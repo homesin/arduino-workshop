@@ -12,24 +12,25 @@ param(
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
 $ProgressPreference = 'SilentlyContinue'
 
-$Source = (Resolve-Path $Source).ProviderPath.TrimEnd('\')
+$Source = $Source.TrimEnd('\')
 $Dest   = Join-Path ([Environment]::GetFolderPath('Desktop')) 'arduino-workshop'
 
+# 用 robocopy，不要自己用字串長度切相對路徑：帳號名稱超過 8 個字元時 %TEMP% 是 8.3 短檔名
+# （C:\Users\WDAGUT~1\…），Get-ChildItem 卻回傳長檔名，兩邊長度對不上，切出來的路徑全錯。
+function Sync($from, $to, [string[]]$opts) {
+  robocopy $from $to /E /NFL /NDL /NJH /NJS /NP @opts | Out-Null
+  if ($LASTEXITCODE -ge 8) { Write-Host "  ✗ 複製失敗（robocopy 結束碼 $LASTEXITCODE）" -ForegroundColor Red; exit 1 }
+}
+
 Write-Host ''
-if (-not (Test-Path $Dest)) {
+if (-not (Test-Path (Join-Path $Dest 'setup\install.ps1'))) {
   Write-Host "▶ 把教材放到 $Dest" -ForegroundColor Cyan
-  Copy-Item $Source $Dest -Recurse
 } else {
   Write-Host "▶ 桌面已經有 arduino-workshop，只更新安裝腳本、補上缺少的檔案（你改過的程式不會被蓋掉）" -ForegroundColor Cyan
-  Get-ChildItem $Source -Recurse -File | ForEach-Object {
-    $rel    = $_.FullName.Substring($Source.Length + 1)
-    $target = Join-Path $Dest $rel
-    if ($rel -like 'setup\*' -or -not (Test-Path $target)) {
-      New-Item -ItemType Directory -Force (Split-Path $target) | Out-Null
-      Copy-Item $_.FullName $target -Force
-    }
-  }
 }
+# /XC /XN /XO：已經存在的檔案一律不動，只補缺少的；接著 setup\ 整個換成新版
+Sync $Source $Dest '/XC', '/XN', '/XO'
+Sync (Join-Path $Source 'setup') (Join-Path $Dest 'setup')
 
 # 另開一個 powershell 跑：install.ps1 失敗時會 exit，不要連這支一起結束
 $a = '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $Dest 'setup\install.ps1')
