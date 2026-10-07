@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arduino 研習安裝</title>
+<style>
+  :root {
+    --bg: #E9EEE8; --card: #F6F8F5; --ink: #143D2D; --mute: #4F6B5E; --line: #C9D4CB;
+    --accent: #87374B; --code-bg: #143D2D; --code-ink: #E9EEE8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #10241B; --card: #183126; --ink: #DDE7DF; --mute: #9DB3A6; --line: #2C4A3C;
+      --accent: #D98AA0; --code-bg: #0A1812; --code-ink: #DDE7DF;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 17px/1.7 "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 40px 16px 64px; }
+  header p { margin: 0; color: var(--mute); font-size: 15px; letter-spacing: .08em; }
+  h1 { margin: 4px 0 8px; font-size: 32px; line-height: 1.3; }
+  h2 { margin: 40px 0 12px; font-size: 21px; border-bottom: 2px solid var(--ink); padding-bottom: 4px; }
+  .lead { margin: 0; color: var(--mute); }
+  ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; }
+  ol.steps > li {
+    counter-increment: s; position: relative; padding: 16px 16px 16px 60px; margin: 12px 0;
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+  }
+  ol.steps > li::before {
+    content: counter(s); position: absolute; left: 16px; top: 16px; width: 30px; height: 30px;
+    border-radius: 50%; background: var(--ink); color: var(--bg);
+    display: grid; place-items: center; font-weight: 700; font-size: 15px;
+  }
+  ol.steps b { display: block; margin-bottom: 2px; }
+  .tabs { display: flex; gap: 6px; margin: 10px 0 0; flex-wrap: wrap; }
+  .tabs button {
+    font: inherit; font-size: 15px; padding: 4px 14px; border-radius: 6px 6px 0 0; cursor: pointer;
+    border: 1px solid var(--line); border-bottom: none; background: transparent; color: var(--mute);
+  }
+  .tabs button[aria-selected="true"] { background: var(--code-bg); color: var(--code-ink); border-color: var(--code-bg); }
+  .cmd { display: flex; align-items: stretch; background: var(--code-bg); border-radius: 0 6px 6px 6px; overflow: hidden; }
+  .cmd code {
+    flex: 1; min-width: 0; padding: 12px 14px; color: var(--code-ink); overflow-x: auto; white-space: nowrap;
+    font: 15px/1.5 Consolas, "Cascadia Mono", monospace;
+  }
+  .cmd button {
+    flex: none; font: inherit; font-size: 15px; padding: 0 18px; border: none; cursor: pointer;
+    background: var(--accent); color: #fff;
+  }
+  .note { font-size: 15px; color: var(--mute); margin: 8px 0 0; }
+  .warn { color: var(--accent); font-weight: 700; }
+  kbd {
+    font: 14px Consolas, monospace; padding: 1px 6px; border: 1px solid var(--line);
+    border-bottom-width: 2px; border-radius: 4px; background: var(--bg);
+  }
+  .dl {
+    display: inline-block; margin: 6px 0; padding: 8px 18px; border-radius: 6px; text-decoration: none;
+    border: 2px solid var(--ink); color: var(--ink); font-weight: 700;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { white-space: nowrap; }
+  dl.faq dt { font-weight: 700; margin-top: 16px; }
+  dl.faq dd { margin: 2px 0 0; }
+  footer { margin-top: 48px; font-size: 13px; color: var(--mute); }
+  @media (max-width: 520px) {
+    h1 { font-size: 26px; }
+    ol.steps > li { padding-left: 52px; }
+    ol.steps > li::before { left: 12px; }
+    th { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p>115.11.14 ARDUINO 實作研習</p>
+    <h1>學員電腦安裝</h1>
+    <p class="lead">上課前在自己的 Windows 電腦做一次，約 15–30 分鐘（視網路速度）。軟體全部自動安裝，最後會列出檢查結果。</p>
+  </header>
+
+  <h2>一行指令安裝（建議）</h2>
+  <ol class="steps">
+    <li>
+      <b>開啟 PowerShell</b>
+      按鍵盤的 <kbd>⊞ Win</kbd> 鍵，輸入 <code>PowerShell</code>，按 <kbd>Enter</kbd>。不需要「以系統管理員身分執行」。
+    </li>
+    <li>
+      <b>複製下面的指令，貼到 PowerShell，按 Enter</b>
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-cmd="full">全部安裝</button>
+        <button role="tab" aria-selected="false" data-cmd="arduino">只裝 Arduino</button>
+      </div>
+      <div class="cmd">
+        <code id="cmd"></code>
+        <button id="copy" type="button">複製</button>
+      </div>
+      <p class="note" id="cmd-note"></p>
+    </li>
+    <li>
+      <b>跳出確認視窗時按「是」</b>
+      安裝 CH340 驅動和部分軟體時，Windows 會問「是否允許此應用程式變更您的裝置」。<span class="warn">按「否」會讓該項目失敗。</span>
+    </li>
+    <li>
+      <b>看最後的結果表</b>
+      出現綠字「全部完成，這台電腦可以上課了」就完成了。教材會放在桌面的 <code>arduino-workshop</code> 資料夾。
+      <p class="note">✓ 成功　！ 不影響上課，但請看說明　✗ 失敗，修好後重新執行即可（已裝好的會自動跳過）</p>
+    </li>
+  </ol>
+
+  <h2>手動下載（指令無法執行時）</h2>
+  <p>
+    <a class="dl" id="zip" href="arduino-workshop.zip">下載教材 zip（116 KB）</a>
+  </p>
+  <ol class="steps">
+    <li><b>解壓縮</b>對 zip 檔按右鍵 →「解壓縮全部」，建議放在桌面。</li>
+    <li><b>雙擊 <code>setup\install.cmd</code></b>
+      若出現「Windows 已保護您的電腦」，按「其他資訊」→「仍要執行」。只裝 Arduino 的話，在該資料夾開啟終端機執行 <code>.\install.cmd -ArduinoOnly</code>。
+    </li>
+  </ol>
+
+  <h2>會安裝哪些東西</h2>
+  <table>
+    <tr><th>項目</th><th>用途</th><th>只裝 Arduino</th></tr>
+    <tr><td>Arduino IDE</td><td>寫程式、上傳到板子</td><td>✓</td></tr>
+    <tr><td>Uno 板子核心、函式庫</td><td>SimpleDHT、Keypad、Servo、Stepper</td><td>✓</td></tr>
+    <tr><td>CH340 驅動</td><td>相容板的 USB 晶片，沒裝電腦認不得板子</td><td>✓</td></tr>
+    <tr><td>VS Code</td><td>選用的編輯器，附一鍵編譯上傳</td><td>✓</td></tr>
+    <tr><td>Node.js、專案套件</td><td>雲端單元：感測資料上網、LINE 推播</td><td></td></tr>
+    <tr><td>Codex CLI</td><td>上課卡關時問 AI 助教</td><td></td></tr>
+  </table>
+  <p class="note">已經裝過的項目會自動跳過，重複執行沒有副作用。</p>
+
+  <h2>常見問題</h2>
+  <dl class="faq">
+    <dt>貼上指令後出現紅字錯誤</dt>
+    <dd>可能是學校網路或電腦政策擋住了，改用上面的「手動下載」。</dd>
+    <dt>公務電腦、電腦教室沒有安裝權限</dt>
+    <dd>請先請資訊人員協助，或在確認視窗輸入管理員帳號密碼。</dd>
+    <dt>結果表的「偵測到板子」是 ！</dt>
+    <dd>沒有插板子時一定會這樣。把 Uno 用 USB 線接上電腦後，雙擊桌面 <code>arduino-workshop\setup\install.cmd</code> 再檢查一次。若仍偵測不到，換一條 USB 線（有些線只能充電）。</dd>
+    <dt>「Codex 登入」是 ！</dt>
+    <dd>第一次使用要登入：在 <code>arduino-workshop</code> 資料夾開終端機輸入 <code>codex</code>，用 ChatGPT 帳號登入。上課時再做也可以。</dd>
+    <dt>重新執行會蓋掉我改過的程式嗎？</dt>
+    <dd>不會。桌面已有 <code>arduino-workshop</code> 時，只會更新安裝腳本、補上缺少的檔案。</dd>
+  </dl>
+
+  <footer>教材版本 2026-10-07 20:51</footer>
+</main>
+
+<script>
+  const base = 'https://homesin.github.io/arduino-workshop';
+  const cmds = {
+    full:    { text: `irm ${base}/get.ps1 | iex`,         note: '全部安裝：Arduino、VS Code、Node.js、Codex CLI。下午有雲端單元的請選這個。' },
+    arduino: { text: `irm ${base}/get-arduino.ps1 | iex`, note: '只裝 Arduino、驅動與 VS Code，不裝 Node.js 與 Codex CLI。只上硬體場次時用。' },
+  };
+  const code = document.getElementById('cmd'), note = document.getElementById('cmd-note'), copy = document.getElementById('copy');
+  function show(key) {
+    code.textContent = cmds[key].text;
+    note.textContent = cmds[key].note;
+    document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.cmd === key));
+  }
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => show(b.dataset.cmd)));
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(code.textContent);
+    } catch {
+      const r = document.createRange(); r.selectNodeContents(code);
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      document.execCommand('copy');
+    }
+    copy.textContent = '已複製';
+    setTimeout(() => copy.textContent = '複製', 1500);
+  });
+  // 重新部署後檔名不變，加版本參數避免拿到瀏覽器快取的舊 zip
+  document.getElementById('zip').href += '?v=' + encodeURIComponent('2026-10-07 20:51');
+  show('full');
+</script>
+</body>
+</html>

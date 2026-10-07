@@ -1,0 +1,98 @@
+{
+  // 給「打開整個專案根目錄」的人用；實際腳本在 arduino-course/.vscode/。
+  // 打開任一單元的 .ino 檔：
+  //   Ctrl+Shift+B                 → 編譯並上傳
+  //   終端機 → 執行工作…           → 選「只編譯」「序列埠監控」「列出連接埠」
+  //   （或 Ctrl+Shift+P 輸入 run task；英文介面叫 Terminal → Run Task…）
+  "version": "2.0.0",
+  "options": {
+    "shell": {
+      "executable": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command"
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "label": "Arduino: 編譯並上傳",
+      "type": "shell",
+      "command": "& '${workspaceFolder}\\arduino-course\\.vscode\\arduino.ps1' -Action upload -File '${file}'",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": {
+        "owner": "arduino",
+        "fileLocation": [
+          "autoDetect",
+          "${workspaceFolder}"
+        ],
+        "pattern": {
+          "regexp": "^(.+?\\.(?:ino|h|cpp)):(\\d+):(\\d+):\\s+(warning|error|fatal error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
+    },
+    {
+      "label": "Arduino: 只編譯",
+      "type": "shell",
+      "command": "& '${workspaceFolder}\\arduino-course\\.vscode\\arduino.ps1' -Action compile -File '${file}'",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": {
+        "owner": "arduino",
+        "fileLocation": [
+          "autoDetect",
+          "${workspaceFolder}"
+        ],
+        "pattern": {
+          "regexp": "^(.+?\\.(?:ino|h|cpp)):(\\d+):(\\d+):\\s+(warning|error|fatal error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
+    },
+    {
+      "label": "Arduino: 序列埠監控",
+      "type": "shell",
+      "command": "& '${workspaceFolder}\\arduino-course\\.vscode\\arduino.ps1' -Action monitor",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Arduino: 列出連接埠",
+      "type": "shell",
+      "command": "& '${workspaceFolder}\\arduino-course\\.vscode\\arduino.ps1' -Action ports",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

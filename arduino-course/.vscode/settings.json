@@ -1,0 +1,7 @@
+{
+  // VS Code 不認得 .ino，預設當純文字、沒有語法上色。
+  // Arduino 程式就是 C++，用內建的 C++ 上色即可，不必裝擴充套件。
+  "files.associations": {
+    "*.ino": "cpp"
+  }
+}

@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>校園環境監測站</title>
+<style>
+  /* 這份儀表板是投影用的，刻意固定淺色，不跟著系統深色模式走。 */
+  :root{
+    color-scheme: light;
+    --surface-0:#f2f2f0; --surface-1:#fcfcfb; --line:#e2e2dd;
+    --ink-1:#0b0b0b; --ink-2:#52514e; --ink-3:#83827c;
+    --temp:#2a78d6;              /* 分類色 slot 1 */
+    --humid:#1baf7a;             /* 分類色 slot 3 */
+    --critical:#d03b3b; --warning:#fab219; --good:#0ca30c;
+    --grid:#ececea;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--surface-0);color:var(--ink-1);
+       font:15px/1.5 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
+  header{display:flex;align-items:baseline;gap:16px;padding:20px 28px 12px}
+  h1{margin:0;font-size:22px;letter-spacing:.02em}
+  .conn{margin-left:auto;font-size:13px;color:var(--ink-2)}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;
+       background:var(--ink-3);margin-right:6px;vertical-align:1px}
+  .dot.live{background:var(--good)}
+  main{display:grid;gap:16px;padding:0 28px 28px;grid-template-columns:1fr}
+  @media (min-width:900px){ main{grid-template-columns:1fr 1fr} }
+  .card{background:var(--surface-1);border:1px solid var(--line);
+        border-radius:10px;padding:18px 20px}
+  .card h2{margin:0 0 2px;font-size:14px;font-weight:600;color:var(--ink-2);letter-spacing:.04em}
+  .card .sub{margin:0 0 14px;font-size:12px;color:var(--ink-3)}
+  .hero{font-size:52px;font-weight:700;line-height:1;letter-spacing:-.01em;
+        font-variant-numeric:tabular-nums}
+  .hero small{font-size:20px;font-weight:600;color:var(--ink-2);margin-left:4px}
+  svg{display:block;width:100%;height:150px;overflow:visible;margin-top:8px}
+  .grid-line{stroke:var(--grid);stroke-width:1}
+  .axis-label{font-size:11px;fill:var(--ink-3)}
+  .series{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+  .last-label{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+  .crosshair{stroke:var(--ink-3);stroke-width:1;stroke-dasharray:3 3;display:none}
+  .tip{position:absolute;pointer-events:none;display:none;background:var(--ink-1);
+       color:#fff;font-size:12px;padding:6px 9px;border-radius:6px;white-space:nowrap;
+       font-variant-numeric:tabular-nums;transform:translate(-50%,-130%)}
+  .status-row{display:flex;gap:12px;margin-top:4px}
+  .status{flex:1;display:flex;align-items:center;gap:10px;padding:12px 14px;
+          border:1px solid var(--line);border-radius:8px;background:var(--surface-1)}
+  .status .icon{font-size:22px;line-height:1}
+  .status .name{font-size:13px;color:var(--ink-2)}
+  .status .state{font-size:16px;font-weight:700}
+  .status[data-on="true"]{border-color:currentColor}
+  #flame[data-on="true"]{color:var(--critical)}
+  #pir[data-on="true"]{color:var(--warning)}
+  table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  th,td{text-align:right;padding:5px 8px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--ink-2);font-weight:600}
+  .toggle{margin-top:12px;font-size:12px;color:var(--ink-2);background:none;
+          border:1px solid var(--line);border-radius:6px;padding:5px 10px;cursor:pointer}
+  .plot{position:relative}
+  .ctrl-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px}
+  .btn{font:inherit;font-size:14px;padding:9px 16px;border-radius:8px;cursor:pointer;
+       border:1px solid var(--line);background:var(--surface-1);color:var(--ink-1)}
+  .btn:hover{border-color:var(--ink-3)}
+  .btn:focus-visible{outline:2px solid var(--good);outline-offset:2px}
+  .btn.danger{border-color:var(--critical);color:var(--critical)}
+  .btn[aria-pressed="true"]{background:var(--ink-1);color:var(--surface-1);border-color:var(--ink-1)}
+  .slider{display:flex;align-items:center;gap:12px;margin-top:16px;font-size:14px}
+  .slider input[type=range]{flex:1;accent-color:var(--temp);min-width:120px}
+  .slider b{font-variant-numeric:tabular-nums;min-width:3.5em;text-align:right}
+  .extra{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px;margin-top:14px}
+  .extra div{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+  .extra dt{font-size:12px;color:var(--ink-3);margin:0 0 3px}
+  .extra dd{margin:0;font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+  .scroll{max-height:190px;overflow:auto}
+  ul.events{list-style:none;margin:0;padding:0;font-size:13px}
+  ul.events li{padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:8px}
+  ul.events time{color:var(--ink-3);font-variant-numeric:tabular-nums;flex:none}
+  .muted{color:var(--ink-3);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <h1>校園環境監測站</h1>
+  <span class="muted">Arduino → Node.js → 即時顯示</span>
+  <span class="conn"><span class="dot" id="dot"></span><span id="connText">等待資料…</span></span>
+</header>
+
+<main>
+  <section class="card">
+    <h2>溫度</h2>
+    <p class="sub">DHT11 · 每秒一筆 · 最近兩分鐘</p>
+    <div class="hero" id="tempNow">--<small>°C</small></div>
+    <div class="plot" id="tempPlot">
+      <svg id="tempChart" viewBox="0 0 600 150" preserveAspectRatio="none" aria-label="溫度折線圖"></svg>
+      <div class="tip" id="tempTip"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>相對濕度</h2>
+    <p class="sub">DHT11 · 每秒一筆 · 最近兩分鐘</p>
+    <div class="hero" id="humidNow">--<small>%</small></div>
+    <div class="plot" id="humidPlot">
+      <svg id="humidChart" viewBox="0 0 600 150" preserveAspectRatio="none" aria-label="濕度折線圖"></svg>
+      <div class="tip" id="humidTip"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>異常偵測</h2>
+    <p class="sub">觸發時會發 LINE 通知</p>
+    <div class="status-row">
+      <div class="status" id="flame" data-on="false">
+        <span class="icon">🔥</span>
+        <span><span class="name">火焰感測</span><br><span class="state" id="flameState">正常</span></span>
+      </div>
+      <div class="status" id="pir" data-on="false">
+        <span class="icon">🚶</span>
+        <span><span class="name">人體紅外線</span><br><span class="state" id="pirState">無人</span></span>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:14px">火焰感測 A0 原始值 <b id="flameRaw">--</b>（越低代表越接近火源）</p>
+    <button class="toggle" id="tableBtn">顯示數值表格</button>
+    <div class="scroll" id="tableWrap" hidden>
+      <table>
+        <thead><tr><th>時間</th><th>溫度 °C</th><th>濕度 %</th><th>火焰</th></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card" id="controlCard">
+    <h2>控制</h2>
+    <p class="sub">指令會經由 Node.js 寫回 Arduino 的序列埠</p>
+    <div class="ctrl-row">
+      <button class="btn" id="btnTest">測試警報</button>
+      <button class="btn danger" id="btnMute" aria-pressed="false">消音</button>
+    </div>
+    <div class="slider">
+      <label for="waterRange">水位門檻</label>
+      <input type="range" id="waterRange" min="0" max="1023" step="10" value="300">
+      <b id="waterVal">300</b>
+    </div>
+    <p class="sub" id="cmdLog" style="margin-top:14px">尚未送出任何指令。</p>
+    <dl class="extra" id="extraStats" hidden></dl>
+  </section>
+
+  <section class="card">
+    <h2>通報記錄</h2>
+    <p class="sub">最近 20 筆</p>
+    <ul class="events" id="events"><li class="muted">還沒有任何警報。</li></ul>
+  </section>
+</main>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+let history = [];
+let flameThreshold = 400;
+
+const fmtTime = (ms) => new Date(ms).toLocaleTimeString('zh-TW', { hour12: false });
+
+/* ── 折線圖 ─────────────────────────────────────────────
+   溫度是 °C、濕度是 %，兩者單位不同，所以刻意畫成兩張圖。
+   把它們疊成一張雙 Y 軸圖是最常見也最容易誤讀的圖表錯誤。  */
+function drawChart(svgId, tipId, values, color, unit, minSpan, decimals) {
+  const svg = document.getElementById(svgId);
+  const W = 600, H = 150, padL = 6, padR = 46, padT = 12, padB = 20;
+  if (values.length < 2) { svg.innerHTML = ''; return; }
+
+  // 折線圖看的是「隨時間怎麼變」，所以基準線不必從 0 開始；
+  // 但一定要給最小跨度，否則感測雜訊會被放大成戲劇性的起伏。
+  const min = Math.min.apply(null, values);
+  const max = Math.max.apply(null, values);
+  const span = Math.max(max - min, minSpan);
+  const mid = (min + max) / 2;
+  let lo = mid - span / 2 - span * 0.15;
+  let hi = mid + span / 2 + span * 0.15;
+
+  const x = (i) => padL + (i / (values.length - 1)) * (W - padL - padR);
+  const y = (v) => padT + (1 - (v - lo) / (hi - lo)) * (H - padT - padB);
+
+  const grid = [lo, (lo + hi) / 2, hi].map((v) =>
+    '<line class="grid-line" x1="' + padL + '" x2="' + (W - padR) +
+    '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '"/>' +
+    '<text class="axis-label" x="' + (W - padR + 6) + '" y="' + (y(v) + 4).toFixed(1) +
+    '">' + v.toFixed(decimals) + '</text>'
+  ).join('');
+
+  const pts = values.map((v, i) => x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
+  const lastV = values[values.length - 1];
+  const lx = x(values.length - 1), ly = y(lastV);
+
+  svg.innerHTML = grid +
+    '<polyline class="series" stroke="' + color + '" points="' + pts + '"/>' +
+    '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) +
+      '" r="4.5" fill="' + color + '" stroke="var(--surface-1)" stroke-width="2"/>' +
+    // 端點數值靠左收，右邊那一欄留給座標軸刻度，兩者才不會疊在一起
+    '<text class="last-label" text-anchor="end" x="' + (lx - 9).toFixed(1) +
+      '" y="' + (ly - 9).toFixed(1) + '" fill="' + color + '">' +
+      lastV.toFixed(decimals) + unit + '</text>' +
+    '<line class="crosshair" id="' + svgId + '-cross" y1="' + padT + '" y2="' + (H - padB) + '"/>';
+
+  // 每秒重繪會把 SVG 內容整個換掉，所以互動狀態存在外面，
+  // 由重繪時依狀態還原；事件則綁在不會被重繪的外層容器上。
+  const st = hoverState[svgId];
+  st.x = x; st.y = y; st.values = values; st.unit = unit; st.decimals = decimals;
+  if (st.index !== null) paintHover(svgId, tipId);
+}
+
+/* 滑鼠狀態：null 代表游標不在圖上 */
+const hoverState = {
+  tempChart: { index: null },
+  humidChart: { index: null },
+};
+
+function paintHover(svgId, tipId) {
+  const st = hoverState[svgId];
+  const cross = document.getElementById(svgId + '-cross');
+  const tip = document.getElementById(tipId);
+  if (!cross || !tip) return;
+  if (st.index === null || !st.values || st.index >= st.values.length) {
+    cross.style.display = 'none';
+    tip.style.display = 'none';
+    return;
+  }
+  const i = Math.min(st.index, st.values.length - 1);
+  const W = 600, H = 150;
+  cross.style.display = 'block';
+  cross.setAttribute('x1', st.x(i));
+  cross.setAttribute('x2', st.x(i));
+  tip.style.display = 'block';
+  tip.style.left = ((st.x(i) / W) * 100) + '%';
+  tip.style.top = ((st.y(st.values[i]) / H) * 100) + '%';
+  const when = history[i] ? fmtTime(history[i].at) : '';
+  tip.textContent = when + '　' + st.values[i].toFixed(st.decimals) + st.unit;
+}
+
+function bindHover(plotId, svgId, tipId) {
+  const plot = document.getElementById(plotId);
+  const st = hoverState[svgId];
+  plot.addEventListener('mousemove', (e) => {
+    const svg = document.getElementById(svgId);
+    const r = svg.getBoundingClientRect();
+    if (!st.values || st.values.length < 2) return;
+    const W = 600, padL = 6, padR = 46;
+    const px = ((e.clientX - r.left) / r.width) * W;
+    let i = Math.round(((px - padL) / (W - padL - padR)) * (st.values.length - 1));
+    st.index = Math.max(0, Math.min(st.values.length - 1, i));
+    paintHover(svgId, tipId);
+  });
+  plot.addEventListener('mouseleave', () => {
+    st.index = null;
+    paintHover(svgId, tipId);
+  });
+}
+
+bindHover('tempPlot', 'tempChart', 'tempTip');
+bindHover('humidPlot', 'humidChart', 'humidTip');
+
+function render() {
+  if (!history.length) return;
+  const last = history[history.length - 1];
+  document.getElementById('tempNow').innerHTML = last.t.toFixed(1) + '<small>°C</small>';
+  document.getElementById('humidNow').innerHTML = last.h.toFixed(0) + '<small>%</small>';
+  document.getElementById('flameRaw').textContent = last.flame;
+
+  const flameOn = last.flame < flameThreshold;
+  setStatus('flame', flameOn, flameOn ? '偵測到火焰' : '正常');
+  setStatus('pir', last.pir === 1, last.pir === 1 ? '有人經過' : '無人');
+
+  drawChart('tempChart', 'tempTip', history.map((r) => r.t), 'var(--temp)', '°C', 4, 1);
+  drawChart('humidChart', 'humidTip', history.map((r) => r.h), 'var(--humid)', '%', 20, 0);
+
+  renderExtra(last);
+
+  document.getElementById('tableBody').innerHTML = history.slice(-30).reverse().map((r) =>
+    '<tr><td>' + fmtTime(r.at) + '</td><td>' + r.t.toFixed(1) +
+    '</td><td>' + r.h.toFixed(0) + '</td><td>' + r.flame + '</td></tr>').join('');
+}
+
+/* 狀態一律「圖示 + 文字 + 顏色」三重表示，不靠顏色單獨傳達。 */
+function setStatus(id, on, text) {
+  document.getElementById(id).dataset.on = String(on);
+  document.getElementById(id + 'State').textContent = text;
+}
+
+function addEvent(ev) {
+  const ul = document.getElementById('events');
+  const placeholder = ul.querySelector('.muted');
+  if (placeholder) ul.innerHTML = '';
+  const li = document.createElement('li');
+  const note = ev.note ? '（' + ev.note + '）' : ev.delivered ? '（已送出 LINE）' : '';
+  li.innerHTML = '<time>' + fmtTime(ev.at) + '</time><span>' + ev.text + ' ' + note + '</span>';
+  ul.prepend(li);
+  while (ul.children.length > 20) ul.lastElementChild.remove();
+}
+
+document.getElementById('tableBtn').addEventListener('click', (e) => {
+  const wrap = document.getElementById('tableWrap');
+  wrap.hidden = !wrap.hidden;
+  e.target.textContent = wrap.hidden ? '顯示數值表格' : '隱藏數值表格';
+});
+
+socket.on('connect', () => {
+  document.getElementById('dot').classList.add('live');
+  document.getElementById('connText').textContent = '已連線';
+});
+socket.on('disconnect', () => {
+  document.getElementById('dot').classList.remove('live');
+  document.getElementById('connText').textContent = '連線中斷';
+});
+socket.on('config', (cfg) => { flameThreshold = cfg.flameThreshold; });
+socket.on('history', (rows) => { history = rows; render(); });
+socket.on('events', (rows) => rows.slice().reverse().forEach(addEvent));
+socket.on('reading', (r) => {
+  history.push(r);
+  if (history.length > 120) history.shift();
+  render();
+});
+socket.on('event', addEvent);
+
+/* ── 控制：瀏覽器 -> Node.js -> Arduino ───────────────── */
+const cmdLog = document.getElementById('cmdLog');
+function send(command) {
+  socket.emit('command', command);
+  cmdLog.textContent = '已送出 ' + command + '…';
+}
+document.getElementById('btnTest').addEventListener('click', () => send('TEST:1'));
+
+const btnMute = document.getElementById('btnMute');
+btnMute.addEventListener('click', () => {
+  const next = btnMute.getAttribute('aria-pressed') !== 'true';
+  btnMute.setAttribute('aria-pressed', String(next));
+  btnMute.textContent = next ? '已消音（點此恢復）' : '消音';
+  send('MUTE:' + (next ? 1 : 0));
+});
+
+const waterRange = document.getElementById('waterRange');
+const waterVal = document.getElementById('waterVal');
+waterRange.addEventListener('input', () => { waterVal.textContent = waterRange.value; });
+waterRange.addEventListener('change', () => send('WATER:' + waterRange.value));
+
+socket.on('commandResult', (r) => {
+  cmdLog.textContent = r.sent
+    ? r.command + ' 已寫入序列埠'
+    : r.command + ' 沒送出去（板子沒連上？改用 npm start 並確認 SERIAL_PORT）';
+});
+
+/* 整合專題會多送距離、光線、水位、狀態，有才顯示 */
+const STATUS_TEXT = ['正常', '偵測到有人', '有東西靠近', '淹水', '火警'];
+function renderExtra(r) {
+  const box = document.getElementById('extraStats');
+  const rows = [];
+  if ('dist' in r)   rows.push(['距離', r.dist < 0 ? '量不到' : r.dist.toFixed(1) + ' cm']);
+  if ('light' in r)  rows.push(['光線', String(r.light)]);
+  if ('water' in r)  rows.push(['水位', String(r.water)]);
+  if ('status' in r) rows.push(['狀態', STATUS_TEXT[r.status] || String(r.status)]);
+  if (!rows.length) { box.hidden = true; return; }
+  box.hidden = false;
+  box.innerHTML = rows.map((x) => '<div><dt>' + x[0] + '</dt><dd>' + x[1] + '</dd></div>').join('');
+}
+</script>
+</body>
+</html>

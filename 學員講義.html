@@ -1,0 +1,659 @@
+<title>校園環境監測站實作手冊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --paper:#f7f8f7;
+  --surface:#ffffff;
+  --surface-2:#eef2f1;
+  --ink:#12181a;
+  --ink-2:#4a585c;
+  --ink-3:#7d8b8e;
+  --rule:#dbe2e2;
+  --rule-strong:#c3cfcf;
+  --accent:#00757f;
+  --accent-ink:#005b63;
+  --accent-soft:#e2f0f1;
+  --warn:#a8551f;
+  --warn-soft:#f8ede4;
+  --ok:#2f6b3a;
+
+  --serif:"Noto Serif TC",Songti TC,SimSun,Georgia,serif;
+  --sans:"Noto Sans TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#101416;
+    --surface:#171d1f;
+    --surface-2:#1e2628;
+    --ink:#e9eeee;
+    --ink-2:#a6b3b5;
+    --ink-3:#7e8c8e;
+    --rule:#293233;
+    --rule-strong:#3a4547;
+    --accent:#3ec6cf;
+    --accent-ink:#7fdbe1;
+    --accent-soft:#12302f;
+    --warn:#dc9358;
+    --warn-soft:#2c2018;
+    --ok:#79c489;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#101416;
+  --surface:#171d1f;
+  --surface-2:#1e2628;
+  --ink:#e9eeee;
+  --ink-2:#a6b3b5;
+  --ink-3:#7e8c8e;
+  --rule:#293233;
+  --rule-strong:#3a4547;
+  --accent:#3ec6cf;
+  --accent-ink:#7fdbe1;
+  --accent-soft:#12302f;
+  --warn:#dc9358;
+  --warn-soft:#2c2018;
+  --ok:#79c489;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:16px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:940px;margin:0 auto;padding:0 24px 96px}
+
+/* ── 頁首 ───────────────────────────────────────── */
+.masthead{padding:56px 0 28px;border-bottom:2px solid var(--ink)}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent-ink);margin:0 0 14px
+}
+h1{
+  font-family:var(--serif);font-weight:700;font-size:clamp(30px,5vw,46px);
+  line-height:1.25;margin:0 0 12px;text-wrap:balance;letter-spacing:-.01em
+}
+.standfirst{margin:0;max-width:60ch;color:var(--ink-2);font-size:17px}
+.facts{
+  display:flex;flex-wrap:wrap;gap:0;margin-top:26px;
+  border-top:1px solid var(--rule)
+}
+.facts div{
+  flex:1 1 150px;padding:14px 18px 14px 0;border-right:1px solid var(--rule)
+}
+.facts div:last-child{border-right:0}
+.facts dt{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 3px
+}
+.facts dd{margin:0;font-weight:500;font-size:15px}
+
+/* ── 章節 ───────────────────────────────────────── */
+section{margin-top:60px}
+h2{
+  font-family:var(--serif);font-weight:600;font-size:26px;line-height:1.35;
+  margin:0 0 6px;text-wrap:balance
+}
+h2 .num{
+  font-family:var(--mono);font-size:14px;font-weight:400;
+  color:var(--accent-ink);margin-right:12px;letter-spacing:.05em
+}
+.lede{margin:0 0 26px;color:var(--ink-2);max-width:62ch}
+h3{font-family:var(--sans);font-weight:700;font-size:17px;margin:0 0 6px}
+p{margin:0 0 14px;max-width:66ch}
+a{color:var(--accent-ink);text-underline-offset:3px}
+strong{font-weight:700}
+code{
+  font-family:var(--mono);font-size:.88em;background:var(--surface-2);
+  padding:1px 5px;border-radius:3px;color:var(--ink)
+}
+
+/* ── 事前作業檢查表 ─────────────────────────────── */
+.checklist{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule);
+  border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+.checklist li{background:var(--surface);padding:0}
+.checklist label{
+  display:grid;grid-template-columns:auto 1fr;gap:14px;
+  padding:16px 18px;cursor:pointer;align-items:start
+}
+.checklist input{
+  appearance:none;width:19px;height:19px;margin:4px 0 0;flex:none;
+  border:1.5px solid var(--rule-strong);border-radius:3px;background:var(--surface);
+  display:grid;place-content:center;cursor:pointer
+}
+.checklist input:checked{background:var(--accent);border-color:var(--accent)}
+.checklist input:checked::after{
+  content:"";width:10px;height:6px;border:2px solid var(--surface);
+  border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-2px)
+}
+.checklist input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.checklist .what{font-weight:700;font-size:16px}
+.checklist .how{color:var(--ink-2);font-size:14.5px;margin-top:2px}
+.checklist input:checked ~ .body .what{color:var(--ink-3);text-decoration:line-through}
+.progress{
+  font-family:var(--mono);font-size:13px;color:var(--ink-2);
+  margin:14px 0 0;display:flex;align-items:center;gap:10px
+}
+.bar{flex:1;height:4px;background:var(--rule);border-radius:2px;overflow:hidden;max-width:220px}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+
+/* ── 時間軸 ─────────────────────────────────────── */
+.steps{display:grid;gap:0}
+.step{
+  display:grid;grid-template-columns:82px 1fr;gap:0;
+  border-top:1px solid var(--rule)
+}
+.step:last-child{border-bottom:1px solid var(--rule)}
+.step .rail{
+  font-family:var(--mono);font-size:13px;color:var(--ink-3);
+  padding:22px 16px 22px 0;border-right:1px solid var(--rule);
+  text-align:right;letter-spacing:.02em
+}
+.step .rail b{display:block;color:var(--accent-ink);font-weight:600;font-size:15px}
+.step .body{padding:22px 0 22px 22px}
+.step p:last-child{margin-bottom:0}
+.block-head{
+  display:flex;align-items:baseline;gap:14px;margin:44px 0 0;
+  padding-bottom:8px;border-bottom:2px solid var(--accent)
+}
+.block-head h3{font-family:var(--serif);font-size:20px;font-weight:600;margin:0}
+.block-head span{
+  font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-left:auto;
+  letter-spacing:.06em
+}
+
+/* 檢查點 */
+.checkpoint{
+  display:flex;gap:10px;align-items:baseline;margin-top:12px;
+  padding:11px 14px;background:var(--accent-soft);border-radius:4px;
+  font-size:14.5px;color:var(--ink)
+}
+.checkpoint b{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent-ink);flex:none
+}
+
+/* ── 終端機／序列輸出 ───────────────────────────── */
+pre{
+  font-family:var(--mono);font-size:13.5px;line-height:1.7;
+  background:var(--surface-2);color:var(--ink);
+  border:1px solid var(--rule);border-left:3px solid var(--accent);
+  padding:14px 16px;border-radius:4px;margin:14px 0;
+  overflow-x:auto
+}
+pre .c{color:var(--ink-3)}
+
+/* ── 表格 ───────────────────────────────────────── */
+.tablewrap{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:520px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{
+  font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-3);border-bottom:1px solid var(--rule-strong);font-weight:400;
+  white-space:nowrap
+}
+tbody tr:last-child td{border-bottom:0}
+td.pin{font-family:var(--mono);font-weight:600;color:var(--accent-ink);white-space:nowrap}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ── 注意事項 ───────────────────────────────────── */
+.warn{
+  background:var(--warn-soft);border-left:3px solid var(--warn);
+  padding:16px 18px;border-radius:0 4px 4px 0;margin:20px 0
+}
+.warn h4{
+  margin:0 0 6px;font-size:15px;font-weight:700;color:var(--warn);
+  display:flex;align-items:center;gap:8px
+}
+.warn p{margin:0;font-size:15px}
+.warn p + p{margin-top:8px}
+
+/* ── 頁尾 ───────────────────────────────────────── */
+footer{
+  margin-top:72px;padding-top:24px;border-top:1px solid var(--rule);
+  font-size:14px;color:var(--ink-3)
+}
+@media (max-width:640px){
+  .step{grid-template-columns:1fr}
+  .step .rail{
+    border-right:0;text-align:left;padding:18px 0 0;
+    display:flex;gap:10px;align-items:baseline
+  }
+  .step .body{padding:8px 0 20px}
+  .facts div{border-right:0;border-bottom:1px solid var(--rule);flex-basis:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">Arduino 實作研習 · 115.11.14</p>
+  <h1>校園環境監測站實作手冊</h1>
+  <p class="standfirst">
+    今天要做一台會自己回報的裝置：溫濕度存進雲端、即時數值投在螢幕上、
+    有異常就傳 LINE 到你手機。從一顆 LED 開始，三小時走完。
+  </p>
+  <dl class="facts">
+    <div><dt>時長</dt><dd>3 小時</dd></div>
+    <div><dt>設備</dt><dd>每人一套</dd></div>
+    <div><dt>開發板</dt><dd>Arduino Uno R3</dd></div>
+    <div><dt>需要網路</dt><dd>是</dd></div>
+  </dl>
+</header>
+
+<section>
+  <h2><span class="num">§1</span>上課前要先做好</h2>
+  <p class="lede">
+    這五項沒完成，現場三小時一定跑不完 —— 光是安裝軟體就會吃掉半堂課。
+    請在上課前找時間做完，遇到問題先問，不要留到當天。
+  </p>
+
+  <ul class="checklist" id="prep">
+    <li><label>
+      <input type="checkbox" data-key="ide">
+      <span class="body">
+        <span class="what">安裝 Arduino IDE</span>
+        <span class="how">到 arduino.cc 下載，一路預設安裝。安裝過程若跳出驅動程式確認視窗，一律按「安裝」——
+        我們用的是 CH340 晶片的板子，少裝驅動就抓不到連接埠。</span>
+      </span>
+    </label></li>
+
+    <li><label>
+      <input type="checkbox" data-key="node">
+      <span class="body">
+        <span class="what">安裝 Node.js（LTS 版）</span>
+        <span class="how">到 nodejs.org 下載 LTS。裝完開命令提示字元輸入 <code>node -v</code>，
+        看得到版本號才算成功。<b>如果是公務電腦沒有安裝權限，請先跟資訊人員確認。</b></span>
+      </span>
+    </label></li>
+
+    <li><label>
+      <input type="checkbox" data-key="proj">
+      <span class="body">
+        <span class="what">下載課程專案並安裝套件</span>
+        <span class="how">解壓縮後在該資料夾開命令提示字元，執行 <code>npm install</code>。
+        接著執行 <code>npm run mock</code>，瀏覽器開 localhost:3000 應該看到資料在跳 ——
+        這一步不需要 Arduino 就能驗證。</span>
+      </span>
+    </label></li>
+
+    <li><label>
+      <input type="checkbox" data-key="ts">
+      <span class="body">
+        <span class="what">註冊 ThingSpeak 並建立一個頻道</span>
+        <span class="how">thingspeak.com 免費註冊（非商用）。建立 Channel，勾選 Field 1 到 4，
+        分別命名為 溫度、濕度、火焰、人體。記下 API Keys 分頁的 <b>Write API Key</b>。</span>
+      </span>
+    </label></li>
+
+    <li><label>
+      <input type="checkbox" data-key="line">
+      <span class="body">
+        <span class="what">申請自己的 LINE 官方帳號</span>
+        <span class="how">developers.line.biz 建立 Messaging API channel，
+        取得 <b>Channel access token（long-lived）</b>，然後用手機掃 QR Code 把自己的官方帳號加為好友。
+        <b>每個人都要有自己的帳號</b>，原因在 §5 說明。</span>
+      </span>
+    </label></li>
+  </ul>
+
+  <p class="progress"><span class="bar"><i id="bar"></i></span><span id="prepCount">0 / 5 完成</span></p>
+</section>
+
+<section>
+  <h2><span class="num">§2</span>今天的流程</h2>
+  <p class="lede">
+    每一段都以「看得到結果」收尾。落後了先求會動，細節可以回家補 ——
+    講義你帶得走，現場的三小時帶不走。
+  </p>
+
+  <div class="block-head">
+    <h3>先讓一顆燈聽話</h3>
+    <span>0:00 – 0:55</span>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="rail"><b>0:00</b>步驟 1</div>
+      <div class="body">
+        <h3>確認板子能燒錄</h3>
+        <p>接上 USB，Arduino IDE 選<b>工具 → 開發板 → Arduino Uno</b>，再選<b>工具 → 連接埠</b>
+        （選有 COM 編號的那一個）。開<b>檔案 → 範例 → 01.Basics → Blink</b>，按上傳。</p>
+        <div class="checkpoint"><b>檢查點</b><span>板子上標示 L 的小燈開始一秒一閃。</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="rail"><b>0:15</b>步驟 2</div>
+      <div class="body">
+        <h3>看懂 setup 與 loop</h3>
+        <p>一支 Arduino 程式永遠只有三塊：最上面的宣告區、開機只跑一次的
+        <code>setup()</code>、以及跑完 setup 後無限重複的 <code>loop()</code>。
+        閃爍的節奏就寫在 loop 裡。</p>
+        <p>試著把 <code>delay(1000)</code> 改成 <code>delay(200)</code> 再上傳一次，
+        感覺一下「改程式 → 上傳 → 硬體行為改變」這個循環。</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="rail"><b>0:30</b>步驟 3</div>
+      <div class="body">
+        <h3>接一顆自己的 LED</h3>
+        <p>LED <b>長腳是正極</b>，串一顆 220Ω 電阻接到 <b>D9</b>；短腳是負極，接到 GND。
+        電阻本身不分方向。接線前先拔掉 USB。</p>
+        <p>把程式裡的腳位從 13 改成 9，上傳。</p>
+        <div class="checkpoint"><b>檢查點</b><span>你自己接的那顆燈開始閃，不是板子上的 L 燈。</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="rail"><b>0:42</b>步驟 4</div>
+      <div class="body">
+        <h3>從「開關」變成「呼吸」</h3>
+        <p><code>digitalWrite</code> 只有 HIGH 和 LOW 兩種狀態。
+        換成 <code>analogWrite</code>，值可以是 0 到 255，用 <code>for</code> 迴圈慢慢加上去再慢慢減下來，
+        看起來就像在呼吸。</p>
+        <p><b>只有腳位旁邊有 <code>~</code> 記號的才支援</b>：D3、D5、D6、D9、D10、D11。這也是我們選 D9 的原因。</p>
+        <div class="checkpoint"><b>檢查點</b><span>燈的亮度連續變化，看不出一格一格的跳動。</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block-head">
+    <h3>讓資料離開這塊板子</h3>
+    <span>0:55 – 1:45</span>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="rail"><b>0:55</b>步驟 5</div>
+      <div class="body">
+        <h3>換上感測器</h3>
+        <p>拔掉 USB，把三個模組接上去（腳位表見 §3）。LED 留在 D9 不用拆，兩者不衝突。</p>
+        <p>Arduino IDE 先安裝函式庫：<b>工具 → 管理程式庫</b>，搜尋 <code>SimpleDHT</code> 安裝（作者 Winlin）。
+        然後開啟課程專案裡的 <code>arduino/sensor_node/sensor_node.ino</code>，上傳。</p>
+        <p>開<b>序列埠監控視窗</b>，右下角速率選 9600。</p>
+        <div class="checkpoint"><b>檢查點</b><span>每秒跳出一行像這樣的資料：</span></div>
+        <pre>{"t":26,"h":58,"pir":0,"flame":812}</pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="rail"><b>1:10</b>步驟 6</div>
+      <div class="body">
+        <h3>Node.js 把資料接過來</h3>
+        <p><b>先把序列埠監控視窗關掉。</b>一個 COM 埠同時只能被一個程式使用 ——
+        這是今天最常見的錯誤，等一下 §5 會再提醒一次。</p>
+        <p>在專案資料夾開命令提示字元：</p>
+        <pre>npm run ports        <span class="c">← 看看板子在哪個 COM 埠</span></pre>
+        <p>把 <code>.env.example</code> 複製成 <code>.env</code>，填入你的埠號：</p>
+        <pre>SERIAL_PORT=COM4</pre>
+        <p>然後啟動：</p>
+        <pre>npm start</pre>
+        <div class="checkpoint"><b>檢查點</b><span>終端機出現「收到第一筆資料，接下來每秒一筆」。</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="rail"><b>1:25</b>步驟 7</div>
+      <div class="body">
+        <h3>即時儀表板</h3>
+        <p>瀏覽器開 <code>http://localhost:3000</code>。溫度、濕度兩條曲線會即時往前走，
+        滑鼠移上去可以看到任一時間點的數值。</p>
+        <p>對著 DHT11 呵一口氣，看濕度那條線衝上去。這是<b>第一個去處：看現在</b> ——
+        資料完全不出這台電腦，所以沒有任何額度限制。</p>
+        <div class="checkpoint"><b>檢查點</b><span>呵氣時濕度曲線明顯上揚，幾秒後慢慢回落。</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block-head">
+    <h3>存起來，以及叫人</h3>
+    <span>1:45 – 3:00</span>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="rail"><b>1:45</b>步驟 8</div>
+      <div class="body">
+        <h3>上傳 ThingSpeak</h3>
+        <p>把事前作業拿到的 Write API Key 填進 <code>.env</code>：</p>
+        <pre>THINGSPEAK_WRITE_KEY=你的金鑰</pre>
+        <p><code>Ctrl+C</code> 停掉程式再 <code>npm start</code> 重新啟動。
+        程式已經內建 15 秒節流，不會超過免費方案的速率限制。</p>
+        <p>回 ThingSpeak 頻道頁面，到 <b>Sharing</b> 分頁選「公開」，
+        這樣別人不用登入就看得到你的圖表。這是<b>第二個去處：存起來</b>。</p>
+        <div class="checkpoint"><b>檢查點</b><span>終端機出現「ThingSpeak 已收第 N 筆」，網頁圖表開始長出資料點。</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="rail"><b>2:15</b>步驟 9</div>
+      <div class="body">
+        <h3>讓手機響起來</h3>
+        <p>把 LINE 的 Channel access token 填進 <code>.env</code>，重新啟動程式。</p>
+        <pre>LINE_CHANNEL_ACCESS_TOKEN=你的權杖</pre>
+        <p>用手在 PIR 感測器前面揮一下，或拿打火機（<b>不要點火</b>，靠近就好）測試火焰感測。</p>
+        <p>這是<b>第三個去處：出事叫人</b>。程式用的是「群發給所有好友」，
+        所以不需要知道任何人的 ID，也不需要對外開通道 —— 只是一個往外的 HTTPS 請求。</p>
+        <div class="checkpoint"><b>檢查點</b><span>手機收到 LINE 通知，儀表板右下角同時出現一筆通報記錄。</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="rail"><b>2:45</b>步驟 10</div>
+      <div class="body">
+        <h3>校正與收尾</h3>
+        <p>火焰門檻一定要照 §4 校正過才算完成。剩下的時間調整你自己的警報文字，
+        或試著把門檻改成「溫度超過 30 度就通知」。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">§3</span>接線表</h2>
+  <p class="lede">
+    三個模組都帶排針，用<b>母／母杜邦線直接插上 Uno 就好，這一段不需要麵包板</b>。
+    接線前一定要先拔掉 USB。
+  </p>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>模組</th><th>VCC</th><th>GND</th><th>訊號腳</th><th>說明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>DHT11 溫溼度</td><td class="pin">5V</td><td class="pin">GND</td><td class="pin">D2</td>
+          <td>反應慢，一秒讀一次就好</td>
+        </tr>
+        <tr>
+          <td>HC-SR501 人體紅外線</td><td class="pin">5V</td><td class="pin">GND</td><td class="pin">D3</td>
+          <td>數位輸出，有人時變 HIGH</td>
+        </tr>
+        <tr>
+          <td>火焰感測</td><td class="pin">5V</td><td class="pin">GND</td><td class="pin">A0</td>
+          <td>類比輸出，接 AO 那一腳</td>
+        </tr>
+        <tr>
+          <td>LED + 220Ω 電阻</td><td>—</td><td class="pin">GND</td><td class="pin">D9</td>
+          <td>上一段留下來的，可以不拆</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn">
+    <h4>接線前先拔 USB</h4>
+    <p>帶電接線如果不小心讓兩支腳位碰在一起，可能燒掉那支腳位甚至整塊板子。
+    先斷電、接完檢查一次、再插上 USB —— 這個順序不要換。</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">§4</span>火焰門檻要現場校正</h2>
+  <p class="lede">
+    <code>.env</code> 裡的 <code>FLAME_THRESHOLD</code> 預設是 400，
+    但每一顆感測器、每個場地的環境光都不一樣。<b>照抄預設值上場，多半不會準。</b>
+  </p>
+  <p>正確做法是先跑起來，看儀表板上的「火焰感測 A0 原始值」：</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>狀況</th><th>典型讀值</th><th>你的實測</th></tr></thead>
+      <tbody>
+        <tr><td>平常（沒有火源）</td><td class="num">700 – 1000</td><td class="num">________</td></tr>
+        <tr><td>打火機靠近約 20 公分</td><td class="num">100 – 300</td><td class="num">________</td></tr>
+        <tr><td>取兩者中間值當門檻</td><td class="num">≈ 400</td><td class="num">________</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>把自己量到的中間值填回 <code>.env</code>，重新啟動程式。
+  數值<b>越低代表越接近火源</b>，所以程式判斷的是「低於門檻就警報」。</p>
+</section>
+
+<section>
+  <h2><span class="num">§5</span>卡住的時候</h2>
+  <p class="lede">
+    這張表涵蓋現場八成的狀況。先照著查，查不到再舉手。
+  </p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>症狀</th><th>原因</th><th>怎麼解</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>上傳失敗，寫著<br><code>Access denied</code></td>
+          <td>COM 埠被別的程式占用</td>
+          <td>關掉序列埠監控視窗，或到終端機按 <code>Ctrl+C</code> 停掉 Node.js。
+              <b>一個 COM 埠同時只能有一個程式使用。</b></td>
+        </tr>
+        <tr>
+          <td>連接埠選單裡沒有 COM 選項</td>
+          <td>驅動沒裝，或線只能充電</td>
+          <td>換一條確定能傳資料的 USB 線；再不行就重裝 CH340 驅動。</td>
+        </tr>
+        <tr>
+          <td>Node.js 說<br><code>連接埠 3000 已經被占用</code></td>
+          <td>上一次的程式還在跑</td>
+          <td>找到另一個終端機視窗按 <code>Ctrl+C</code>，或在 <code>.env</code> 把
+              <code>PORT</code> 改成 3001。</td>
+        </tr>
+        <tr>
+          <td>溫濕度一直是 0</td>
+          <td>DHT11 訊號腳接錯，或讀太快</td>
+          <td>確認接在 D2。DHT11 需要至少一秒一次，程式已經處理，不要自己改快。</td>
+        </tr>
+        <tr>
+          <td>PIR 一直說有人</td>
+          <td>模組上的延遲時間旋鈕轉太大</td>
+          <td>HC-SR501 上有兩顆小旋鈕，把「延遲時間」那顆逆時針轉到底。
+              另外它開機後需要約一分鐘暖機。</td>
+        </tr>
+        <tr>
+          <td>ThingSpeak 回傳 <code>0</code></td>
+          <td>Write Key 貼錯，或送太快</td>
+          <td>確認貼的是 <b>Write</b> API Key 不是 Read。程式已內建 15 秒節流。</td>
+        </tr>
+        <tr>
+          <td>LINE 回 <code>401</code></td>
+          <td>權杖錯了或已失效</td>
+          <td>回 LINE Developers 重新產生 long-lived token，注意不要複製到多餘的空白。</td>
+        </tr>
+        <tr>
+          <td>LINE 回 <code>429</code></td>
+          <td>這個月的免費額度用完了</td>
+          <td>免費方案每月 200 則。等下個月，或改用自己的另一個帳號。</td>
+        </tr>
+        <tr>
+          <td>燈完全不亮</td>
+          <td>九成是正負腳接反</td>
+          <td>LED 長腳是正極。把它轉個方向再試 —— 這是最常見的一項。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="warn">
+    <h4>為什麼每個人要有自己的 LINE 官方帳號</h4>
+    <p>LINE 群發訊息是<b>「發給 N 個好友就扣 N 則」</b>，免費方案每個月只有 200 則。
+    如果全班共用一個帳號、有 10 個人加好友，一次測試就扣 10 則 —— 200 則只夠測 20 次。
+    現場除錯一個人就可能試十次。</p>
+    <p>用自己的帳號，你有完整的 200 則，而且結訓後帳號帶得回自己單位繼續用。</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">§6</span>回家可以往哪裡走</h2>
+  <p class="lede">
+    這四條路都沿用今天的接線與程式骨架，差別只在多接一個零件或多改幾行。
+  </p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>方向</th><th>要多什麼</th><th>改哪裡</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>溫度也發警報</b></td>
+          <td>不用多任何零件</td>
+          <td><code>src/index.js</code> 裡照著火焰那段，加一個「溫度大於 30 就通知」。最快的一條。</td>
+        </tr>
+        <tr>
+          <td><b>加一顆按鈕</b></td>
+          <td>輕觸開關、10KΩ 電阻</td>
+          <td>Arduino 端用 <code>digitalRead</code> 讀按鈕狀態，多送一個欄位上來。</td>
+        </tr>
+        <tr>
+          <td><b>換成問答機器人</b></td>
+          <td>需要對外的 HTTPS 通道</td>
+          <td>改用 LINE 的「回覆訊息」——<b>回覆完全免費且無限</b>，
+              學生問「現在幾度」隨你玩。代價是要架 webhook。</td>
+        </tr>
+        <tr>
+          <td><b>讓裝置獨立上網</b></td>
+          <td>ESP32 開發板</td>
+          <td>不用接電腦就能自己連 WiFi。但機關的 WiFi 常需要網頁登入，
+              ESP32 過不了，實務上多半得用手機熱點。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <p>校園環境監測站實作手冊 · 115.11.14 Arduino 實作研習<br>
+  課程專案：<code>arduino-cloud-workshop</code> ·
+  指令速查：<code>npm start</code>（正常執行）、<code>npm run mock</code>（不用板子）、
+  <code>npm run ports</code>（列出連接埠）</p>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('#prep input'));
+  var bar = document.getElementById('bar');
+  var count = document.getElementById('prepCount');
+
+  function read(key) {
+    try { return localStorage.getItem('prep:' + key) === '1'; } catch (e) { return false; }
+  }
+  function write(key, on) {
+    try { localStorage.setItem('prep:' + key, on ? '1' : '0'); } catch (e) { /* 無痕視窗等情況，略過 */ }
+  }
+  function paint() {
+    var done = boxes.filter(function (b) { return b.checked; }).length;
+    bar.style.width = (done / boxes.length * 100) + '%';
+    count.textContent = done + ' / ' + boxes.length + ' 完成';
+  }
+
+  boxes.forEach(function (b) {
+    b.checked = read(b.dataset.key);
+    b.addEventListener('change', function () {
+      write(b.dataset.key, b.checked);
+      paint();
+    });
+  });
+  paint();
+})();
+</script>

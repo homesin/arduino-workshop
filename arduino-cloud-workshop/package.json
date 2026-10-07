@@ -1,0 +1,23 @@
+{
+  "name": "arduino-cloud-workshop",
+  "version": "1.0.0",
+  "description": "Arduino 感測資料 -> Node.js -> ThingSpeak / 即時儀表板 / LINE·ntfy·Discord·Slack·Telegram 推播",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/index.js",
+    "mock": "node src/index.js --mock",
+    "ports": "node src/list-ports.js",
+    "selftest": "node test/selftest.js",
+    "test-alert": "node test/send-test-alert.js",
+    "probe-smtp": "node test/probe-smtp.js"
+  },
+  "dependencies": {
+    "@serialport/parser-readline": "^13.0.0",
+    "dotenv": "^17.0.0",
+    "express": "^5.0.0",
+    "nodemailer": "^10.0.1",
+    "serialport": "^13.0.0",
+    "socket.io": "^4.8.0"
+  }
+}
