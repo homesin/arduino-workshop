@@ -251,35 +251,28 @@ footer{
 <section>
   <h2><span class="num">§1</span>上課前要先做好</h2>
   <p class="lede">
-    這五項沒完成，現場三小時一定跑不完 —— 光是安裝軟體就會吃掉半堂課。
+    這四項沒完成，現場三小時一定跑不完 —— 光是安裝軟體就會吃掉半堂課。
     請在上課前找時間做完，遇到問題先問，不要留到當天。
   </p>
 
   <ul class="checklist" id="prep">
     <li><label>
-      <input type="checkbox" data-key="ide">
+      <input type="checkbox" data-key="install">
       <span class="body">
-        <span class="what">安裝 Arduino IDE</span>
-        <span class="how">到 arduino.cc 下載，一路預設安裝。安裝過程若跳出驅動程式確認視窗，一律按「安裝」——
-        我們用的是 CH340 晶片的板子，少裝驅動就抓不到連接埠。</span>
+        <span class="what">一鍵安裝上課用的軟體</span>
+        <span class="how">打開 <b>homesin.github.io/arduino-workshop</b> 照著做：按 Win 鍵輸入 PowerShell 開啟，
+        貼上 <code style="word-break:break-all">irm https://homesin.github.io/arduino-workshop/get.ps1 | iex</code> 按 Enter。
+        Arduino IDE、CH340 驅動、Node.js 和課程教材會自動裝好，跳出確認視窗一律按「是」，
+        看到綠字「全部完成」就好。<b>如果是公務電腦沒有安裝權限，請先跟資訊人員確認。</b></span>
       </span>
     </label></li>
 
     <li><label>
-      <input type="checkbox" data-key="node">
+      <input type="checkbox" data-key="mock">
       <span class="body">
-        <span class="what">安裝 Node.js（LTS 版）</span>
-        <span class="how">到 nodejs.org 下載 LTS。裝完開命令提示字元輸入 <code>node -v</code>，
-        看得到版本號才算成功。<b>如果是公務電腦沒有安裝權限，請先跟資訊人員確認。</b></span>
-      </span>
-    </label></li>
-
-    <li><label>
-      <input type="checkbox" data-key="proj">
-      <span class="body">
-        <span class="what">下載課程專案並安裝套件</span>
-        <span class="how">解壓縮後在該資料夾開命令提示字元，執行 <code>npm install</code>。
-        接著執行 <code>npm run mock</code>，瀏覽器開 localhost:3000 應該看到資料在跳 ——
+        <span class="what">確認雲端專案能跑</span>
+        <span class="how">教材在桌面的 <code>arduino-workshop</code> 資料夾。在裡面的 <code>arduino-cloud-workshop</code>
+        開終端機執行 <code>npm run mock</code>，瀏覽器開 localhost:3000 應該看到資料在跳 ——
         這一步不需要 Arduino 就能驗證。</span>
       </span>
     </label></li>
@@ -304,7 +297,7 @@ footer{
     </label></li>
   </ul>
 
-  <p class="progress"><span class="bar"><i id="bar"></i></span><span id="prepCount">0 / 5 完成</span></p>
+  <p class="progress"><span class="bar"><i id="bar"></i></span><span id="prepCount">0 / 4 完成</span></p>
 </section>
 
 <section>
@@ -375,8 +368,9 @@ footer{
       <div class="body">
         <h3>換上感測器</h3>
         <p>拔掉 USB，把三個模組接上去（腳位表見 §3）。LED 留在 D9 不用拆，兩者不衝突。</p>
-        <p>Arduino IDE 先安裝函式庫：<b>工具 → 管理程式庫</b>，搜尋 <code>SimpleDHT</code> 安裝（作者 Winlin）。
-        然後開啟課程專案裡的 <code>arduino/sensor_node/sensor_node.ino</code>，上傳。</p>
+        <p>開啟桌面 <code>arduino-workshop</code> 裡的 <code>arduino-cloud-workshop/arduino/sensor_node/sensor_node.ino</code>，上傳。
+        需要的 <code>SimpleDHT</code> 函式庫一鍵安裝已經裝好；編譯時說找不到它的話，
+        到<b>工具 → 管理程式庫</b>搜尋 <code>SimpleDHT</code> 安裝（作者 Winlin）。</p>
         <p>開<b>序列埠監控視窗</b>，右下角速率選 9600。</p>
         <div class="checkpoint"><b>檢查點</b><span>每秒跳出一行像這樣的資料：</span></div>
         <pre>{"t":26,"h":58,"pir":0,"flame":812}</pre>
@@ -391,7 +385,7 @@ footer{
         這是今天最常見的錯誤，等一下 §5 會再提醒一次。</p>
         <p>在專案資料夾開命令提示字元：</p>
         <pre>npm run ports        <span class="c">← 看看板子在哪個 COM 埠</span></pre>
-        <p>把 <code>.env.example</code> 複製成 <code>.env</code>，填入你的埠號：</p>
+        <p>用記事本打開 <code>.env</code>（一鍵安裝已經從 <code>.env.example</code> 複製好），填入你的埠號：</p>
         <pre>SERIAL_PORT=COM4</pre>
         <p>然後啟動：</p>
         <pre>npm start</pre>
