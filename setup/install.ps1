@@ -47,7 +47,15 @@ function Update-Path {
 
 function Install-WithWinget($id, $name, [string[]]$extra = @()) {
   Info "用 winget 安裝 $name（第一次會跳出同意條款或系統管理員確認，請按「是」）…"
-  winget install --id $id -e --silent --accept-package-agreements --accept-source-agreements @extra
+  # 固定用 winget 來源：msstore 來源常連不上，會連帶讓整個指令報「無法開啟來源」
+  winget install --id $id -e --source winget --silent --accept-package-agreements --accept-source-agreements @extra
+  if ($LASTEXITCODE -ne 0) {
+    # 來源資料庫損壞或網路暫時不通：重設來源後再試一次
+    Info 'winget 來源開啟失敗，重設來源後再試一次…'
+    winget source reset --force 2>&1 | Out-Null
+    winget source update --name winget 2>&1 | Out-Null
+    winget install --id $id -e --source winget --silent --accept-package-agreements --accept-source-agreements @extra
+  }
   Update-Path
 }
 
