@@ -48,7 +48,7 @@ function Update-Path {
 # winget 的來源索引壞掉（0x8a15000f）時的後備：直接從官網下載安裝檔靜默安裝。
 # $url 為空字串表示沒有後備；$fbArgs 是安裝程式的靜默參數（.msi 則用 msiexec）。
 function Install-Direct($url, $name, [string[]]$fbArgs = @()) {
-  if (-not $url) { return }
+  if (-not $url) { Info "沒有 $name 的後備下載網址"; return }
   Info "winget 用不了，改從官網直接下載 $name…"
   $file = Join-Path $env:TEMP ("direct-" + [IO.Path]::GetFileName(($url -split '\?')[0]))
   if ($file -notmatch '\.(exe|msi)$') { $file += '.exe' }
@@ -56,8 +56,12 @@ function Install-Direct($url, $name, [string[]]$fbArgs = @()) {
     $ProgressPreference = 'SilentlyContinue'
     Invoke-WebRequest -Uri $url -OutFile $file -UseBasicParsing
   } catch { Info "下載失敗：$($_.Exception.Message)"; return }
-  if ($file -match '\.msi$') { Start-Process msiexec.exe -ArgumentList (@('/i', "`"$file`"", '/qn', '/norestart') + $fbArgs) -Wait }
-  else {
+  if ($file -match '\.msi$') {
+    # msi 要系統管理員權限；非管理員身分靜默安裝會悄悄失敗，所以明確要求提升
+    $p = Start-Process msiexec.exe -Verb RunAs -PassThru -Wait `
+      -ArgumentList (@('/i', "`"$file`"", '/qn', '/norestart') + $fbArgs)
+    Info "安裝程式結束碼：$($p.ExitCode)"
+  } else {
     $p = Start-Process $file -ArgumentList $fbArgs -Wait -PassThru
     Info "安裝程式結束碼：$($p.ExitCode)"
   }
