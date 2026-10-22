@@ -57,7 +57,10 @@ function Install-Direct($url, $name, [string[]]$fbArgs = @()) {
     Invoke-WebRequest -Uri $url -OutFile $file -UseBasicParsing
   } catch { Info "下載失敗：$($_.Exception.Message)"; return }
   if ($file -match '\.msi$') { Start-Process msiexec.exe -ArgumentList (@('/i', "`"$file`"", '/qn', '/norestart') + $fbArgs) -Wait }
-  else { Start-Process $file -ArgumentList $fbArgs -Wait }
+  else {
+    $p = Start-Process $file -ArgumentList $fbArgs -Wait -PassThru
+    Info "安裝程式結束碼：$($p.ExitCode)"
+  }
   Update-Path
 }
 
@@ -148,8 +151,11 @@ function Find-VSCode {
 function Find-ArduinoCli {
   $cmd = Get-Command arduino-cli -ErrorAction SilentlyContinue
   if ($cmd) { return $cmd.Source }
-  $bundled = Join-Path $env:LOCALAPPDATA 'Programs\Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe'
-  if (Test-Path $bundled) { return $bundled }
+  $rel = 'Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe'
+  foreach ($base in @((Join-Path $env:LOCALAPPDATA 'Programs'), $env:ProgramFiles)) {
+    $bundled = Join-Path $base $rel
+    if (Test-Path $bundled) { return $bundled }
+  }
   return $null
 }
 
@@ -172,7 +178,7 @@ if ($cli) {
   # 指定 exe 安裝檔（和官網下載的同一個，裝在使用者目錄）。
   # 不指定的話，系統管理員身分下 winget 會挑 MSI，它回報成功卻沒有放任何檔案。
   Install-WithWinget 'ArduinoSA.IDE.stable' 'Arduino IDE' @('--installer-type', 'nullsoft') `
-    'https://downloads.arduino.cc/arduino-ide/arduino-ide_latest_Windows_64bit.exe' @('/S')
+    'https://downloads.arduino.cc/arduino-ide/arduino-ide_latest_Windows_64bit.exe' @('/S', '/currentuser')
   $cli = Find-ArduinoCli
   if (-not $cli) { Abort 'Arduino IDE 安裝失敗。請手動到 arduino.cc/en/software 下載安裝後再執行一次。' }
 }
