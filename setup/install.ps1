@@ -410,6 +410,27 @@ $usb = @((& $cli board list --format json | ConvertFrom-Json).detected_ports |
   Where-Object { $_.port.protocol -eq 'serial' -and $_.port.properties.vid })
 if ($usb.Count -ge 1) {
   Record '偵測到板子' $true (($usb | ForEach-Object { $_.port.address }) -join '、')
+
+  # 實際燒錄一次 u01-blink：連 USB 線、驅動、板子型號、bootloader 一起驗到。
+  # 腳本只能確認上傳成功，燈有沒有閃要用眼睛看。
+  if ($usb.Count -eq 1) {
+    $port = $usb[0].port.address
+    $blink = Join-Path $Course 'u01-blink'
+    Step "12. 驗收：燒錄 u01-blink 到 $port"
+    if (-not (Test-Path $blink)) {
+      Record '燒錄測試' $null '找不到 u01-blink'
+    } else {
+      Info '上傳中…（約 10 秒）'
+      & $cli compile --upload -p $port --fqbn $FQBN $blink *> $null
+      if ($LASTEXITCODE -eq 0) {
+        Record '燒錄測試' $true "已上傳到 $port：請看板子上標 L 的小燈，每秒閃一下就正常"
+      } else {
+        Record '燒錄測試' $false '上傳失敗：換一條 USB 線或換 USB 孔；相容板請確認驅動已裝好，重新插拔後再執行一次'
+      }
+    }
+  } else {
+    Record '燒錄測試' $null '同時插了多塊板子，跳過；拔到只剩一塊再執行一次'
+  }
 } else {
   # CH340 沒裝驅動時，裝置會出現在「其他裝置」，名稱通常是 USB2.0-Serial
   $noDriver = Get-PnpDevice -PresentOnly -ErrorAction SilentlyContinue |
