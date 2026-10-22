@@ -45,7 +45,23 @@ function Update-Path {
               [Environment]::GetEnvironmentVariable('Path', 'User')
 }
 
-function Install-WithWinget($id, $name, [string[]]$extra = @()) {
+# winget 的來源索引壞掉（0x8a15000f）時的後備：直接從官網下載安裝檔靜默安裝。
+# $url 為空字串表示沒有後備；$fbArgs 是安裝程式的靜默參數（.msi 則用 msiexec）。
+function Install-Direct($url, $name, [string[]]$fbArgs = @()) {
+  if (-not $url) { return }
+  Info "winget 用不了，改從官網直接下載 $name…"
+  $file = Join-Path $env:TEMP ("direct-" + [IO.Path]::GetFileName(($url -split '\?')[0]))
+  if ($file -notmatch '\.(exe|msi)$') { $file += '.exe' }
+  try {
+    $ProgressPreference = 'SilentlyContinue'
+    Invoke-WebRequest -Uri $url -OutFile $file -UseBasicParsing
+  } catch { Info "下載失敗：$($_.Exception.Message)"; return }
+  if ($file -match '\.msi$') { Start-Process msiexec.exe -ArgumentList (@('/i', "`"$file`"", '/qn', '/norestart') + $fbArgs) -Wait }
+  else { Start-Process $file -ArgumentList $fbArgs -Wait }
+  Update-Path
+}
+
+function Install-WithWinget($id, $name, [string[]]$extra = @(), $fbUrl = '', [string[]]$fbArgs = @()) {
   Info "用 winget 安裝 $name（第一次會跳出同意條款或系統管理員確認，請按「是」）…"
   # 固定用 winget 來源：msstore 來源常連不上，會連帶讓整個指令報「無法開啟來源」
   winget install --id $id -e --source winget --silent --accept-package-agreements --accept-source-agreements @extra
@@ -55,6 +71,7 @@ function Install-WithWinget($id, $name, [string[]]$extra = @()) {
     winget source reset --force 2>&1 | Out-Null
     winget source update --name winget 2>&1 | Out-Null
     winget install --id $id -e --source winget --silent --accept-package-agreements --accept-source-agreements @extra
+    if ($LASTEXITCODE -ne 0) { Install-Direct $fbUrl $name $fbArgs }
   }
   Update-Path
 }
@@ -154,7 +171,8 @@ if ($cli) {
 } else {
   # 指定 exe 安裝檔（和官網下載的同一個，裝在使用者目錄）。
   # 不指定的話，系統管理員身分下 winget 會挑 MSI，它回報成功卻沒有放任何檔案。
-  Install-WithWinget 'ArduinoSA.IDE.stable' 'Arduino IDE' '--installer-type', 'nullsoft'
+  Install-WithWinget 'ArduinoSA.IDE.stable' 'Arduino IDE' @('--installer-type', 'nullsoft') `
+    'https://downloads.arduino.cc/arduino-ide/arduino-ide_latest_Windows_64bit.exe' @('/S')
   $cli = Find-ArduinoCli
   if (-not $cli) { Abort 'Arduino IDE 安裝失敗。請手動到 arduino.cc/en/software 下載安裝後再執行一次。' }
 }
@@ -232,8 +250,9 @@ if ($code) {
 } else {
   # 指定 user scope：和 Arduino IDE 同樣的理由，系統管理員身分下 winget 可能改挑全機版安裝檔。
   # 靜默安裝只套用預設勾選，桌面圖示與右鍵「以 Code 開啟」預設沒勾，要自己加進 MERGETASKS。
-  Install-WithWinget 'Microsoft.VisualStudioCode' 'VS Code' '--scope', 'user', '--custom',
-    '/MERGETASKS=!runcode,desktopicon,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath'
+  $codeTasks = '/MERGETASKS=!runcode,desktopicon,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath'
+  Install-WithWinget 'Microsoft.VisualStudioCode' 'VS Code' @('--scope', 'user', '--custom', $codeTasks) `
+    'https://update.code.visualstudio.com/latest/win32-x64-user/stable' @('/VERYSILENT', '/NORESTART', $codeTasks)
   $code = Find-VSCode
   # 保險：萬一安裝程式沒吃到上面的參數，自己建桌面捷徑
   $lnk = Join-Path ([Environment]::GetFolderPath('Desktop')) 'Visual Studio Code.lnk'
@@ -278,7 +297,13 @@ if (-not $ArduinoOnly) {
     Info "已安裝 $(node -v)，跳過"
   } else {
     if ($nodeMajor -gt 0) { Info "目前是 $(node -v)，版本太舊，改裝 LTS 版" }
-    Install-WithWinget 'OpenJS.NodeJS.LTS' 'Node.js LTS'
+    # 後備網址：從 nodejs.org 的校驗檔找出 22 版最新的 msi 檔名
+    $nodeUrl = ''
+    try {
+      $sums = (Invoke-WebRequest 'https://nodejs.org/dist/latest-v22.x/SHASUMS256.txt' -UseBasicParsing).Content
+      if ($sums -match '(node-v[\d.]+-x64\.msi)') { $nodeUrl = "https://nodejs.org/dist/latest-v22.x/$($Matches[1])" }
+    } catch {}
+    Install-WithWinget 'OpenJS.NodeJS.LTS' 'Node.js LTS' @() $nodeUrl
     if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
       Abort 'Node.js 安裝後仍找不到 node。請關掉這個視窗重新執行一次（PATH 有時要重開才生效）。'
     }
