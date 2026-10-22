@@ -88,15 +88,17 @@ function Install-WithWinget($id, $name, [string[]]$extra = @(), $fbUrl = '', [st
 #   - 資訊組封鎖了 Microsoft Store
 #   - Windows 10 LTSC、很久沒更新的 Windows 10、Windows Sandbox
 # 全部用 Add-AppxPackage 裝在目前使用者底下，不需要系統管理員權限。
-function Install-Winget {
-  Info '這台電腦找不到 winget，嘗試自動補上…'
+function Install-Winget([switch]$Reinstall) {
+  if ($Reinstall) { Info '重新安裝最新版 winget…' } else { Info '這台電腦找不到 winget，嘗試自動補上…' }
 
-  # 1. 套件其實在，只是還沒註冊到這個帳號：幾秒就好
-  try {
-    Add-AppxPackage -RegisterByFamilyName -MainPackage 'Microsoft.DesktopAppInstaller_8wekyb3d8bbwe' -ErrorAction Stop
-    Update-Path
-    if (Get-Command winget -ErrorAction SilentlyContinue) { Info '重新註冊成功'; return }
-  } catch { }
+  # 1. 套件其實在，只是還沒註冊到這個帳號：幾秒就好（重新安裝時跳過，因為 winget 本來就在）
+  if (-not $Reinstall) {
+    try {
+      Add-AppxPackage -RegisterByFamilyName -MainPackage 'Microsoft.DesktopAppInstaller_8wekyb3d8bbwe' -ErrorAction Stop
+      Update-Path
+      if (Get-Command winget -ErrorAction SilentlyContinue) { Info '重新註冊成功'; return }
+    } catch { }
+  }
 
   # 2. 從離線資料夾或 GitHub 安裝。講師可以先把兩個檔案放進 setup\winget-offline\，
   #    用隨身碟發給學員就不必每台都下載 300 MB（Sandbox 測試也是走這條）。
@@ -138,6 +140,24 @@ function Install-Winget {
   }
 }
 
+# winget 在，但來源索引壞掉（0x8a15000f 等）時，所有 winget install 都會失敗。
+# 先重設來源；還是不行就重裝最新版 winget。修不好也不中止：後面的安裝有官網直接下載的後備。
+function Test-WingetSource {
+  winget source update --name winget *> $null
+  return ($LASTEXITCODE -eq 0)
+}
+function Repair-Winget {
+  Info '檢查 winget 來源是否正常…'
+  if (Test-WingetSource) { Info '正常'; return }
+  Info '來源有問題，重設來源…'
+  winget source reset --force *> $null
+  if (Test-WingetSource) { Info '重設後恢復正常'; return }
+  Install-Winget -Reinstall
+  winget source reset --force *> $null
+  if (Test-WingetSource) { Info '重裝 winget 後恢復正常'; return }
+  Info 'winget 來源仍無法使用，之後的軟體會改從官網直接下載（不影響結果）'
+}
+
 function Test-CH340Driver {
   [bool](Get-ChildItem (Join-Path $env:WINDIR 'System32\DriverStore\FileRepository') -Filter 'ch341ser.inf_*' -Directory -ErrorAction SilentlyContinue)
 }
@@ -171,6 +191,7 @@ if (-not (Get-Command winget -ErrorAction SilentlyContinue)) { Install-Winget }
 if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
   Abort "winget 自動安裝失敗，後面的軟體都靠它安裝，請找講師。`n  （講師：可到 Microsoft Store 更新「應用程式安裝程式」，或把 winget 安裝檔放進 setup\winget-offline\ 後重跑）"
 }
+Repair-Winget
 Record 'winget' $true (winget --version)
 
 # ─────────────────────────────────────────────
