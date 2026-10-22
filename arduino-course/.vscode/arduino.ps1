@@ -27,8 +27,12 @@ function Fail($msg) {
 # ── 找 arduino-cli：先找 PATH，再找 Arduino IDE 內建的那一份 ──
 $cli = (Get-Command arduino-cli -ErrorAction SilentlyContinue).Source
 if (-not $cli) {
-  $bundled = Join-Path $env:LOCALAPPDATA 'Programs\Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe'
-  if (Test-Path $bundled) { $cli = $bundled }
+  # 裝在使用者目錄（預設）或全機的 Program Files（靜默安裝有時會裝在這）都找
+  $rel = 'Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe'
+  foreach ($base in @((Join-Path $env:LOCALAPPDATA 'Programs'), $env:ProgramFiles)) {
+    $bundled = Join-Path $base $rel
+    if (Test-Path $bundled) { $cli = $bundled; break }
+  }
 }
 if (-not $cli) { Fail '找不到 arduino-cli。請先安裝 Arduino IDE 2.x，或執行 winget install ArduinoSA.CLI' }
 
