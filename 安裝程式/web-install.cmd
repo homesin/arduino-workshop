@@ -1,6 +1,6 @@
 @echo off
-rem Double-click to install from the web. Tries GitHub Pages first, then the nginx fallback.
+rem Double-click to install from the web (GitHub Pages).
 chcp 65001 >nul
-powershell -NoProfile -ExecutionPolicy Bypass -Command "try { irm https://homesin.github.io/arduino-workshop/get.ps1 | iex } catch { Write-Host 'GitHub Pages failed, trying backup...' -ForegroundColor Yellow; irm https://homeshin.ddns.net/web/course/arduino/get.ps1 | iex }"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "try { irm https://homesin.github.io/arduino-workshop/get.ps1 | iex } catch { Write-Host 'Download failed. Check your network, or download the zip from https://homesin.github.io/arduino-workshop/ ' -ForegroundColor Red }"
 echo.
 pause
