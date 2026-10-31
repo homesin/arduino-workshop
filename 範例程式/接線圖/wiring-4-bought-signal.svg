@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1840 760" width="1840" height="760" role="img" aria-labelledby="buy1-t buy1-d" font-family="'Noto Sans TC','Source Han Sans TC','Microsoft JhengHei','微軟正黑體',sans-serif">
+<title id="buy1-t">圖四、本次採購感測器接線：訊號</title>
+<desc id="buy1-d">本次採購的四種感測器接線。DHT11 的 DATA 接 D2，HC-SR501 的 OUT 接 D3，HC-SR04 的 Trig 接 D4、Echo 接 D5，LM393 光敏模組的 AO 接 A1。</desc>
+<rect width="1840" height="760" fill="#ffffff"/>
+<text x="920.0" y="56" font-size="32" fill="#2d3142" text-anchor="middle" font-weight="500" font-family="'Noto Serif TC','Source Han Serif TC','Instrument Serif','PMingLiU','新細明體',serif">圖四、本次採購感測器接線：訊號</text>
+<text x="920.0" y="88" font-size="16" fill="#4f5d75" text-anchor="middle">依報價單 99022：DHT11、HC-SR501、HC-SR04、LM393 光敏模組，各一個接到 Uno</text>
+<rect x="760" y="160" width="320" height="400" rx="6" fill="#eaf1f8" stroke="#d1461f" stroke-width="2"/>
+<text x="920.0" y="348" font-size="16" fill="#2d3142" text-anchor="middle" font-weight="600">Arduino Uno R3</text>
+<text x="920.0" y="366" font-size="12" fill="#4f5d75" text-anchor="middle">副廠 CH340 版</text>
+<text x="920.0" y="384" font-size="12" fill="#4f5d75" text-anchor="middle">D0 / D1 保留給序列埠</text>
+<rect x="88" y="176" width="320" height="88" rx="6" fill="#fbf6e6" stroke="#b8a05c" stroke-width="1.5"/>
+<text x="248.0" y="217" font-size="16" fill="#2d3142" text-anchor="middle" font-weight="600">DHT11 溫溼度</text>
+<text x="248.0" y="235" font-size="12" fill="#4f5d75" text-anchor="middle">DATA 腳；另接 VCC、GND</text>
+<line x1="408" y1="220" x2="760" y2="220" stroke="#4f5d75" stroke-width="2"/>
+<rect x="424" y="209" width="80" height="22" fill="#ffffff"/>
+<text x="464" y="224" font-size="12" fill="#4f5d75" text-anchor="middle">DATA</text>
+<text x="776" y="225" font-size="16" fill="#2d3142" text-anchor="start" font-weight="600" font-family="'Geist Mono','Consolas','SFMono-Regular',monospace">D2</text>
+<rect x="88" y="296" width="320" height="88" rx="6" fill="#fbf6e6" stroke="#b8a05c" stroke-width="1.5"/>
+<text x="248.0" y="337" font-size="16" fill="#2d3142" text-anchor="middle" font-weight="600">HC-SR501 人體紅外線</text>
+<text x="248.0" y="355" font-size="12" fill="#4f5d75" text-anchor="middle">OUT 腳；另接 VCC、GND</text>
+<line x1="408" y1="340" x2="760" y2="340" stroke="#4f5d75" stroke-width="2"/>
+<rect x="424" y="329" width="80" height="22" fill="#ffffff"/>
+<text x="464" y="344" font-size="12" fill="#4f5d75" text-anchor="middle">OUT</text>
+<text x="776" y="345" font-size="16" fill="#2d3142" text-anchor="start" font-weight="600" font-family="'Geist Mono','Consolas','SFMono-Regular',monospace">D3</text>
+<rect x="88" y="416" width="320" height="88" rx="6" fill="#fbf6e6" stroke="#b8a05c" stroke-width="1.5"/>
+<text x="248.0" y="448" font-size="16" fill="#2d3142" text-anchor="middle" font-weight="600">HC-SR04 超音波</text>
+<text x="248.0" y="466" font-size="12" fill="#4f5d75" text-anchor="middle">Trig、Echo 各一條線</text>
+<text x="248.0" y="484" font-size="12" fill="#4f5d75" text-anchor="middle">另接 VCC、GND</text>
+<line x1="408" y1="460" x2="760" y2="460" stroke="#4f5d75" stroke-width="2"/>
+<rect x="424" y="449" width="80" height="22" fill="#ffffff"/>
+<text x="464" y="464" font-size="12" fill="#4f5d75" text-anchor="middle">Trig</text>
+<text x="776" y="465" font-size="16" fill="#2d3142" text-anchor="start" font-weight="600" font-family="'Geist Mono','Consolas','SFMono-Regular',monospace">D4</text>
+<line x1="408" y1="500" x2="760" y2="500" stroke="#4f5d75" stroke-width="2"/>
+<rect x="424" y="489" width="80" height="22" fill="#ffffff"/>
+<text x="464" y="504" font-size="12" fill="#4f5d75" text-anchor="middle">Echo</text>
+<text x="776" y="505" font-size="16" fill="#2d3142" text-anchor="start" font-weight="600" font-family="'Geist Mono','Consolas','SFMono-Regular',monospace">D5</text>
+<rect x="1432" y="176" width="320" height="88" rx="6" fill="#fbf6e6" stroke="#b8a05c" stroke-width="1.5"/>
+<text x="1592.0" y="208" font-size="16" fill="#2d3142" text-anchor="middle" font-weight="600">LM393 光敏模組</text>
+<text x="1592.0" y="226" font-size="12" fill="#4f5d75" text-anchor="middle">AO 類比輸出；另接 VCC、GND</text>
+<text x="1592.0" y="244" font-size="12" fill="#4f5d75" text-anchor="middle">DO 數位輸出不接</text>
+<line x1="1080" y1="220" x2="1432" y2="220" stroke="#4f5d75" stroke-width="2"/>
+<rect x="1336" y="209" width="80" height="22" fill="#ffffff"/>
+<text x="1376" y="224" font-size="12" fill="#4f5d75" text-anchor="middle">AO</text>
+<text x="1064" y="225" font-size="16" fill="#2d3142" text-anchor="end" font-weight="600" font-family="'Geist Mono','Consolas','SFMono-Regular',monospace">A1</text>
+<rect x="540" y="604" width="760" height="24" rx="6" fill="#fbeee9" stroke="#e6a892" stroke-width="1"/>
+<text x="920" y="620" font-size="12" fill="#2d3142" text-anchor="middle" font-weight="600">腳位沿用課程整合專題；沒買的零件（火焰、水位、七段等）整組略過</text>
+<text x="88" y="676" font-size="12" fill="#4f5d75" text-anchor="start">LM393 光敏模組腳位順序為 AO、DO、GND、VCC；DO 只給亮／暗兩種狀態，本專題用 AO 讀數值，DO 空接。</text>
+<text x="88" y="704" font-size="12" fill="#4f5d75" text-anchor="start">感測器上的針腳是公針：母對公杜邦線的母端插感測器，公端插 Uno 或麵包板。</text>
+</svg>

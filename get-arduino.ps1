@@ -3,7 +3,7 @@
 #   irm https://homesin.github.io/arduino-workshop/get.ps1 | iex
 #
 # Downloads the course zip, extracts it to a temp folder, then hands over to
-# setup\from-web.ps1 inside the zip (which copies it to the Desktop and runs install.ps1).
+# the setup folder's from-web.ps1 inside the zip (which copies it to the Desktop and runs install.ps1).
 #
 # ASCII only on purpose: nginx serves .ps1 as application/octet-stream without a charset,
 # so any Chinese text here would reach the student garbled. Chinese messages live in from-web.ps1.
@@ -32,8 +32,11 @@
     return
   }
 
+  # The setup folder is named in Chinese. Written as \u escapes because this file must stay ASCII (see above).
+  $setupDir = [regex]::Unescape('\u5b89\u88dd\u7a0b\u5f0f')
+
   # A separate process: install.ps1 calls exit on failure, which would otherwise close this window.
-  $a = '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $src 'setup\from-web.ps1'), '-Source', $src
+  $a = '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $src ($setupDir + '\from-web.ps1')), '-Source', $src
   if ($only) { $a += '-ArduinoOnly' }
   & powershell.exe @a
   Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue

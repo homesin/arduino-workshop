@@ -1,4 +1,7 @@
-<title>校園環境監測站實作手冊</title>
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arduino 感測器與雲端監測實作手冊</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
@@ -230,18 +233,19 @@ footer{
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<style>.checklist .what,.checklist .how{display:block}</style>
 
 <div class="wrap">
 
 <header class="masthead">
   <p class="eyebrow">Arduino 實作研習 · 115.11.14</p>
-  <h1>校園環境監測站實作手冊</h1>
+  <h1>Arduino 感測器與雲端監測實作手冊</h1>
   <p class="standfirst">
-    今天要做一台會自己回報的裝置：溫濕度存進雲端、即時數值投在螢幕上、
-    有異常就傳 LINE 到你手機。從一顆 LED 開始，三小時走完。
+    今天要做一台會自己回報的環境監測站：四個感測器量溫濕度、距離、有沒有人、亮暗，
+    數字顯示在螢幕上、存進 ThingSpeak 雲端，有東西靠近時手機收到 ntfy 通知。零基礎可以跟著做。
   </p>
   <dl class="facts">
-    <div><dt>時長</dt><dd>3 小時</dd></div>
+    <div><dt>時長</dt><dd>約 6–7 小時（可彈性調整）</dd></div>
     <div><dt>設備</dt><dd>每人一套</dd></div>
     <div><dt>開發板</dt><dd>Arduino Uno R3</dd></div>
     <div><dt>需要網路</dt><dd>是</dd></div>
@@ -251,7 +255,7 @@ footer{
 <section>
   <h2><span class="num">§1</span>上課前要先做好</h2>
   <p class="lede">
-    這四項沒完成，現場三小時一定跑不完 —— 光是安裝軟體就會吃掉半堂課。
+    這四項沒完成，現場一定跑不完 —— 光是安裝軟體就會吃掉大半時間。
     請在上課前找時間做完，遇到問題先問，不要留到當天。
   </p>
 
@@ -263,7 +267,7 @@ footer{
         <span class="how">打開 <b>homesin.github.io/arduino-workshop</b> 照著做：按 Win 鍵輸入 PowerShell 開啟，
         貼上 <code style="word-break:break-all">irm https://homesin.github.io/arduino-workshop/get.ps1 | iex</code> 按 Enter。
         Arduino IDE、CH340 驅動、Node.js 和課程教材會自動裝好，跳出確認視窗一律按「是」，
-        看到綠字「全部完成」就好。<b>如果是公務電腦沒有安裝權限，請先跟資訊人員確認。</b></span>
+        看到全部完成就好。<b>如果是公務電腦沒有安裝權限，請先跟資訊人員確認。</b></span>
       </span>
     </label></li>
 
@@ -271,8 +275,8 @@ footer{
       <input type="checkbox" data-key="mock">
       <span class="body">
         <span class="what">確認雲端專案能跑</span>
-        <span class="how">教材在桌面的 <code>arduino-workshop</code> 資料夾。在裡面的 <code>arduino-cloud-workshop</code>
-        開終端機執行 <code>npm run mock</code>，瀏覽器開 localhost:3000 應該看到資料在跳 ——
+        <span class="how">教材在桌面的 <code>arduino-workshop</code> 資料夾。在裡面的 <code>雲端實作</code>
+        開終端機執行 <code>npm run mock</code>，瀏覽器開 <code>localhost:3000</code> 應該看到資料在跳 ——
         這一步不需要 Arduino 就能驗證。</span>
       </span>
     </label></li>
@@ -281,344 +285,301 @@ footer{
       <input type="checkbox" data-key="ts">
       <span class="body">
         <span class="what">註冊 ThingSpeak 並建立一個頻道</span>
-        <span class="how">thingspeak.com 免費註冊（非商用）。建立 Channel，勾選 Field 1 到 4，
-        分別命名為 溫度、濕度、火焰、人體。記下 API Keys 分頁的 <b>Write API Key</b>。</span>
+        <span class="how">thingspeak.com 免費註冊（非商用）。建立 Channel，勾選 <b>Field 1 到 5</b>，
+        依序命名為 <b>溫度、濕度、光線、人體、距離</b>。記下 API Keys 分頁的 <b>Write API Key</b>，
+        並在 Sharing 分頁選「Share channel view with everyone」。</span>
       </span>
     </label></li>
 
     <li><label>
-      <input type="checkbox" data-key="line">
+      <input type="checkbox" data-key="ntfy">
       <span class="body">
-        <span class="what">申請自己的 LINE 官方帳號</span>
-        <span class="how">developers.line.biz 建立 Messaging API channel，
-        取得 <b>Channel access token（long-lived）</b>，然後用手機掃 QR Code 把自己的官方帳號加為好友。
-        <b>每個人都要有自己的帳號</b>，原因在 §5 說明。</span>
+        <span class="what">手機裝 ntfy，想好自己的主題名稱</span>
+        <span class="how">到應用程式商店搜尋 <b>ntfy</b> 安裝（不用註冊帳號）。
+        自己取一個主題名稱，<b>要包含一串隨機英數字</b>，例如「arduino-」加上你自己亂打的 8 個字，
+        <b>不要用 test、arduino 這種猜得到的名字</b>。把它抄下來，上課要用。
+        在 App 裡按 ＋ 訂閱這個主題。</span>
       </span>
     </label></li>
   </ul>
 
   <p class="progress"><span class="bar"><i id="bar"></i></span><span id="prepCount">0 / 4 完成</span></p>
+
+  <div class="warn">
+    <h4>主題名稱就是密碼</h4>
+    <p>ntfy 沒有帳號也沒有登入：任何人知道你的主題名稱，就能訂閱它，也能對它發訊息。
+    所以要自己取、要夠難猜，<b>全班不能共用同一個主題</b>，也不要貼在群組裡。</p>
+  </div>
 </section>
 
 <section>
-  <h2><span class="num">§2</span>今天的流程</h2>
+  <h2><span class="num">§2</span>你手上的零件</h2>
+  <p class="lede">這些就是今天會用到的全部零件。沒有 LED、電阻、按鈕 —— 輸出會用「螢幕上的數字」和「手機通知」代替。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>零件</th><th>今天用來做什麼</th></tr></thead>
+    <tbody>
+      <tr><td><b>Arduino Uno R3</b>（CH340 版）</td><td>主控板，負責讀感測器、整理成資料送給電腦</td></tr>
+      <tr><td><b>DHT11</b> 溫濕度</td><td>量溫度與相對濕度</td></tr>
+      <tr><td><b>HC-SR04</b> 超音波</td><td>量前方物體的距離（公分）</td></tr>
+      <tr><td><b>HC-SR501</b> 人體紅外線</td><td>偵測有沒有人在移動</td></tr>
+      <tr><td><b>LM393</b> 光敏模組</td><td>量光線亮暗（越暗數字越大）</td></tr>
+      <tr><td><b>400 孔迷你麵包板</b></td><td>分電：讓四個感測器共用 5V 與 GND</td></tr>
+      <tr><td><b>杜邦線</b>（母對公、公對公）</td><td>母對公：模組接板子；公對公：Uno 的 5V、GND 接到麵包板電源軌</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="num">§3</span>今天的流程</h2>
   <p class="lede">
-    每一段都以「看得到結果」收尾。落後了先求會動，細節可以回家補 ——
-    講義你帶得走，現場的三小時帶不走。
+    每一段都以「看得到結果」收尾。時間是預估，落後了先求會動，細節可以回家補 ——
+    講義你帶得走，現場的時間帶不走。
   </p>
 
   <div class="block-head">
-    <h3>先讓一顆燈聽話</h3>
-    <span>0:00 – 0:55</span>
+    <h3>二、確認環境</h3>
+    <span>約 0:15</span>
   </div>
   <div class="steps">
     <div class="step">
       <div class="rail"><b>0:00</b>步驟 1</div>
       <div class="body">
-        <h3>確認板子能燒錄</h3>
-        <p>接上 USB，Arduino IDE 選<b>工具 → 開發板 → Arduino Uno</b>，再選<b>工具 → 連接埠</b>
-        （選有 COM 編號的那一個）。開<b>檔案 → 範例 → 01.Basics → Blink</b>，按上傳。</p>
-        <div class="checkpoint"><b>檢查點</b><span>板子上標示 L 的小燈開始一秒一閃。</span></div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="rail"><b>0:15</b>步驟 2</div>
-      <div class="body">
-        <h3>看懂 setup 與 loop</h3>
-        <p>一支 Arduino 程式永遠只有三塊：最上面的宣告區、開機只跑一次的
-        <code>setup()</code>、以及跑完 setup 後無限重複的 <code>loop()</code>。
-        閃爍的節奏就寫在 loop 裡。</p>
-        <p>試著把 <code>delay(1000)</code> 改成 <code>delay(200)</code> 再上傳一次，
-        感覺一下「改程式 → 上傳 → 硬體行為改變」這個循環。</p>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="rail"><b>0:30</b>步驟 3</div>
-      <div class="body">
-        <h3>接一顆自己的 LED</h3>
-        <p>LED <b>長腳是正極</b>，串一顆 220Ω 電阻接到 <b>D9</b>；短腳是負極，接到 GND。
-        電阻本身不分方向。接線前先拔掉 USB。</p>
-        <p>把程式裡的腳位從 13 改成 9，上傳。</p>
-        <div class="checkpoint"><b>檢查點</b><span>你自己接的那顆燈開始閃，不是板子上的 L 燈。</span></div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="rail"><b>0:42</b>步驟 4</div>
-      <div class="body">
-        <h3>從「開關」變成「呼吸」</h3>
-        <p><code>digitalWrite</code> 只有 HIGH 和 LOW 兩種狀態。
-        換成 <code>analogWrite</code>，值可以是 0 到 255，用 <code>for</code> 迴圈慢慢加上去再慢慢減下來，
-        看起來就像在呼吸。</p>
-        <p><b>只有腳位旁邊有 <code>~</code> 記號的才支援</b>：D3、D5、D6、D9、D10、D11。這也是我們選 D9 的原因。</p>
-        <div class="checkpoint"><b>檢查點</b><span>燈的亮度連續變化，看不出一格一格的跳動。</span></div>
+        <h3>現場只做驗收</h3>
+        <p>環境在上課前就裝好了。現在把 Uno 用 <b>能傳資料的 USB 線</b> 接上電腦，
+        打開 Arduino IDE，選<b>工具 → 開發板 → Arduino Uno</b>，再選<b>工具 → 連接埠</b>（選有 COM 編號的那一個）。</p>
+        <p>連接埠一直不出現：先換一條 USB 線（最常見），再確認 CH340 驅動有裝。</p>
+        <div class="checkpoint"><b>檢查點</b><span>工具 → 連接埠 裡看得到一個 COM 編號。</span></div>
       </div>
     </div>
   </div>
-
   <div class="block-head">
-    <h3>讓資料離開這塊板子</h3>
-    <span>0:55 – 1:45</span>
+    <h3>三、基礎操作</h3>
+    <span>約 0:30 – 1:30</span>
   </div>
   <div class="steps">
     <div class="step">
-      <div class="rail"><b>0:55</b>步驟 5</div>
+      <div class="rail"><b>0:30</b>步驟 1</div>
       <div class="body">
-        <h3>換上感測器</h3>
-        <p>拔掉 USB，把三個模組接上去（腳位表見 §3）。LED 留在 D9 不用拆，兩者不衝突。</p>
-        <p>開啟桌面 <code>arduino-workshop</code> 裡的 <code>arduino-cloud-workshop/arduino/sensor_node/sensor_node.ino</code>，上傳。
-        需要的 <code>SimpleDHT</code> 函式庫一鍵安裝已經裝好；編譯時說找不到它的話，
-        到<b>工具 → 管理程式庫</b>搜尋 <code>SimpleDHT</code> 安裝（作者 Winlin）。</p>
-        <p>開<b>序列埠監控視窗</b>，右下角速率選 9600。</p>
-        <div class="checkpoint"><b>檢查點</b><span>每秒跳出一行像這樣的資料：</span></div>
-        <pre>{"t":26,"h":58,"pir":0,"flame":812}</pre>
+        <h3>讓板上的燈閃起來</h3>
+        <p>在 IDE 開啟教材的 <code>範例程式\c03a-blink</code>，按上傳。這支程式不用接任何線，
+        用的是板子內建的 L 燈（接在 D13）。</p>
+        <p>試著把 <code>delay(1000)</code> 改成 <code>delay(200)</code> 再上傳，感覺「改程式 → 上傳 → 硬體改變」這個循環。</p>
+        <div class="checkpoint"><b>檢查點</b><span>板子上標示 L 的小燈開始閃，改了 delay 之後閃得更快。</span></div>
       </div>
     </div>
-
     <div class="step">
-      <div class="rail"><b>1:10</b>步驟 6</div>
+      <div class="rail"><b>0:50</b>步驟 2</div>
       <div class="body">
-        <h3>Node.js 把資料接過來</h3>
-        <p><b>先把序列埠監控視窗關掉。</b>一個 COM 埠同時只能被一個程式使用 ——
-        這是今天最常見的錯誤，等一下 §5 會再提醒一次。</p>
-        <p>在專案資料夾開命令提示字元：</p>
-        <pre>npm run ports        <span class="c">← 看看板子在哪個 COM 埠</span></pre>
-        <p>用記事本打開 <code>.env</code>（一鍵安裝已經從 <code>.env.example</code> 複製好），填入你的埠號：</p>
-        <pre>SERIAL_PORT=COM4</pre>
-        <p>然後啟動：</p>
-        <pre>npm start</pre>
-        <div class="checkpoint"><b>檢查點</b><span>終端機出現「收到第一筆資料，接下來每秒一筆」。</span></div>
+        <h3>看懂程式三段</h3>
+        <p>一支 Arduino 程式永遠只有三塊：最上面的<b>宣告區</b>、開機只跑一次的 <code>setup()</code>、
+        跑完 setup 後無限重複的 <code>loop()</code>。閃爍的節奏就寫在 loop 裡。</p>
       </div>
     </div>
-
     <div class="step">
-      <div class="rail"><b>1:25</b>步驟 7</div>
+      <div class="rail"><b>1:00</b>步驟 3</div>
       <div class="body">
-        <h3>即時儀表板</h3>
-        <p>瀏覽器開 <code>http://localhost:3000</code>。溫度、濕度兩條曲線會即時往前走，
-        滑鼠移上去可以看到任一時間點的數值。</p>
-        <p>對著 DHT11 呵一口氣，看濕度那條線衝上去。這是<b>第一個去處：看現在</b> ——
-        資料完全不出這台電腦，所以沒有任何額度限制。</p>
-        <div class="checkpoint"><b>檢查點</b><span>呵氣時濕度曲線明顯上揚，幾秒後慢慢回落。</span></div>
+        <h3>讓板子說話</h3>
+        <p>開啟 <code>範例程式\c03b-serial-hello</code>，上傳。接著開<b>工具 → 序列埠監控視窗</b>（Ctrl + Shift + M），
+        右下角速率選 <b>9600</b>。</p>
+        <p>看到亂碼：幾乎都是速率沒選 9600。之後所有感測器的數字，都是用這個視窗看的。</p>
+        <p>另外兩樣新工具，請看簡報：<b>麵包板</b>（哪些孔相通）和<b>杜邦線</b>（公對公、母對公）。</p>
+        <div class="checkpoint"><b>檢查點</b><span>序列埠監控視窗出現「你好，我是 Arduino」和一直增加的次數。</span></div>
       </div>
     </div>
   </div>
-
   <div class="block-head">
-    <h3>存起來，以及叫人</h3>
-    <span>1:45 – 3:00</span>
+    <h3>四、感測器個別實作</h3>
+    <span>約 1:30 – 3:30</span>
   </div>
   <div class="steps">
     <div class="step">
-      <div class="rail"><b>1:45</b>步驟 8</div>
+      <div class="rail"><b>1:30</b>步驟 1</div>
       <div class="body">
-        <h3>上傳 ThingSpeak</h3>
-        <p>把事前作業拿到的 Write API Key 填進 <code>.env</code>：</p>
-        <pre>THINGSPEAK_WRITE_KEY=你的金鑰</pre>
-        <p><code>Ctrl+C</code> 停掉程式再 <code>npm start</code> 重新啟動。
-        程式已經內建 15 秒節流，不會超過免費方案的速率限制。</p>
-        <p>回 ThingSpeak 頻道頁面，到 <b>Sharing</b> 分頁選「公開」，
-        這樣別人不用登入就看得到你的圖表。這是<b>第二個去處：存起來</b>。</p>
-        <div class="checkpoint"><b>檢查點</b><span>終端機出現「ThingSpeak 已收第 N 筆」，網頁圖表開始長出資料點。</span></div>
+        <h3>DHT11 溫濕度</h3>
+        <p>先拔掉 USB 再接線。每個感測器的 VCC 先接 Uno 的 5V、GND 接 GND，訊號腳如下：</p>
+        <div class="tablewrap"><table><thead><tr><th>感測器腳位</th><th>接到 Uno</th><th>說明</th></tr></thead><tbody><tr><td>DATA</td><td class="pin">D2</td><td>溫濕度資料線</td></tr><tr><td>VCC</td><td class="pin">5V</td><td>電源</td></tr><tr><td>GND</td><td class="pin">GND</td><td>接地</td></tr></tbody></table></div>
+        <p><b>針腳順序以模組板上的印字為準</b>（S／DATA、+／VCC、-／GND），不同廠牌排列可能不同。
+        上傳 <code>範例程式\c04a-dht11</code>，開序列埠監控視窗。</p>
+        <p>動手：對著感測器呵一口氣，看濕度衝上去再慢慢回落。DHT11 反應很慢，要等幾秒。</p>
+        <div class="checkpoint"><b>檢查點</b><span>序列埠出現「溫度 ○ °C　濕度 ○ %」，呵氣後濕度會上升。</span></div>
       </div>
     </div>
-
     <div class="step">
-      <div class="rail"><b>2:15</b>步驟 9</div>
+      <div class="rail"><b>2:00</b>步驟 2</div>
       <div class="body">
-        <h3>讓手機響起來</h3>
-        <p>把 LINE 的 Channel access token 填進 <code>.env</code>，重新啟動程式。</p>
-        <pre>LINE_CHANNEL_ACCESS_TOKEN=你的權杖</pre>
-        <p>用手在 PIR 感測器前面揮一下，或拿打火機（<b>不要點火</b>，靠近就好）測試火焰感測。</p>
-        <p>這是<b>第三個去處：出事叫人</b>。程式用的是「群發給所有好友」，
-        所以不需要知道任何人的 ID，也不需要對外開通道 —— 只是一個往外的 HTTPS 請求。</p>
-        <div class="checkpoint"><b>檢查點</b><span>手機收到 LINE 通知，儀表板右下角同時出現一筆通報記錄。</span></div>
+        <h3>HC-SR04 超音波</h3>
+        <div class="tablewrap"><table><thead><tr><th>感測器腳位</th><th>接到 Uno</th><th>說明</th></tr></thead><tbody><tr><td>Trig</td><td class="pin">D4</td><td>發射</td></tr><tr><td>Echo</td><td class="pin">D5</td><td>接收回波</td></tr><tr><td>VCC</td><td class="pin">5V</td><td>電源</td></tr><tr><td>GND</td><td class="pin">GND</td><td>接地</td></tr></tbody></table></div>
+        <p>上傳 <code>範例程式\c04b-hcsr04</code>。動手：手掌放在探頭前 10–30 公分，慢慢靠近、再移遠。</p>
+        <p><b>一直是 -1（量不到）</b>：先查 VCC、GND、Trig、Echo 四條線，再確認前方不是空曠（超過約 4 公尺也會量不到）。</p>
+        <div class="checkpoint"><b>檢查點</b><span>手越靠近，距離數字越小；小於 30 公分會出現「有東西靠近」。</span></div>
       </div>
     </div>
-
     <div class="step">
-      <div class="rail"><b>2:45</b>步驟 10</div>
+      <div class="rail"><b>2:30</b>步驟 3</div>
       <div class="body">
-        <h3>校正與收尾</h3>
-        <p>火焰門檻一定要照 §4 校正過才算完成。剩下的時間調整你自己的警報文字，
-        或試著把門檻改成「溫度超過 30 度就通知」。</p>
+        <h3>HC-SR501 人體紅外線</h3>
+        <div class="tablewrap"><table><thead><tr><th>感測器腳位</th><th>接到 Uno</th><th>說明</th></tr></thead><tbody><tr><td>OUT</td><td class="pin">D3</td><td>有人／沒人</td></tr><tr><td>VCC</td><td class="pin">5V</td><td>電源</td></tr><tr><td>GND</td><td class="pin">GND</td><td>接地</td></tr></tbody></table></div>
+        <p>上傳 <code>範例程式\c04c-pir</code>。<b>剛插電要暖機約一分鐘</b>，這段時間的讀值不準。
+        暖機後在感測器前揮手。模組上有兩顆旋鈕：靈敏度、延遲時間，上課時把「延遲」逆時針轉到底，反應最快。</p>
+        <div class="checkpoint"><b>檢查點</b><span>揮手時出現「偵測到有人」，停住不動幾秒後出現「恢復無人」。</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="rail"><b>3:00</b>步驟 4</div>
+      <div class="body">
+        <h3>LM393 光敏模組</h3>
+        <div class="tablewrap"><table><thead><tr><th>感測器腳位</th><th>接到 Uno</th><th>說明</th></tr></thead><tbody><tr><td>AO</td><td class="pin">A1</td><td>類比輸出（讀數值）</td></tr><tr><td>DO</td><td class="pin">不接</td><td>本次不用</td></tr><tr><td>GND</td><td class="pin">GND</td><td>接地</td></tr><tr><td>VCC</td><td class="pin">5V</td><td>電源</td></tr></tbody></table></div>
+        <p>這個模組的針腳印刷順序是 <b>AO、DO、GND、VCC</b>，和其他感測器不同。上傳 <code>範例程式\c04d-ldr</code>。</p>
+        <p>動手：先記下平常的數字，再用手把感測器完全遮住，記下遮住的數字。<b>這個模組越暗數字越大</b>。</p>
+        <div class="checkpoint"><b>檢查點</b><span>遮住感測器，數字明顯變大。門檻取「平常」與「遮住」兩個數字的中間值。</span></div>
       </div>
     </div>
   </div>
+  <div class="block-head">
+    <h3>五、感測資料整合</h3>
+    <span>約 3:30 – 4:30</span>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="rail"><b>3:30</b>步驟 1</div>
+      <div class="body">
+        <h3>接電源軌</h3>
+        <p>Uno 只有一個 5V 孔，四個感測器都要 5V，所以要用麵包板的電源軌分出去：
+        用<b>公對公杜邦線</b>把 Uno 的 5V 接到紅色電源軌、GND 接到藍色電源軌；
+        四個感測器的 VCC、GND 都改接到電源軌（母對公杜邦線）。訊號腳維持原本接法。</p>
+        <p>四個感測器合計約 90 mA（典型值估算），遠低於 USB 的 500 mA，不需要外接電源。</p>
+        <div class="warn">
+          <h4>先量電源軌</h4>
+          <p>有些 400 孔小麵包板的電源軌在<b>中間是斷開的</b>，左右兩半不通。
+          接線前用三用電表量一下兩端是否相通；斷開的話，左右兩半各自接一條 5V 和 GND。</p>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="rail"><b>3:50</b>步驟 2</div>
+      <div class="body">
+        <h3>上傳整合程式，逐一驗收</h3>
+        <p>上傳 <code>範例程式\c05-sensor-node</code>，開序列埠監控視窗，會看到每秒一行：</p>
+<pre>{"t":31,"h":43,"pir":0,"dist":23,"light":280}</pre>
+        <p>五個欄位依序是：溫度、濕度、人體（1 有人）、距離（公分，-1 量不到）、光線（越暗越大）。
+        逐一確認：呵氣 → <code>h</code> 變大；手靠近超音波 → <code>dist</code> 變小；在人體紅外線前揮手 → <code>pir</code> 變 1；遮住光敏 → <code>light</code> 變大。</p>
+        <div class="checkpoint"><b>檢查點</b><span>四個欄位都會隨動作變化。某個欄位不動，就是那個感測器還沒接好。</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="block-head">
+    <h3>六、Node.js 與雲端</h3>
+    <span>約 4:30 – 6:00</span>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="rail"><b>4:30</b>步驟 1</div>
+      <div class="body">
+        <h3>讓電腦讀到資料</h3>
+        <p><b>先關掉序列埠監控視窗</b>（一個連接埠同時只能被一個程式使用）。
+        在教材的 <code>雲端實作</code> 資料夾開終端機：</p>
+<pre><span class="c"># 列出連接埠，找出 Arduino 是哪個 COM</span>
+npm run ports
+
+<span class="c"># 複製設定檔範本（Windows）</span>
+copy .env.example .env</pre>
+        <p>用記事本開 <code>.env</code>，把 <code>SERIAL_PORT=COM3</code> 改成你的 COM 編號。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="rail"><b>4:50</b>步驟 2</div>
+      <div class="body">
+        <h3>填入 ThingSpeak 與 ntfy 設定</h3>
+        <p>在 <code>.env</code> 填入這三個（等號後面不要有多餘空白）：</p>
+<pre>THINGSPEAK_WRITE_KEY=你的 Write API Key
+NOTIFY_CHANNELS=ntfy
+NTFY_TOPIC=你自己取的主題名稱</pre>
+        <p><code>NOTIFY_CHANNELS=ntfy</code> 表示只啟用 ntfy。<code>NTFY_TOPIC</code> 要和手機 App 訂閱的主題<b>逐字相同</b>。
+        <code>NEAR_CM=30</code> 是「距離小於幾公分就通知」，可以依現場調整。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="rail"><b>5:10</b>步驟 3</div>
+      <div class="body">
+        <h3>啟動並看三個去處</h3>
+        <p>執行 <code>npm start</code>。終端機出現「已連上 COM」和「收到第一筆資料」就成功了。</p>
+        <p><b>去處一：</b>瀏覽器開 <code>http://localhost:3000</code> 看即時數值、趨勢圖、通報記錄。<br>
+        <b>去處二：</b>到 ThingSpeak 你的頻道看曲線（最短 15 秒才有一筆新資料）。<br>
+        <b>去處三：</b>手放在超音波前 10–30 公分，手機應該收到「有東西靠近」。同一種通知 60 秒內只會發一次。</p>
+        <div class="checkpoint"><b>檢查點</b><span>儀表板在跳、ThingSpeak 出現曲線、手機收到 ntfy 通知。</span></div>
+      </div>
+    </div>
+  </div>
+
 </section>
 
 <section>
-  <h2><span class="num">§3</span>接線表</h2>
-  <p class="lede">
-    三個模組都帶排針，用<b>母／母杜邦線直接插上 Uno 就好，這一段不需要麵包板</b>。
-    接線前一定要先拔掉 USB。
-  </p>
-  <div class="tablewrap">
-    <table>
-      <thead>
-        <tr><th>模組</th><th>VCC</th><th>GND</th><th>訊號腳</th><th>說明</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>DHT11 溫溼度</td><td class="pin">5V</td><td class="pin">GND</td><td class="pin">D2</td>
-          <td>反應慢，一秒讀一次就好</td>
-        </tr>
-        <tr>
-          <td>HC-SR501 人體紅外線</td><td class="pin">5V</td><td class="pin">GND</td><td class="pin">D3</td>
-          <td>數位輸出，有人時變 HIGH</td>
-        </tr>
-        <tr>
-          <td>火焰感測</td><td class="pin">5V</td><td class="pin">GND</td><td class="pin">A0</td>
-          <td>類比輸出，接 AO 那一腳</td>
-        </tr>
-        <tr>
-          <td>LED + 220Ω 電阻</td><td>—</td><td class="pin">GND</td><td class="pin">D9</td>
-          <td>上一段留下來的，可以不拆</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <h2><span class="num">§4</span>接線總表</h2>
+  <p class="lede">四個感測器的 VCC 都接電源軌的 5V、GND 都接電源軌的 GND。訊號腳各自不同，不會衝突。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>感測器</th><th>訊號腳 → Uno</th><th>程式</th></tr></thead>
+    <tbody>
+      <tr><td>DHT11</td><td class="pin">DATA → D2</td><td><code>c04a-dht11</code></td></tr>
+      <tr><td>HC-SR04</td><td class="pin">Trig → D4、Echo → D5</td><td><code>c04b-hcsr04</code></td></tr>
+      <tr><td>HC-SR501</td><td class="pin">OUT → D3</td><td><code>c04c-pir</code></td></tr>
+      <tr><td>LM393</td><td class="pin">AO → A1（DO 不接）</td><td><code>c04d-ldr</code></td></tr>
+      <tr><td colspan="2"><b>四個一起</b></td><td><code>c05-sensor-node</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>D0、D1 是序列埠專用，不要接任何東西，否則程式上傳不進去。</p>
+</section>
+
+<section>
+  <h2><span class="num">§5</span>門檻要現場量，不要照抄</h2>
+  <p class="lede">每個模組、每間教室的環境都不一樣。程式裡的數字只是範例。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>感測器</th><th>範例門檻</th><th>怎麼訂</th></tr></thead>
+    <tbody>
+      <tr><td>光敏</td><td class="num">400</td><td>記下「平常」與「遮住」兩個數字，取中間值。本講師機平常約 280、遮住約 490，但教室偏暗時平常就可能超過 600。</td></tr>
+      <tr><td>距離</td><td class="num">30 公分</td><td>先看空曠時的數字，再決定「多近算近」。設定檔的 <code>NEAR_CM</code>。</td></tr>
+      <tr><td>溫度</td><td class="num">32 °C</td><td>先看室溫。室溫本來就超過門檻，就把門檻調高。</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="num">§6</span>卡住的時候</h2>
+  <p class="lede">照這個順序查：先連接埠，再接線，最後設定。九成的狀況都停在前兩項，先別懷疑雲端服務壞掉。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>狀況</th><th>常見原因</th><th>怎麼辦</th></tr></thead>
+    <tbody>
+      <tr><td>連接埠找不到、或上傳失敗（Access denied）</td><td>USB 線只能充電；CH340 驅動沒裝；序列埠監控視窗或 Node.js 占用連接埠</td><td>換 USB 線；關掉監控視窗並停掉 Node.js；<code>npm run ports</code> 確認埠號</td></tr>
+      <tr><td>某個欄位一直不變</td><td>那個感測器沒接好，或沒有電</td><td>拔掉其他模組，一個一個單獨測</td></tr>
+      <tr><td>全部感測器都沒反應</td><td>5V 或 GND 沒接到電源軌，或電源軌中間斷開</td><td>量電源軌兩端；斷開的話左右各接一條線</td></tr>
+      <tr><td>距離一直是 -1</td><td>HC-SR04 沒收到回波：VCC、GND、Trig、Echo 其中一條沒接好</td><td>先查四條線，再把手放在前面 10–30 公分</td></tr>
+      <tr><td>溫濕度一直是 0 或讀取失敗</td><td>DATA 沒接在 D2，或讀太快</td><td>對照接線；程式間隔不要小於 1 秒</td></tr>
+      <tr><td>ThingSpeak 沒資料</td><td>Write Key 貼錯（貼成 Read Key）、多了空白，或送太快</td><td>重貼 Write API Key；耐心等 15 秒</td></tr>
+      <tr><td>手機沒收到通知</td><td>主題名稱兩邊不一致；手機沒開通知權限；同一種通知 60 秒內不重複</td><td>逐字比對 <code>.env</code> 與 App 的主題；看儀表板「通報記錄」有沒有「已送達 ntfy」</td></tr>
+    </tbody>
+  </table></div>
   <div class="warn">
-    <h4>接線前先拔 USB</h4>
-    <p>帶電接線如果不小心讓兩支腳位碰在一起，可能燒掉那支腳位甚至整塊板子。
-    先斷電、接完檢查一次、再插上 USB —— 這個順序不要換。</p>
+    <h4>想一個人先試雲端那一半？</h4>
+    <p>在 <code>雲端實作</code> 執行 <code>npm run mock</code>：用模擬訊號跑完整條流程，不需要板子。
+    板子還沒接好、或網路有問題時，先用它把「板子」和「雲端」隔離開來找原因。</p>
   </div>
 </section>
 
 <section>
-  <h2><span class="num">§4</span>火焰門檻要現場校正</h2>
-  <p class="lede">
-    <code>.env</code> 裡的 <code>FLAME_THRESHOLD</code> 預設是 400，
-    但每一顆感測器、每個場地的環境光都不一樣。<b>照抄預設值上場，多半不會準。</b>
-  </p>
-  <p>正確做法是先跑起來，看儀表板上的「火焰感測 A0 原始值」：</p>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>狀況</th><th>典型讀值</th><th>你的實測</th></tr></thead>
-      <tbody>
-        <tr><td>平常（沒有火源）</td><td class="num">700 – 1000</td><td class="num">________</td></tr>
-        <tr><td>打火機靠近約 20 公分</td><td class="num">100 – 300</td><td class="num">________</td></tr>
-        <tr><td>取兩者中間值當門檻</td><td class="num">≈ 400</td><td class="num">________</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p>把自己量到的中間值填回 <code>.env</code>，重新啟動程式。
-  數值<b>越低代表越接近火源</b>，所以程式判斷的是「低於門檻就警報」。</p>
-</section>
-
-<section>
-  <h2><span class="num">§5</span>卡住的時候</h2>
-  <p class="lede">
-    這張表涵蓋現場八成的狀況。先照著查，查不到再舉手。
-  </p>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>症狀</th><th>原因</th><th>怎麼解</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>上傳失敗，寫著<br><code>Access denied</code></td>
-          <td>COM 埠被別的程式占用</td>
-          <td>關掉序列埠監控視窗，或到終端機按 <code>Ctrl+C</code> 停掉 Node.js。
-              <b>一個 COM 埠同時只能有一個程式使用。</b></td>
-        </tr>
-        <tr>
-          <td>連接埠選單裡沒有 COM 選項</td>
-          <td>驅動沒裝，或線只能充電</td>
-          <td>換一條確定能傳資料的 USB 線；再不行就重裝 CH340 驅動。</td>
-        </tr>
-        <tr>
-          <td>Node.js 說<br><code>連接埠 3000 已經被占用</code></td>
-          <td>上一次的程式還在跑</td>
-          <td>找到另一個終端機視窗按 <code>Ctrl+C</code>，或在 <code>.env</code> 把
-              <code>PORT</code> 改成 3001。</td>
-        </tr>
-        <tr>
-          <td>溫濕度一直是 0</td>
-          <td>DHT11 訊號腳接錯，或讀太快</td>
-          <td>確認接在 D2。DHT11 需要至少一秒一次，程式已經處理，不要自己改快。</td>
-        </tr>
-        <tr>
-          <td>PIR 一直說有人</td>
-          <td>模組上的延遲時間旋鈕轉太大</td>
-          <td>HC-SR501 上有兩顆小旋鈕，把「延遲時間」那顆逆時針轉到底。
-              另外它開機後需要約一分鐘暖機。</td>
-        </tr>
-        <tr>
-          <td>ThingSpeak 回傳 <code>0</code></td>
-          <td>Write Key 貼錯，或送太快</td>
-          <td>確認貼的是 <b>Write</b> API Key 不是 Read。程式已內建 15 秒節流。</td>
-        </tr>
-        <tr>
-          <td>LINE 回 <code>401</code></td>
-          <td>權杖錯了或已失效</td>
-          <td>回 LINE Developers 重新產生 long-lived token，注意不要複製到多餘的空白。</td>
-        </tr>
-        <tr>
-          <td>LINE 回 <code>429</code></td>
-          <td>這個月的免費額度用完了</td>
-          <td>免費方案每月 200 則。等下個月，或改用自己的另一個帳號。</td>
-        </tr>
-        <tr>
-          <td>燈完全不亮</td>
-          <td>九成是正負腳接反</td>
-          <td>LED 長腳是正極。把它轉個方向再試 —— 這是最常見的一項。</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="warn">
-    <h4>為什麼每個人要有自己的 LINE 官方帳號</h4>
-    <p>LINE 群發訊息是<b>「發給 N 個好友就扣 N 則」</b>，免費方案每個月只有 200 則。
-    如果全班共用一個帳號、有 10 個人加好友，一次測試就扣 10 則 —— 200 則只夠測 20 次。
-    現場除錯一個人就可能試十次。</p>
-    <p>用自己的帳號，你有完整的 200 則，而且結訓後帳號帶得回自己單位繼續用。</p>
-  </div>
-</section>
-
-<section>
-  <h2><span class="num">§6</span>回家可以往哪裡走</h2>
-  <p class="lede">
-    這四條路都沿用今天的接線與程式骨架，差別只在多接一個零件或多改幾行。
-  </p>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>方向</th><th>要多什麼</th><th>改哪裡</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><b>溫度也發警報</b></td>
-          <td>不用多任何零件</td>
-          <td><code>src/index.js</code> 裡照著火焰那段，加一個「溫度大於 30 就通知」。最快的一條。</td>
-        </tr>
-        <tr>
-          <td><b>加一顆按鈕</b></td>
-          <td>輕觸開關、10KΩ 電阻</td>
-          <td>Arduino 端用 <code>digitalRead</code> 讀按鈕狀態，多送一個欄位上來。</td>
-        </tr>
-        <tr>
-          <td><b>換成問答機器人</b></td>
-          <td>需要對外的 HTTPS 通道</td>
-          <td>改用 LINE 的「回覆訊息」——<b>回覆完全免費且無限</b>，
-              學生問「現在幾度」隨你玩。代價是要架 webhook。</td>
-        </tr>
-        <tr>
-          <td><b>讓裝置獨立上網</b></td>
-          <td>ESP32 開發板</td>
-          <td>不用接電腦就能自己連 WiFi。但機關的 WiFi 常需要網頁登入，
-              ESP32 過不了，實務上多半得用手機熱點。</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <h2><span class="num">§7</span>回家可以往哪裡走</h2>
+  <p class="lede">四條路都沿用今天的接線與程式骨架，差別只在多接一個零件或多改幾行。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>方向</th><th>怎麼做</th></tr></thead>
+    <tbody>
+      <tr><td><b>天暗自動通報</b></td><td>照距離那一段的寫法複製一次，改成光線超過門檻就通知。</td></tr>
+      <tr><td><b>加輸出裝置</b></td><td>加蜂鳴器或 LED，讓裝置自己也會叫（要另外購買）。</td></tr>
+      <tr><td><b>換成問答機器人</b></td><td>改用 LINE 的回覆訊息：免費，代價是要架 webhook。</td></tr>
+      <tr><td><b>讓裝置自己上網</b></td><td>換 ESP32 就不必接電腦，但要先過機關 WiFi 那一關。</td></tr>
+    </tbody>
+  </table></div>
 </section>
 
 <footer>
-  <p>校園環境監測站實作手冊 · 115.11.14 Arduino 實作研習<br>
-  課程專案：<code>arduino-cloud-workshop</code> ·
-  指令速查：<code>npm start</code>（正常執行）、<code>npm run mock</code>（不用板子）、
-  <code>npm run ports</code>（列出連接埠）</p>
+  分享成果時，請分享 ThingSpeak 的<b>圖表網址</b>，不要分享 Write API Key 或 ntfy 的主題名稱 —— 它們是密碼。截圖前先遮起來。
 </footer>
 
 </div>

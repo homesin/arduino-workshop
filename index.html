@@ -114,11 +114,11 @@
 
   <h2>手動下載（指令無法執行時）</h2>
   <p>
-    <a class="dl" id="zip" href="arduino-workshop.zip">下載教材 zip（125 KB）</a>
+    <a class="dl" id="zip" href="arduino-workshop.zip">下載教材 zip（103 KB）</a>
   </p>
   <ol class="steps">
     <li><b>解壓縮</b>對 zip 檔按右鍵 →「解壓縮全部」，建議放在桌面。</li>
-    <li><b>雙擊 <code>setup\install.cmd</code></b>
+    <li><b>雙擊 <code>安裝程式\install.cmd</code></b>
       若出現「Windows 已保護您的電腦」，按「其他資訊」→「仍要執行」。只裝 Arduino 的話，在該資料夾開啟終端機執行 <code>.\install.cmd -ArduinoOnly</code>。
     </li>
   </ol>
@@ -127,10 +127,10 @@
   <table>
     <tr><th>項目</th><th>用途</th><th>只裝 Arduino</th></tr>
     <tr><td>Arduino IDE</td><td>寫程式、上傳到板子</td><td>✓</td></tr>
-    <tr><td>Uno 板子核心、函式庫</td><td>SimpleDHT、Keypad、Servo、Stepper</td><td>✓</td></tr>
+    <tr><td>Uno 板子核心、函式庫</td><td>SimpleDHT</td><td>✓</td></tr>
     <tr><td>CH340 驅動</td><td>相容板的 USB 晶片，沒裝電腦認不得板子</td><td>✓</td></tr>
     <tr><td>VS Code</td><td>選用的編輯器，附一鍵編譯上傳</td><td>✓</td></tr>
-    <tr><td>Node.js、專案套件</td><td>雲端單元：感測資料上網、LINE 推播</td><td></td></tr>
+    <tr><td>Node.js、專案套件</td><td>雲端單元：感測資料上網、ntfy 手機通知</td><td></td></tr>
     <tr><td>Codex CLI</td><td>上課卡關時問 AI 助教</td><td></td></tr>
   </table>
   <p class="note">已經裝過的項目會自動跳過，重複執行沒有副作用。</p>
@@ -142,14 +142,14 @@
     <dt>公務電腦、電腦教室沒有安裝權限</dt>
     <dd>請先請資訊人員協助，或在確認視窗輸入管理員帳號密碼。</dd>
     <dt>結果表的「偵測到板子」是 ！</dt>
-    <dd>沒有插板子時一定會這樣。把 Uno 用 USB 線接上電腦後，雙擊桌面 <code>arduino-workshop\setup\install.cmd</code> 再檢查一次。若仍偵測不到，換一條 USB 線（有些線只能充電）。</dd>
+    <dd>沒有插板子時一定會這樣。把 Uno 用 USB 線接上電腦後，雙擊桌面 <code>arduino-workshop\安裝程式\install.cmd</code> 再檢查一次。若仍偵測不到，換一條 USB 線（有些線只能充電）。</dd>
     <dt>「Codex 登入」是 ！</dt>
     <dd>第一次使用要登入：在 <code>arduino-workshop</code> 資料夾開終端機輸入 <code>codex</code>，用 ChatGPT 帳號登入。上課時再做也可以。</dd>
     <dt>重新執行會蓋掉我改過的程式嗎？</dt>
     <dd>不會。桌面已有 <code>arduino-workshop</code> 時，只會更新安裝腳本、補上缺少的檔案。</dd>
   </dl>
 
-  <footer>教材版本 2026-10-22 14:37</footer>
+  <footer>教材版本 2026-10-31 13:20</footer>
 </main>
 
 <script>
@@ -177,7 +177,7 @@
     setTimeout(() => copy.textContent = '複製', 1500);
   });
   // 重新部署後檔名不變，加版本參數避免拿到瀏覽器快取的舊 zip
-  document.getElementById('zip').href += '?v=' + encodeURIComponent('2026-10-22 14:37');
+  document.getElementById('zip').href += '?v=' + encodeURIComponent('2026-10-31 13:20');
   show('full');
 </script>
 </body>
