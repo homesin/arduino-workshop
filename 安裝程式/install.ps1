@@ -172,6 +172,40 @@ function Find-VSCode {
   return $null
 }
 
+function Find-ArduinoIde {
+  foreach ($base in @((Join-Path $env:LOCALAPPDATA 'Programs'), $env:ProgramFiles)) {
+    $exe = Join-Path $base 'Arduino IDE\Arduino IDE.exe'
+    if (Test-Path $exe) { return $exe }
+  }
+  return $null
+}
+
+function Find-VSCodeExe {
+  $code = Find-VSCode
+  if (-not $code) { return $null }
+  $exe = Join-Path (Split-Path (Split-Path $code -Parent) -Parent) 'Code.exe'   # bin\code.cmd → Code.exe
+  if (Test-Path $exe) { return $exe }
+  return $null
+}
+
+# 資料夾裡沒有這個捷徑就建一個；已經有的不動。回傳這次新建的資料夾清單。
+function Ensure-Shortcut($name, $exe, [string[]]$dirs) {
+  $made = @()
+  foreach ($dir in $dirs) {
+    if (-not $dir -or -not (Test-Path $dir)) { continue }
+    $lnk = Join-Path $dir "$name.lnk"
+    if (Test-Path $lnk) { continue }
+    try {
+      $sc = (New-Object -ComObject WScript.Shell).CreateShortcut($lnk)
+      $sc.TargetPath = $exe
+      $sc.WorkingDirectory = Split-Path $exe -Parent
+      $sc.Save()
+      $made += $dir
+    } catch {}
+  }
+  return $made
+}
+
 function Find-ArduinoCli {
   $cmd = Get-Command arduino-cli -ErrorAction SilentlyContinue
   if ($cmd) { return $cmd.Source }
@@ -316,6 +350,32 @@ if ($code) {
 } else {
   # 用「！」：Arduino IDE 已經能完成全部單元，VS Code 是選用
   Record 'VS Code' $null '沒裝成。要用的話到 code.visualstudio.com 手動下載；不裝也能用 Arduino IDE 上課'
+}
+
+# ─────────────────────────────────────────────
+Step '5b. 桌面捷徑（Arduino IDE、VS Code）'
+# 電腦教室的電腦常常本來就裝好這兩個軟體，上面會顯示「已安裝，跳過」，不會替使用者建捷徑，
+# 所以不管是不是這次裝的，都檢查一次：桌面沒有就補一個。教材資料夾裡也放一份，
+# 桌面被鎖定、被還原或被導向到別處時，學員至少還能從教材資料夾點開。
+$desk       = [Environment]::GetFolderPath('Desktop')
+$deskCommon = [Environment]::GetFolderPath('CommonDesktopDirectory')
+$apps = @(
+  @{ Name = 'Arduino IDE';        Exe = (Find-ArduinoIde) },
+  @{ Name = 'Visual Studio Code'; Exe = (Find-VSCodeExe) }
+)
+foreach ($app in $apps) {
+  $label = "桌面捷徑：$($app.Name)"
+  if (-not $app.Exe) { Record $label $null '找不到程式，略過（可從開始選單搜尋開啟）'; continue }
+  $onDesktop = (Test-Path (Join-Path $desk "$($app.Name).lnk")) -or (Test-Path (Join-Path $deskCommon "$($app.Name).lnk"))
+  $targets = @($Root)
+  if (-not $onDesktop) { $targets = @($desk, $Root) }
+  $made = @(Ensure-Shortcut $app.Name $app.Exe $targets)
+  $onDesktop = (Test-Path (Join-Path $desk "$($app.Name).lnk")) -or (Test-Path (Join-Path $deskCommon "$($app.Name).lnk"))
+  if ($onDesktop) {
+    Record $label $true $(if ($made -contains $desk) { '已在桌面建立' } else { '桌面已有' })
+  } else {
+    Record $label $null '桌面建不起來（可能被鎖定）：請從教材資料夾裡的捷徑，或開始選單搜尋開啟'
+  }
 }
 
 # ─────────────────────────────────────────────
