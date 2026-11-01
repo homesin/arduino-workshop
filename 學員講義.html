@@ -253,10 +253,10 @@ footer{
 </header>
 
 <section>
-  <h2><span class="num">§1</span>上課前要先做好</h2>
+  <h2><span class="num">§1</span>建議上課前先做好</h2>
   <p class="lede">
-    這四項沒完成，現場一定跑不完 —— 光是安裝軟體就會吃掉大半時間。
-    請在上課前找時間做完，遇到問題先問，不要留到當天。
+    這四項能先做完最好，現場會順很多。沒時間先做也沒關係：
+    <b>安裝軟體</b>課堂上一開始會一起裝（邊裝邊上第一章），其他項目到時候再補。遇到問題先問，不要留到最後。
   </p>
 
   <ul class="checklist" id="prep">
@@ -267,7 +267,7 @@ footer{
         <span class="how">打開 <b>homesin.github.io/arduino-workshop</b> 照著做：按 Win 鍵輸入 PowerShell 開啟，
         貼上 <code style="word-break:break-all">irm https://homesin.github.io/arduino-workshop/get.ps1 | iex</code> 按 Enter。
         Arduino IDE、CH340 驅動、Node.js 和課程教材會自動裝好，跳出確認視窗一律按「是」，
-        看到全部完成就好。<b>如果是公務電腦沒有安裝權限，請先跟資訊人員確認。</b></span>
+        看到全部完成就好。<b>如果是公務電腦沒有安裝權限，請先跟資訊人員確認。</b>圖文版：<a href="https://homesin.github.io/arduino-workshop/guide/install.html" target="_blank" rel="noopener">一鍵安裝與驗收</a>。</span>
       </span>
     </label></li>
 
@@ -277,7 +277,7 @@ footer{
         <span class="what">確認雲端專案能跑</span>
         <span class="how">教材在桌面的 <code>arduino-workshop</code> 資料夾。在裡面的 <code>雲端實作</code>
         開終端機執行 <code>npm run mock</code>，瀏覽器開 <code>localhost:3000</code> 應該看到資料在跳 ——
-        這一步不需要 Arduino 就能驗證。</span>
+        這一步不需要 Arduino 就能驗證。圖文版：<a href="https://homesin.github.io/arduino-workshop/guide/cloud.html" target="_blank" rel="noopener">雲端實作啟動</a>。</span>
       </span>
     </label></li>
 
@@ -287,7 +287,7 @@ footer{
         <span class="what">註冊 ThingSpeak 並建立一個頻道</span>
         <span class="how">thingspeak.com 免費註冊（非商用）。建立 Channel，勾選 <b>Field 1 到 5</b>，
         依序命名為 <b>溫度、濕度、光線、人體、距離</b>。記下 API Keys 分頁的 <b>Write API Key</b>，
-        並在 Sharing 分頁選「Share channel view with everyone」。</span>
+        並在 Sharing 分頁選「Share channel view with everyone」。<b>註冊姓名只能填英文字母。</b>圖文版：<a href="https://homesin.github.io/arduino-workshop/guide/thingspeak-signup.html" target="_blank" rel="noopener">ThingSpeak 註冊教學</a>、<a href="https://homesin.github.io/arduino-workshop/guide/thingspeak-chart.html" target="_blank" rel="noopener">看圖表與分享</a>。</span>
       </span>
     </label></li>
 
@@ -298,7 +298,7 @@ footer{
         <span class="how">到應用程式商店搜尋 <b>ntfy</b> 安裝（不用註冊帳號）。
         自己取一個主題名稱，<b>要包含一串隨機英數字</b>，例如「arduino-」加上你自己亂打的 8 個字，
         <b>不要用 test、arduino 這種猜得到的名字</b>。把它抄下來，上課要用。
-        在 App 裡按 ＋ 訂閱這個主題。</span>
+        在 App 裡按 ＋ 訂閱這個主題。圖文版：<a href="https://homesin.github.io/arduino-workshop/guide/ntfy.html" target="_blank" rel="noopener">ntfy 安裝與訂閱</a>。</span>
       </span>
     </label></li>
   </ul>
@@ -345,7 +345,7 @@ footer{
       <div class="rail"><b>0:00</b>步驟 1</div>
       <div class="body">
         <h3>現場只做驗收</h3>
-        <p>環境在上課前就裝好了。現在把 Uno 用 <b>能傳資料的 USB 線</b> 接上電腦，
+        <p>環境（課前或上課一開始）已經裝好了。現在把 Uno 用 <b>能傳資料的 USB 線</b> 接上電腦，
         打開 Arduino IDE，選<b>工具 → 開發板 → Arduino Uno</b>，再選<b>工具 → 連接埠</b>（選有 COM 編號的那一個）。</p>
         <p>連接埠一直不出現：先換一條 USB 線（最常見），再確認 CH340 驅動有裝。</p>
         <div class="checkpoint"><b>檢查點</b><span>工具 → 連接埠 裡看得到一個 COM 編號。</span></div>
@@ -545,6 +545,23 @@ NTFY_TOPIC=你自己取的主題名稱</pre>
 <section>
   <h2><span class="num">§6</span>卡住的時候</h2>
   <p class="lede">照這個順序查：先連接埠，再接線，最後設定。九成的狀況都停在前兩項，先別懷疑雲端服務壞掉。</p>
+  <h3>完整的圖文教學頁</h3>
+  <p>每份都是從頭到尾的步驟，上課卡住時、或回家想再做一次都可以查（需要連上網路）。總覽：<a href="https://homesin.github.io/arduino-workshop/guide/" target="_blank" rel="noopener">教學頁總覽</a></p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>教學頁</th><th>查什麼</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/install.html" target="_blank" rel="noopener"><b>一鍵安裝與驗收</b></a></td><td>安裝結果表怎麼看、沒全綠怎麼辦</td></tr>
+      <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/upload.html" target="_blank" rel="noopener"><b>Arduino 第一次上傳與序列埠</b></a></td><td>選板子、上傳、看數字、亂碼</td></tr>
+      <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/wiring.html" target="_blank" rel="noopener"><b>麵包板與四感測器接線</b></a></td><td>電源軌、每支腳位、逐個驗證</td></tr>
+      <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/cloud.html" target="_blank" rel="noopener"><b>雲端實作啟動</b></a></td><td>.env、npm start、儀表板</td></tr>
+      <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/thingspeak-signup.html" target="_blank" rel="noopener"><b>ThingSpeak 註冊教學</b></a></td><td>註冊、建頻道、Write API Key</td></tr>
+      <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/thingspeak-chart.html" target="_blank" rel="noopener"><b>ThingSpeak 看圖表與分享</b></a></td><td>看曲線、公開網址、沒資料時</td></tr>
+      <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/ntfy.html" target="_blank" rel="noopener"><b>ntfy 安裝與訂閱</b></a></td><td>手機與網頁訂閱、手動測試</td></tr>
+      <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/troubleshooting.html" target="_blank" rel="noopener"><b>排錯與驗收總表</b></a></td><td>照順序一關一關查，附驗收清單</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>常見狀況速查</h3>
   <div class="tablewrap"><table>
     <thead><tr><th>狀況</th><th>常見原因</th><th>怎麼辦</th></tr></thead>
     <tbody>

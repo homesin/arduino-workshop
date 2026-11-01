@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>排錯與驗收總表</title>
+<style>
+  :root{
+    --bg:#E9EEE8; --ink:#143D2D; --accent:#87374B; --card:#fff; --line:#c9d3c8; --muted:#4a6358;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.75;font-size:17px}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+  header h1{font-size:2rem;margin:0 0 6px}
+  header p{margin:0;color:var(--muted)}
+  .toc{background:var(--card);border:1px solid var(--line);padding:14px 20px;margin:24px 0}
+  .toc b{display:block;margin-bottom:4px}
+  .toc ol{margin:0;padding-left:22px}
+  .toc a{color:var(--ink)}
+  section.step{background:var(--card);border:1px solid var(--line);margin:24px 0;padding:22px 24px}
+  .step h2{margin:0 0 12px;font-size:1.3rem;display:flex;align-items:center;gap:12px}
+  .num{flex:none;width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;
+    display:grid;place-items:center;font-weight:700}
+  .step p{margin:8px 0}
+  figure{margin:14px 0 4px}
+  figure img{display:block;width:100%;height:auto;border:1px solid var(--line)}
+  figcaption{font-size:.9rem;color:var(--muted);margin-top:6px}
+  code{background:#eef2ec;padding:1px 6px;font-family:Consolas,monospace}
+  pre{background:#143D2D;color:#E8F0E8;padding:12px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:.95rem;margin:10px 0}
+  .note,.warn,.check{margin:14px 0;padding:10px 14px;border-left:5px solid}
+  .note{border-color:var(--ink);background:#eef2ec}
+  .warn{border-color:var(--accent);background:#f6e9ec}
+  .check{border-color:#2f7d4f;background:#e4f2e8}
+  .note b,.warn b,.check b{margin-right:6px}
+  table{border-collapse:collapse;margin:10px 0;width:100%}
+  th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+  th{background:#eef2ec}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .cols>div{border:1px solid var(--line);padding:4px 16px 12px;background:#fafcf9}
+  .cols h3{margin:10px 0 4px;font-size:1.05rem}
+  @media(max-width:640px){.cols{grid-template-columns:1fr}}
+  .chk{list-style:none;padding:0;margin:8px 0}
+  .chk li{padding:4px 0}
+  .chk input{width:18px;height:18px;margin-right:10px;vertical-align:-3px}
+  footer{margin-top:32px;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>排錯與驗收總表</h1>
+    <p>出問題時，<b>從上往下</b>一關一關查，比亂試快得多。最後附上課驗收清單。</p>
+  </header>
+
+  <nav class="toc">
+    <b>內容</b>
+    <ol>
+      <li><a href="#s0">查的順序</a></li>
+      <li><a href="#s1">第 1 關：電腦看得到板子嗎</a></li>
+      <li><a href="#s2">第 2 關：板子有在說話嗎</a></li>
+      <li><a href="#s3">第 3 關：每個感測器有讀數嗎</a></li>
+      <li><a href="#s4">第 4 關：Node.js 收得到資料嗎</a></li>
+      <li><a href="#s5">第 5 關：ThingSpeak</a></li>
+      <li><a href="#s6">第 6 關：ntfy 手機通知</a></li>
+      <li><a href="#s7">上課驗收清單</a></li>
+    </ol>
+  </nav>
+
+  <section class="step" id="s0">
+    <h2>查的順序</h2>
+    <p>資料的路線是一條線：<b>感測器 → Uno → USB → Node.js → 儀表板 / ThingSpeak / ntfy</b>。哪一關斷了，後面全部都看不到。所以：</p>
+    <ol>
+      <li><b>先查連接埠</b>（最常見）</li>
+      <li><b>再查接線與電源</b></li>
+      <li><b>最後才查設定檔</b>（Key、主題名稱）</li>
+    </ol>
+    <div class="note"><b>一個原則：</b>一次只改一個地方，改完馬上測。同時改好幾個，好了也不知道是哪個修好的。</div>
+  </section>
+
+  <section class="step" id="s1">
+    <h2><span class="num">1</span>第 1 關：電腦看得到板子嗎</h2>
+    <p><b>怎麼確認：</b>在 <code>雲端實作</code> 資料夾執行 <code>npm run ports</code>，看有沒有名稱含 <b>CH340</b> 或 <b>USB-SERIAL</b> 的連接埠。Arduino IDE 選單裡括號寫 <b>(USB)</b> 的那一個也是它。</p>
+    <table>
+      <tr><th>狀況</th><th>原因</th><th>怎麼辦</th></tr>
+      <tr><td>清單裡沒有 CH340／USB 的埠</td><td>USB 線只能充電；USB 孔問題；CH340 驅動沒裝</td><td>換一條 USB 線、換 USB 孔；重跑一鍵安裝（驅動那一列要是 ✓）</td></tr>
+      <tr><td>整塊板子都不亮</td><td>USB 線沒接好或壞掉</td><td>換線</td></tr>
+      <tr><td>IDE 的開發板名稱顯示 <b>Unknown</b></td><td>正常：IDE 不認得相容板</td><td>用 <b>Select other board and port…</b> 手動選 Arduino UNO 與 (USB) 那個埠</td></tr>
+      <tr><td>上傳失敗，出現 <code>Access denied</code> 或 port 相關錯誤</td><td>連接埠被占用：序列埠監控視窗還開著，或 Node.js 還在跑</td><td>關掉序列埠監控視窗；其他視窗的 Node.js 按 <code>Ctrl + C</code>；再上傳</td></tr>
+      <tr><td>上傳失敗、埠號正確</td><td>D0 或 D1 接了線</td><td>拔掉 D0、D1 上的線</td></tr>
+    </table>
+    <div class="warn"><b>一個連接埠同時只能有一個程式使用：</b>序列埠監控視窗、Node.js、上傳，三者擇一。</div>
+  </section>
+
+  <section class="step" id="s2">
+    <h2><span class="num">2</span>第 2 關：板子有在說話嗎</h2>
+    <p><b>怎麼確認：</b>Arduino IDE 打開序列埠監控視窗，速率選 <b>9600 baud</b>。</p>
+    <table>
+      <tr><th>看到什麼</th><th>原因</th><th>怎麼辦</th></tr>
+      <tr><td>黃色警告 <b>Not connected</b></td><td>還沒選開發板與連接埠</td><td>選好 Arduino UNO 與 (USB) 埠</td></tr>
+      <tr><td>亂碼（<code>��</code>）</td><td>速率不是 9600</td><td>右下角改成 9600 baud</td></tr>
+      <tr><td>空白，什麼都沒有</td><td>板子上不是會輸出的程式；或剛好錯過開機那一句</td><td>確認已上傳 <code>c03b</code> 或 <code>c05</code>；按板子上的 Reset 鈕</td></tr>
+    </table>
+  </section>
+
+  <section class="step" id="s3">
+    <h2><span class="num">3</span>第 3 關：每個感測器有讀數嗎</h2>
+    <p><b>怎麼確認：</b>上傳 <code>c05-sensor-node</code>，監控視窗每秒一行 <code>{"t":..,"h":..,"pir":..,"dist":..,"light":..}</code>。逐個動手：呵氣、揮手、靠近、遮光。</p>
+    <table>
+      <tr><th>症狀</th><th>可能原因</th><th>怎麼辦</th></tr>
+      <tr><td><b>全部</b>感測器都沒反應</td><td>5V 或 GND 沒接到電源軌；電源軌中間斷開；5V、GND 接反</td><td>檢查 Uno 到電源軌的兩條線；紅藍線對調要立刻拔 USB；軌道有缺口就左右各接一條</td></tr>
+      <tr><td><b>某一個</b>欄位一直不變</td><td>那個模組沒接好或沒電</td><td>拔掉其他模組，一個一個單獨測（用 <code>c04a</code>～<code>c04d</code>）</td></tr>
+      <tr><td>溫度、濕度一直是 0 或讀取失敗</td><td>DATA 沒接 D2；讀太快</td><td>對照接線；程式間隔不要小於 1 秒</td></tr>
+      <tr><td>距離一直是 <b>-1</b></td><td>HC-SR04 沒收到回波：VCC、GND、Trig（D4）、Echo（D5）有一條沒接好；前方太空曠</td><td>先查四條線；手放前面 10–30 公分再看</td></tr>
+      <tr><td>人體紅外線亂跳</td><td>剛插電還在暖機</td><td>等約一分鐘；HIGH 會維持好幾秒，這是正常的</td></tr>
+      <tr><td>光敏數字和直覺相反</td><td>LM393 是<b>越暗越大</b></td><td>正常現象，不是壞掉</td></tr>
+    </table>
+  </section>
+
+  <section class="step" id="s4">
+    <h2><span class="num">4</span>第 4 關：Node.js 收得到資料嗎</h2>
+    <p><b>怎麼確認：</b>在 <code>雲端實作</code> 資料夾 <code>npm start</code>，終端機要出現「<b>收到第一筆資料</b>」，儀表板右上角綠點「已連線」。</p>
+    <table>
+      <tr><th>狀況</th><th>原因</th><th>怎麼辦</th></tr>
+      <tr><td><code>Access denied</code> 或 <code>Resource temporarily unavailable</code></td><td>序列埠被占用</td><td>關掉監控視窗；別的 Node.js 視窗按 <code>Ctrl + C</code></td></tr>
+      <tr><td>一直沒有「收到第一筆資料」</td><td><code>.env</code> 的 <code>SERIAL_PORT</code> 填錯；Arduino 沒上傳 c05</td><td>重跑 <code>npm run ports</code> 確認埠號，改 <code>.env</code> 後重啟；重新上傳 c05</td></tr>
+      <tr><td>打不開 <code>localhost:3000</code></td><td>程式沒在跑；埠號被改過</td><td>看終端機印出的網址</td></tr>
+      <tr><td>想先確認程式本身沒問題</td><td>—</td><td><code>npm run mock</code>（不需要板子）或 <code>npm run selftest</code></td></tr>
+    </table>
+    <div class="note"><b>mock 能練到什麼：</b>沒有板子、板子壞了、還沒接線時，用 <code>npm run mock</code> 照樣能把儀表板、ThingSpeak、ntfy 整條流程練完。</div>
+  </section>
+
+  <section class="step" id="s5">
+    <h2><span class="num">5</span>第 5 關：ThingSpeak</h2>
+    <table>
+      <tr><th>狀況</th><th>原因</th><th>怎麼辦</th></tr>
+      <tr><td>啟動摘要顯示「ThingSpeak — 未設定（略過）」</td><td><code>THINGSPEAK_WRITE_KEY</code> 是空的或沒存檔</td><td>貼上 Write API Key，存檔，重啟</td></tr>
+      <tr><td>頻道 Entries 一直是 0</td><td>Key 貼成 <b>Read</b> Key；多了空白；還沒滿 15 秒</td><td>重貼 API Keys 頁<b>最上面</b>的 Write API Key；等 15 秒</td></tr>
+      <tr><td>終端機「失敗」次數增加</td><td>Key 錯誤，或連不上 ThingSpeak</td><td>確認網路；先看本機儀表板</td></tr>
+      <tr><td>某個 Field 沒圖</td><td>建頻道時沒勾選該 Field</td><td>Channel Settings 勾選並儲存</td></tr>
+    </table>
+    <div class="note"><b>為什麼是 15 秒：</b>免費版最短 15 秒才收一筆，程式已內建節流，調得更短也不會更快。</div>
+  </section>
+
+  <section class="step" id="s6">
+    <h2><span class="num">6</span>第 6 關：ntfy 手機通知</h2>
+    <table>
+      <tr><th>狀況</th><th>原因</th><th>怎麼辦</th></tr>
+      <tr><td>手機沒收到</td><td>主題名稱兩邊不一致；沒允許通知；同一種通知 60 秒內只發一次</td><td>逐字比對 <code>.env</code> 的 <code>NTFY_TOPIC</code> 與 App 裡訂閱的主題；開啟 App 的通知權限；看儀表板「通報記錄」</td></tr>
+      <tr><td>網頁收得到、手機收不到</td><td>手機沒訂閱同一個主題</td><td>在 App 清單確認主題名稱</td></tr>
+      <tr><td>手動測試被拒絕（429）</td><td>送太快，被頻率限制；教室共用同一個網路出口</td><td>等一兩分鐘再試，不要全班同時狂按</td></tr>
+      <tr><td>靠近了卻完全沒通知</td><td><code>NOTIFY_CHANNELS</code> 沒寫 ntfy；<code>.env</code> 沒存檔；<code>NEAR_CM</code> 門檻太小</td><td>檢查 <code>.env</code>；看儀表板距離數字，調整 <code>NEAR_CM</code></td></tr>
+    </table>
+    <div class="warn"><b>主題名稱等於密碼：</b>不要貼給別人、不要用 <code>test</code> 之類好猜的名字。</div>
+  </section>
+
+  <section class="step" id="s7">
+    <h2><span class="num">7</span>上課驗收清單</h2>
+    <p>全部打勾，就完成了這台環境監測站：</p>
+    <ul class="chk">
+      <li><label><input type="checkbox">一鍵安裝的結果表全是 ✓</label></li>
+      <li><label><input type="checkbox">Blink 上傳成功，板子上 L 燈會閃</label></li>
+      <li><label><input type="checkbox">序列埠監控視窗看得到文字（9600 baud，沒有亂碼）</label></li>
+      <li><label><input type="checkbox">四個感測器接好，序列埠每秒一行 JSON，<b>四個欄位都會跟著動手變化</b></label></li>
+      <li><label><input type="checkbox"><code>npm start</code> 出現「收到第一筆資料」，儀表板數字在跳</label></li>
+      <li><label><input type="checkbox">ThingSpeak 頻道有曲線，Entries 持續增加</label></li>
+      <li><label><input type="checkbox">手靠近超音波，手機在幾秒內收到 ntfy 通知</label></li>
+    </ul>
+    <h3 style="margin:16px 0 4px">異常測試（看儀表板與手機的反應）</h3>
+    <ul>
+      <li>手靠近超音波：距離變小，小於門檻時手機通知</li>
+      <li>手遮住光敏：光線數字變大</li>
+      <li>在人體紅外線前揮手：人體從 0 變 1，通報記錄出現「偵測到有人經過」</li>
+    </ul>
+    <div class="check"><b>成功的樣子：</b>手靠近超音波時，手機在幾秒內響。</div>
+    <div class="note"><b>成果分享：</b>分享 ThingSpeak 的<b>圖表網址</b>，不要分享 Write API Key 或 ntfy 主題名稱。</div>
+    <div class="note"><b>回家後延伸：</b>光線超過門檻也通知（天暗通報）、加輸出裝置（蜂鳴器、LED，需另外購買）、換 ESP32 讓裝置自己上網。</div>
+  </section>
+
+  <footer>排錯與驗收總表 · 115.11.14 Arduino 實作研習</footer>
+</div>
+</body>
+</html>

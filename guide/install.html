@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一鍵安裝與驗收</title>
+<style>
+  :root{
+    --bg:#E9EEE8; --ink:#143D2D; --accent:#87374B; --card:#fff; --line:#c9d3c8; --muted:#4a6358;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.75;font-size:17px}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+  header h1{font-size:2rem;margin:0 0 6px}
+  header p{margin:0;color:var(--muted)}
+  .toc{background:var(--card);border:1px solid var(--line);padding:14px 20px;margin:24px 0}
+  .toc b{display:block;margin-bottom:4px}
+  .toc ol{margin:0;padding-left:22px}
+  .toc a{color:var(--ink)}
+  section.step{background:var(--card);border:1px solid var(--line);margin:24px 0;padding:22px 24px}
+  .step h2{margin:0 0 12px;font-size:1.3rem;display:flex;align-items:center;gap:12px}
+  .num{flex:none;width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;
+    display:grid;place-items:center;font-weight:700}
+  .step p{margin:8px 0}
+  figure{margin:14px 0 4px}
+  figure img{display:block;width:100%;height:auto;border:1px solid var(--line)}
+  figcaption{font-size:.9rem;color:var(--muted);margin-top:6px}
+  code{background:#eef2ec;padding:1px 6px;font-family:Consolas,monospace}
+  pre{background:#143D2D;color:#E8F0E8;padding:12px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:.95rem;margin:10px 0}
+  .note,.warn,.check{margin:14px 0;padding:10px 14px;border-left:5px solid}
+  .note{border-color:var(--ink);background:#eef2ec}
+  .warn{border-color:var(--accent);background:#f6e9ec}
+  .check{border-color:#2f7d4f;background:#e4f2e8}
+  .note b,.warn b,.check b{margin-right:6px}
+  table{border-collapse:collapse;margin:10px 0;width:100%}
+  th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+  th{background:#eef2ec}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .cols>div{border:1px solid var(--line);padding:4px 16px 12px;background:#fafcf9}
+  .cols h3{margin:10px 0 4px;font-size:1.05rem}
+  @media(max-width:640px){.cols{grid-template-columns:1fr}}
+  footer{margin-top:32px;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>一鍵安裝與驗收</h1>
+    <p>貼一行指令，把上課要用的軟體全部裝好，最後看結果表是不是全綠勾。約 5～15 分鐘，視網路而定。</p>
+  </header>
+
+  <nav class="toc">
+    <b>步驟</b>
+    <ol>
+      <li><a href="#s1">先確認條件</a></li>
+      <li><a href="#s2">開啟 PowerShell 並貼上指令</a></li>
+      <li><a href="#s3">安裝過程在做什麼</a></li>
+      <li><a href="#s4">看結果表驗收</a></li>
+      <li><a href="#s5">結果不是全綠怎麼辦</a></li>
+      <li><a href="#s6">插上板子再驗收一次</a></li>
+    </ol>
+  </nav>
+
+  <div class="note"><b>裝了什麼：</b>Arduino IDE（寫程式、上傳）、Uno 板子核心、DHT11 用的函式庫、CH340 驅動（讓電腦認得相容板）、VS Code、Node.js（後半段把資料送上雲端）、雲端專案的套件，以及教材。</div>
+
+  <section class="step" id="s1">
+    <h2><span class="num">1</span>先確認條件</h2>
+    <ul>
+      <li>電腦<b>連得上網路</b>（要下載軟體）。</li>
+      <li>你的帳號<b>有安裝軟體的權限</b>。公務電腦若被管制，請先問資訊人員。</li>
+      <li>Arduino 板子<b>先不用接</b>也可以。接上的話，最後會多一項上傳測試。</li>
+    </ul>
+  </section>
+
+  <section class="step" id="s2">
+    <h2><span class="num">2</span>開啟 PowerShell 並貼上指令</h2>
+    <ol>
+      <li>按鍵盤的 <b>Win 鍵</b>，輸入 <code>PowerShell</code>，按 Enter 開啟。</li>
+      <li>貼上下面這一行，按 Enter：</li>
+    </ol>
+    <pre>irm https://homesin.github.io/arduino-workshop/get.ps1 | iex</pre>
+    <ol start="3">
+      <li>安裝過程中如果跳出<b>確認視窗</b>（要求系統管理員權限），一律按<b>「是」</b>。</li>
+    </ol>
+    <div class="note"><b>貼上的方法：</b>在 PowerShell 視窗裡按滑鼠<b>右鍵</b>就會貼上；也可以按 <code>Ctrl + V</code>。</div>
+    <div class="note"><b>教材已經在電腦上的話：</b>也可以直接雙擊教材資料夾裡 <code>安裝程式\install.cmd</code>，效果一樣。</div>
+  </section>
+
+  <section class="step" id="s3">
+    <h2><span class="num">3</span>安裝過程在做什麼</h2>
+    <p>安裝程式會一項一項處理，每一段以 <b>▶</b> 開頭。已經裝過的會直接顯示「已安裝，跳過」，所以<b>重複執行沒有副作用</b>。</p>
+    <table>
+      <tr><th>段落</th><th>項目</th><th>用來做什麼</th></tr>
+      <tr><td>1</td><td>Arduino IDE</td><td>寫程式與上傳到板子</td></tr>
+      <tr><td>2</td><td>Uno 板子核心 arduino:avr</td><td>讓 IDE 知道怎麼編譯給 Uno</td></tr>
+      <tr><td>3</td><td>函式庫 SimpleDHT</td><td>讀 DHT11 溫濕度（本次唯一需要的函式庫）</td></tr>
+      <tr><td>4</td><td>CH340 驅動</td><td>相容板的 USB 晶片驅動；沒裝的話插上板子也不會出現連接埠</td></tr>
+      <tr><td>5</td><td>VS Code 與中文語言套件</td><td>選用的編輯器</td></tr>
+      <tr><td>6</td><td>Node.js 20 版以上</td><td>雲端實作用</td></tr>
+      <tr><td>7</td><td>雲端專案套件</td><td>執行 <code>npm install</code></td></tr>
+      <tr><td>8</td><td>Codex CLI</td><td>上課卡關時問 AI 助教用（選用）</td></tr>
+      <tr><td>9～10</td><td>驗收：編譯、雲端程式自我測試</td><td>不需要板子，也不會真的發通知</td></tr>
+      <tr><td>11～12</td><td>檢查板子、燒錄 Blink</td><td>有插板子才會做</td></tr>
+    </table>
+    <div class="note"><b>要等多久：</b>第一次安裝會下載 Arduino IDE、板子核心（約 100 MB）等，網路慢的話板子核心那一段要好幾分鐘，停在那裡是正常的，不要關視窗。</div>
+  </section>
+
+  <section class="step" id="s4">
+    <h2><span class="num">4</span>看結果表驗收</h2>
+    <p>全部跑完會印出<b>結果表</b>。看<b>「結果」那一欄是不是全是 ✓</b>：</p>
+    <pre>══════════ 結果 ══════════
+
+項目                        結果 說明
+--                        -- --
+winget                    ✓  v1.29.380
+Arduino IDE / arduino-cli ✓  arduino-cli  版本：1.5.1 ...
+板子核心 arduino:avr          ✓
+函式庫                       ✓  SimpleDHT
+CH340 驅動                  ✓
+VS Code                   ✓  1.102.3
+VS Code 中文介面              ✓
+Node.js                   ✓  v22.21.0
+專案套件                      ✓
+Codex CLI                 ✓  codex-cli 0.145.0
+編譯 c03a-blink             ✓
+編譯 c04a-dht11             ✓
+雲端程式自我測試                  ✓
+偵測到板子                     ✓  COM4
+燒錄測試                      ✓  已上傳到 COM4：請看板子上標 L 的小燈，每秒閃一下就正常
+
+全部完成，這台電腦可以上課了。
+（標「！」的項目不影響上課，但請看一下說明。）</pre>
+    <div class="check"><b>驗收通過：</b>看到「全部完成，這台電腦可以上課了。」</div>
+    <div class="note"><b>你的版本號可能不同：</b>上面是講師電腦重跑一次的結果，版本號與埠號（COM4）以你自己的為準。</div>
+    <table>
+      <tr><th>符號</th><th>意思</th></tr>
+      <tr><td>✓</td><td>通過</td></tr>
+      <tr><td>！</td><td>不影響上課，但請看說明欄（例如沒插板子、Codex 還沒登入）</td></tr>
+      <tr><td>✗</td><td>失敗，要處理。結尾會寫「有 N 項失敗」</td></tr>
+    </table>
+  </section>
+
+  <section class="step" id="s5">
+    <h2><span class="num">5</span>結果不是全綠怎麼辦</h2>
+    <table>
+      <tr><th>看到什麼</th><th>意思與處理</th></tr>
+      <tr><td><b>偵測到板子 ！</b>（沒有插板子，或 USB 線只能充電）</td><td>先插上板子，再重新執行一次指令即可。換一條 USB 線試試</td></tr>
+      <tr><td><b>偵測到板子 ✗</b>（板子有插但缺 CH340 驅動）</td><td>看上方「CH340 驅動」那一列的說明，裝好後重新插拔</td></tr>
+      <tr><td><b>CH340 驅動 ！</b></td><td>原廠 Uno 不需要；相容板的話，到 WCH 官網下載 CH341SER.EXE 手動安裝</td></tr>
+      <tr><td><b>燒錄測試 ✗</b></td><td>換一條 USB 線或換 USB 孔；重新插拔後再執行一次</td></tr>
+      <tr><td><b>Codex 登入 ！</b></td><td>第一次使用才需要，之後再登入，不影響上課</td></tr>
+      <tr><td><b>.env 設定檔 ！</b></td><td>已替你從範本複製；金鑰要自己填（見雲端實作教學）</td></tr>
+      <tr><td>Node.js 安裝後找不到 node</td><td>關掉視窗，重新開一個再跑一次（環境變數要重開才生效）</td></tr>
+      <tr><td>winget 自動安裝失敗</td><td>後面的軟體都靠它，請找講師</td></tr>
+    </table>
+    <div class="note"><b>重新執行不會重裝：</b>修好之後再貼一次同一行指令，已完成的項目會自動跳過。</div>
+  </section>
+
+  <section class="step" id="s6">
+    <h2><span class="num">6</span>插上板子再驗收一次</h2>
+    <p>沒插板子時，最後會顯示「偵測到板子 ！」。插上 Arduino（USB 線要能傳資料），再貼一次指令，會多這幾項：</p>
+    <ul>
+      <li><b>偵測到板子 ✓</b>，說明欄寫連接埠，例如 <code>COM4</code>。</li>
+      <li><b>燒錄測試 ✓</b>：腳本實際把 Blink 上傳到板子。</li>
+    </ul>
+    <div class="check"><b>用眼睛確認：</b>看板子上印著 <b>L</b> 的小燈，每秒閃一下就正常。腳本只能確認「上傳成功」，燈有沒有閃要你自己看。</div>
+    <div class="note"><b>注意：</b>這一步會把板子上原有的程式換成 Blink。之後要跑感測器範例，再重新上傳對應的程式即可。</div>
+  </section>
+
+  <footer>一鍵安裝與驗收 · 115.11.14 Arduino 實作研習</footer>
+</div>
+</body>
+</html>
