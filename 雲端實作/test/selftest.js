@@ -62,6 +62,10 @@ process.env.ALERT_COOLDOWN_SEC = '0';
 process.env.LINE_DAILY_LIMIT = '2';
 process.env.NEAR_CM = '30';
 
+// 學員的 .env（從 .env.example 複製）會寫 NOTIFY_CHANNELS=ntfy，dotenv 載入後會把其他通知渠道過濾掉，
+// 下面 Discord／Slack／Telegram 的測試就會失敗。先明確清成空字串（dotenv 不會覆蓋已存在的環境變數）。
+process.env.NOTIFY_CHANNELS = '';
+
 // 其他四家通知服務也指到同一個假伺服器
 process.env.NTFY_SERVER = `${base}/ntfy`;
 process.env.NTFY_TOPIC = 'selftest-topic';
