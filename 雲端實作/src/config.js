@@ -13,7 +13,8 @@ export const config = {
 
   thingspeakKey: (process.env.THINGSPEAK_WRITE_KEY || '').trim(),
   thingspeakUrl: process.env.THINGSPEAK_URL || 'https://api.thingspeak.com/update',
-  thingspeakIntervalMs: num(process.env.THINGSPEAK_INTERVAL_SEC, 15) * 1000,
+  // ThingSpeak 免費版下限是 15 秒，剛好 15 秒偶爾會被拒絕（回 0）。設定值只要 ≥ 15，就再多留 2 秒餘裕。
+  thingspeakIntervalMs: ((s) => (s >= 15 ? s + 2 : s) * 1000)(num(process.env.THINGSPEAK_INTERVAL_SEC, 15)),
 
   // ── 通知去處 ────────────────────────────────────────────────
   // 憑證填了就啟用，留空就略過。NOTIFY_CHANNELS 有填的話再多一層過濾，

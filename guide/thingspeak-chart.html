@@ -73,7 +73,7 @@
 [20:22:31] ThingSpeak 已收第 2 筆（溫度 29.3°C / 濕度 53.7%）
 [20:22:44] 狀態：ThingSpeak 成功 2 / 失敗 0　通知 （未啟用）</pre>
     <div class="check"><b>檢查點：</b>看到「ThingSpeak 已收第 N 筆」，而且狀態行的<b>失敗是 0</b>。</div>
-    <div class="note"><b>為什麼是 15 秒一筆：</b>ThingSpeak 免費版最短 15 秒才收一筆。儀表板每秒更新，但上傳雲端有內建節流，所以只有每 15 秒那一筆會送出。</div>
+    <div class="note"><b>為什麼是 15 秒一筆：</b>ThingSpeak 免費版最短 15 秒才收一筆。儀表板每秒更新，但上傳雲端有內建節流（程式再多留 2 秒餘裕，實際約每 17 秒一筆），所以不是每秒都送。</div>
   </section>
 
   <section class="step" id="s2">
