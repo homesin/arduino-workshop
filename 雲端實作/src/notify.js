@@ -33,7 +33,9 @@ export function createNotifier({ log }) {
     : everything;
 
   // 沒填憑證的就不列入，免得畫面被四家的預演訊息洗版。LINE 例外。
-  const active = wanted.filter((c) => c.configured || c.dryRun);
+  let active = wanted.filter((c) => c.configured || c.dryRun);
+  // 一家都沒設定（例如 NOTIFY_CHANNELS=ntfy 但主題還沒填）：留第一家當預演，警報才不會無聲消失。
+  if (!active.length && wanted.length) active = [{ ...wanted[0], dryRun: true }];
   const notifiers = active.map((c) => createChannelNotifier({ ...c, log }));
 
   return {

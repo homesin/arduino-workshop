@@ -53,13 +53,13 @@
   </nav>
 
   <div class="note"><b>開始之前：</b>四題都要先完成上課的雲端實作（<a href="cloud.html">雲端實作啟動</a>），也就是 <code>雲端實作</code> 資料夾裡的 <code>npm run mock</code> 跑得起來。
-    改程式用 VS Code（<a href="vscode.html">VS Code 教學</a>）。改壞了不用怕：把 <code>src\index.js</code> 裡你新增的那幾行刪掉就回到原樣。</div>
+    改程式用 VS Code（<a href="vscode.html">VS Code 教學</a>），先用 <b>File → Open Folder</b> 開啟桌面的 <code>arduino-workshop</code> 資料夾。下面的路徑都從這個資料夾算起。改壞了不用怕：把 <code>src\index.js</code> 裡你新增的那幾行刪掉就回到原樣。</div>
 
   <section class="step" id="e1">
     <h2><span class="num">1</span>天暗自動通報</h2>
     <p>上課的程式只會在「有東西靠近」和「有人經過」時通知。照同樣的寫法，再加一條：<b>光線太暗就通知</b>。光敏模組的數字<b>越大越暗</b>。</p>
     <ol>
-      <li>用 VS Code 開 <code>雲端實作\src\index.js</code>，找到這一行：<pre>  if (reading.pir === 1) {</pre></li>
+      <li>用 VS Code 開啟程式檔 <code>桌面\arduino-workshop\雲端實作\src\index.js</code>（左邊 Explorer 依序點 <b>雲端實作 → src → index.js</b>），找到這一行：<pre>  if (reading.pir === 1) {</pre></li>
       <li>在它的<b>上面</b>貼上這一段：
 <pre>  // 練習 1：天暗通報（light 越大越暗；400 只是範例，要換成你量到的值）
   if (reading.light > 400) {
@@ -95,7 +95,7 @@
       <li>到 <a href="https://developers.line.biz" target="_blank" rel="noopener">developers.line.biz</a>，用 LINE 帳號登入，建立一個 <b>Messaging API</b> channel（會一併建立 LINE 官方帳號）。</li>
       <li>進入該 channel 的 <b>Messaging API</b> 分頁，最下面 <b>Channel access token (long-lived)</b> 按 <b>Issue</b>，複製那一長串。</li>
       <li>用手機掃同一頁的 QR Code，<b>把自己的官方帳號加為好友</b>（沒加好友就收不到）。</li>
-      <li>用 VS Code 開 <code>雲端實作\.env</code>，加上這一行（貼上你的 token）：<pre>LINE_CHANNEL_ACCESS_TOKEN=貼上你的token</pre></li>
+      <li>用 VS Code 開啟設定檔 <code>桌面\arduino-workshop\雲端實作\.env</code>（Explorer 裡 <b>雲端實作 → .env</b>），加上這一行（貼上你的 token）：<pre>LINE_CHANNEL_ACCESS_TOKEN=貼上你的token</pre></li>
       <li>找到 <code>NOTIFY_CHANNELS=ntfy</code> 這一行，<b>改成</b>：<pre>NOTIFY_CHANNELS=ntfy,line</pre>
         這行是「只送哪幾家」的過濾器，不改的話 LINE 會被擋掉，什麼都收不到。</li>
       <li>存檔，終端機執行 <code>npm run mock</code>，等一則警報，手機 LINE 就會收到。</li>
