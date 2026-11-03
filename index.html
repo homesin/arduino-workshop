@@ -114,7 +114,7 @@
 
   <h2>手動下載（指令無法執行時）</h2>
   <p>
-    <a class="dl" id="zip" href="arduino-workshop.zip">下載教材 zip（105 KB）</a>
+    <a class="dl" id="zip" href="arduino-workshop.zip">下載教材 zip（107 KB）</a>
   </p>
   <ol class="steps">
     <li><b>解壓縮</b>對 zip 檔按右鍵 →「解壓縮全部」，建議放在桌面。</li>
@@ -150,9 +150,9 @@
   </dl>
 
   <h2>卡住了？查教學頁</h2>
-  <p class="note">安裝、上傳、接線、雲端、ThingSpeak、ntfy 都有從頭到尾的圖文教學，上課卡住時、或回家後想再做一次都可以查：<a href="guide/">教學頁總覽</a></p>
+  <p class="note">安裝、上傳、接線、雲端、ThingSpeak、ntfy 都有從頭到尾的圖文教學，上課卡住時、或課後在自己的電腦上複習都可以查（Arduino 套件是借用的，借用與歸還方式請看學員講義 §2）：<a href="guide/">教學頁總覽</a></p>
 
-  <footer>教材版本 2026-11-03 10:50</footer>
+  <footer>教材版本 2026-11-03 11:16</footer>
 </main>
 
 <script>
@@ -180,8 +180,78 @@
     setTimeout(() => copy.textContent = '複製', 1500);
   });
   // 重新部署後檔名不變，加版本參數避免拿到瀏覽器快取的舊 zip
-  document.getElementById('zip').href += '?v=' + encodeURIComponent('2026-11-03 10:50');
+  document.getElementById('zip').href += '?v=' + encodeURIComponent('2026-11-03 11:16');
   show('full');
+</script>
+<!--copybtn-->
+<style>
+.cpb{font:600 12px/1 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;cursor:pointer;border:1px solid rgba(127,127,127,.55);
+  background:rgba(255,255,255,.92);color:#143D2D;border-radius:4px;padding:5px 9px;white-space:nowrap}
+.cpb:hover{background:#fff;border-color:#87374B;color:#87374B}
+.cpb.ok{background:#e4f2e8;border-color:#2f7d4f;color:#2f7d4f}
+pre>.cpb{position:absolute;top:6px;right:6px;z-index:2;opacity:.9}
+code+.cpb{margin-left:6px;padding:2px 7px;font-size:11px;vertical-align:middle}
+@media print{.cpb{display:none}}
+</style>
+<script>
+(function () {
+  // 只幫「指令」和「設定檔內容」加複製鈕；範例輸出（有 ✓、═ 等符號）不加。
+  var CMD = /^((npm |cd |copy |irm |python |pwsh |winget |\$env:|"sk-)|codex( [A-Za-z-]+)*$)/;
+  var ENV = /^[A-Z][A-Z0-9_]*=/;
+  function isCommandBlock(text) {
+    var lines = text.split('\n').map(function (l) { return l.trim(); })
+      .filter(function (l) { return l && l.charAt(0) !== '#'; });
+    if (!lines.length || /[✓✔✗═─]/.test(text)) return false;
+    return lines.every(function (l) { return CMD.test(l) || ENV.test(l); });
+  }
+  function fallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function flash(btn, ok) {
+    var old = btn.getAttribute('data-label');
+    btn.textContent = ok ? '已複製 ✓' : '請手動複製';
+    btn.className = 'cpb' + (ok ? ' ok' : '');
+    setTimeout(function () { btn.textContent = old; btn.className = 'cpb'; }, 1600);
+  }
+  function makeButton(getText) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'cpb'; b.textContent = '複製'; b.setAttribute('data-label', '複製');
+    b.addEventListener('click', function () {
+      var text = getText();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { flash(b, true); },
+          function () { flash(b, fallback(text)); });
+      } else { flash(b, fallback(text)); }
+    });
+    return b;
+  }
+  function init() {
+    Array.prototype.forEach.call(document.querySelectorAll('pre'), function (pre) {
+      if (pre.querySelector('.cpb')) return;
+      var text = pre.textContent.replace(/\s+$/, '');
+      if (!isCommandBlock(text)) return;
+      pre.style.position = 'relative';
+      pre.appendChild(makeButton(function () {
+        var c = pre.cloneNode(true), x = c.querySelector('.cpb');
+        if (x) x.parentNode.removeChild(x);
+        return c.textContent.replace(/\s+$/, '');
+      }));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('code'), function (code) {
+      if (code.closest('pre') || (code.nextSibling && code.nextSibling.className === 'cpb')) return;
+      var t = code.textContent.trim();
+      if (!CMD.test(t) || t.indexOf('\n') >= 0) return;
+      code.parentNode.insertBefore(makeButton(function () { return t; }), code.nextSibling);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
 </script>
 </body>
 </html>

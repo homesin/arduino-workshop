@@ -187,5 +187,75 @@
 
   <footer>麵包板與四感測器接線 · 115.11.14 Arduino 實作研習</footer>
 </div>
+<!--copybtn-->
+<style>
+.cpb{font:600 12px/1 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;cursor:pointer;border:1px solid rgba(127,127,127,.55);
+  background:rgba(255,255,255,.92);color:#143D2D;border-radius:4px;padding:5px 9px;white-space:nowrap}
+.cpb:hover{background:#fff;border-color:#87374B;color:#87374B}
+.cpb.ok{background:#e4f2e8;border-color:#2f7d4f;color:#2f7d4f}
+pre>.cpb{position:absolute;top:6px;right:6px;z-index:2;opacity:.9}
+code+.cpb{margin-left:6px;padding:2px 7px;font-size:11px;vertical-align:middle}
+@media print{.cpb{display:none}}
+</style>
+<script>
+(function () {
+  // 只幫「指令」和「設定檔內容」加複製鈕；範例輸出（有 ✓、═ 等符號）不加。
+  var CMD = /^((npm |cd |copy |irm |python |pwsh |winget |\$env:|"sk-)|codex( [A-Za-z-]+)*$)/;
+  var ENV = /^[A-Z][A-Z0-9_]*=/;
+  function isCommandBlock(text) {
+    var lines = text.split('\n').map(function (l) { return l.trim(); })
+      .filter(function (l) { return l && l.charAt(0) !== '#'; });
+    if (!lines.length || /[✓✔✗═─]/.test(text)) return false;
+    return lines.every(function (l) { return CMD.test(l) || ENV.test(l); });
+  }
+  function fallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function flash(btn, ok) {
+    var old = btn.getAttribute('data-label');
+    btn.textContent = ok ? '已複製 ✓' : '請手動複製';
+    btn.className = 'cpb' + (ok ? ' ok' : '');
+    setTimeout(function () { btn.textContent = old; btn.className = 'cpb'; }, 1600);
+  }
+  function makeButton(getText) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'cpb'; b.textContent = '複製'; b.setAttribute('data-label', '複製');
+    b.addEventListener('click', function () {
+      var text = getText();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { flash(b, true); },
+          function () { flash(b, fallback(text)); });
+      } else { flash(b, fallback(text)); }
+    });
+    return b;
+  }
+  function init() {
+    Array.prototype.forEach.call(document.querySelectorAll('pre'), function (pre) {
+      if (pre.querySelector('.cpb')) return;
+      var text = pre.textContent.replace(/\s+$/, '');
+      if (!isCommandBlock(text)) return;
+      pre.style.position = 'relative';
+      pre.appendChild(makeButton(function () {
+        var c = pre.cloneNode(true), x = c.querySelector('.cpb');
+        if (x) x.parentNode.removeChild(x);
+        return c.textContent.replace(/\s+$/, '');
+      }));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('code'), function (code) {
+      if (code.closest('pre') || (code.nextSibling && code.nextSibling.className === 'cpb')) return;
+      var t = code.textContent.trim();
+      if (!CMD.test(t) || t.indexOf('\n') >= 0) return;
+      code.parentNode.insertBefore(makeButton(function () { return t; }), code.nextSibling);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
 </body>
 </html>

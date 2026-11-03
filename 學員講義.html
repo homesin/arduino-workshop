@@ -327,12 +327,23 @@ footer{
       <tr><td><b>杜邦線</b>（母對公、公對公）</td><td>母對公：模組接板子；公對公：Uno 的 5V、GND 接到麵包板電源軌</td></tr>
     </tbody>
   </table></div>
+  <div class="warn">
+    <h4>套件是借用的</h4>
+    <p style="margin:0 0 8px">Arduino 套件（Uno、四個感測器、麵包板、杜邦線）是學校借給你的，<b>不是送的</b>。</p>
+    <ul style="margin:0 0 8px;padding-left:20px">
+      <li><b>登記：</b>領取時登記姓名、電話。</li>
+      <li><b>使用：</b>上課用，課後可以借回去練習。</li>
+      <li><b>歸還：</b>原則上上課後<b>一個月內</b>（仍在學期內）歸還給<b>營繕組 陳鴻翔技正</b>，電話 <b>05-2717131</b>。</li>
+      <li><b>有問題：</b>寄信到 <b>homeshin@mail.ncyu.edu.tw</b>。</li>
+    </ul>
+    <p style="margin:0">沒有板子的時候，軟體部分（<code>npm run mock</code> 模擬模式、ThingSpeak、ntfy）一樣可以在自己的電腦練習。</p>
+  </div>
 </section>
 
 <section>
   <h2><span class="num">§3</span>今天的流程</h2>
   <p class="lede">
-    每一段都以「看得到結果」收尾。時間是預估，落後了先求會動，細節可以回家補 ——
+    每一段都以「看得到結果」收尾。時間是預估，落後了先求會動，細節可以課後補 ——
     講義你帶得走，現場的時間帶不走。
   </p>
 
@@ -548,7 +559,7 @@ NTFY_TOPIC=你自己取的主題名稱</pre>
   <h2><span class="num">§6</span>卡住的時候</h2>
   <p class="lede">照這個順序查：先連接埠，再接線，最後設定。九成的狀況都停在前兩項，先別懷疑雲端服務壞掉。</p>
   <h3>完整的圖文教學頁</h3>
-  <p>每份都是從頭到尾的步驟，上課卡住時、或回家想再做一次都可以查（需要連上網路）。總覽：<a href="https://homesin.github.io/arduino-workshop/guide/" target="_blank" rel="noopener">教學頁總覽</a></p>
+  <p>每份都是從頭到尾的步驟，上課卡住時、或課後在自己的電腦上複習都可以查（需要連上網路）。實體套件是借用的，歸還方式見 §2。總覽：<a href="https://homesin.github.io/arduino-workshop/guide/" target="_blank" rel="noopener">教學頁總覽</a></p>
   <div class="tablewrap"><table>
     <thead><tr><th>教學頁</th><th>查什麼</th></tr></thead>
     <tbody>
@@ -586,13 +597,13 @@ NTFY_TOPIC=你自己取的主題名稱</pre>
 </section>
 
 <section>
-  <h2><span class="num">§7</span>回家可以往哪裡走</h2>
+  <h2><span class="num">§7</span>課後可以往哪裡走</h2>
   <p class="lede">四條路都沿用今天的接線與程式骨架，差別只在多接一個零件或多改幾行。</p>
   <div class="tablewrap"><table>
     <thead><tr><th>方向</th><th>怎麼做</th></tr></thead>
     <tbody>
       <tr><td><b>天暗自動通報</b></td><td>照距離那一段的寫法複製一次，改成光線超過門檻就通知。</td></tr>
-      <tr><td><b>加輸出裝置</b></td><td>加蜂鳴器或 LED，讓裝置自己也會叫（要另外購買）。</td></tr>
+      <tr><td><b>加輸出裝置</b></td><td>加蜂鳴器或 LED，讓裝置自己也會叫（要自己另外購買；借用的套件裡沒有）。</td></tr>
       <tr><td><b>換成問答機器人</b></td><td>改用 LINE 的回覆訊息：免費，代價是要架 webhook。</td></tr>
       <tr><td><b>讓裝置自己上網</b></td><td>換 ESP32 就不必接電腦，但要先過機關 WiFi 那一關。</td></tr>
     </tbody>
@@ -631,5 +642,75 @@ NTFY_TOPIC=你自己取的主題名稱</pre>
     });
   });
   paint();
+})();
+</script>
+<!--copybtn-->
+<style>
+.cpb{font:600 12px/1 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;cursor:pointer;border:1px solid rgba(127,127,127,.55);
+  background:rgba(255,255,255,.92);color:#143D2D;border-radius:4px;padding:5px 9px;white-space:nowrap}
+.cpb:hover{background:#fff;border-color:#87374B;color:#87374B}
+.cpb.ok{background:#e4f2e8;border-color:#2f7d4f;color:#2f7d4f}
+pre>.cpb{position:absolute;top:6px;right:6px;z-index:2;opacity:.9}
+code+.cpb{margin-left:6px;padding:2px 7px;font-size:11px;vertical-align:middle}
+@media print{.cpb{display:none}}
+</style>
+<script>
+(function () {
+  // 只幫「指令」和「設定檔內容」加複製鈕；範例輸出（有 ✓、═ 等符號）不加。
+  var CMD = /^((npm |cd |copy |irm |python |pwsh |winget |\$env:|"sk-)|codex( [A-Za-z-]+)*$)/;
+  var ENV = /^[A-Z][A-Z0-9_]*=/;
+  function isCommandBlock(text) {
+    var lines = text.split('\n').map(function (l) { return l.trim(); })
+      .filter(function (l) { return l && l.charAt(0) !== '#'; });
+    if (!lines.length || /[✓✔✗═─]/.test(text)) return false;
+    return lines.every(function (l) { return CMD.test(l) || ENV.test(l); });
+  }
+  function fallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function flash(btn, ok) {
+    var old = btn.getAttribute('data-label');
+    btn.textContent = ok ? '已複製 ✓' : '請手動複製';
+    btn.className = 'cpb' + (ok ? ' ok' : '');
+    setTimeout(function () { btn.textContent = old; btn.className = 'cpb'; }, 1600);
+  }
+  function makeButton(getText) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'cpb'; b.textContent = '複製'; b.setAttribute('data-label', '複製');
+    b.addEventListener('click', function () {
+      var text = getText();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { flash(b, true); },
+          function () { flash(b, fallback(text)); });
+      } else { flash(b, fallback(text)); }
+    });
+    return b;
+  }
+  function init() {
+    Array.prototype.forEach.call(document.querySelectorAll('pre'), function (pre) {
+      if (pre.querySelector('.cpb')) return;
+      var text = pre.textContent.replace(/\s+$/, '');
+      if (!isCommandBlock(text)) return;
+      pre.style.position = 'relative';
+      pre.appendChild(makeButton(function () {
+        var c = pre.cloneNode(true), x = c.querySelector('.cpb');
+        if (x) x.parentNode.removeChild(x);
+        return c.textContent.replace(/\s+$/, '');
+      }));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('code'), function (code) {
+      if (code.closest('pre') || (code.nextSibling && code.nextSibling.className === 'cpb')) return;
+      var t = code.textContent.trim();
+      if (!CMD.test(t) || t.indexOf('\n') >= 0) return;
+      code.parentNode.insertBefore(makeButton(function () { return t; }), code.nextSibling);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
