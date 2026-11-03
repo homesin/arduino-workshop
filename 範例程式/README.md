@@ -12,7 +12,7 @@
 | `c04d-ldr` | 四 | LM393 光敏，類比輸入與門檻 | AO→A1（DO 不接） |
 | `c05-sensor-node` | 五 | 四個一起讀，不用 `delay`，每秒一行 JSON | 同上全部 |
 
-所有感測器的 VCC→5V、GND→GND（共用麵包板電源軌，見 `接線圖/wiring-5-bought-power.svg`）。
+所有感測器的 VCC 接麵包板紅軌（Uno 5V）、GND 接藍軌（Uno GND），訊號腳直接接 Uno；先搭好電源軌，四個感測器接好後不拆（見 `接線圖/wiring-5-bought-power.svg`）。
 
 ## 需要的函式庫
 

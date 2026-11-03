@@ -9,11 +9,11 @@
  * 需要的函式庫（Arduino IDE → 工具 → 管理程式庫，搜尋安裝）：
  *   SimpleDHT   by Winlin      ← 讀 DHT11，零相依套件
  *
- * 接線（四個感測器共用麵包板電源軌，詳見教材的接線圖）：
- *   DHT11 模組        VCC→5V   GND→GND   DATA→D2
- *   HC-SR501 PIR      VCC→5V   GND→GND   OUT →D3
- *   HC-SR04 超音波    VCC→5V   GND→GND   Trig→D4   Echo→D5
- *   LM393 光敏模組    VCC→5V   GND→GND   AO  →A1   （DO 不接）
+ * 接線（四個感測器VCC 接麵包板紅軌（5V）、GND 接藍軌，訊號腳直接接 Uno）：
+ *   DHT11 模組        VCC→紅軌  GND→藍軌  DATA→D2
+ *   HC-SR501 PIR      VCC→紅軌  GND→藍軌  OUT →D3
+ *   HC-SR04 超音波    VCC→紅軌  GND→藍軌  Trig→D4   Echo→D5
+ *   LM393 光敏模組    VCC→紅軌  GND→藍軌  AO  →A1   （DO 不接）
  *
  * 注意：LM393 光敏模組是「越暗數值越大」。
  */

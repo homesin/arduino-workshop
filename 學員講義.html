@@ -267,7 +267,7 @@ footer{
         <span class="how">打開 <b>homesin.github.io/arduino-workshop</b> 照著做：按 Win 鍵輸入 PowerShell 開啟，
         貼上 <code style="word-break:break-all">irm https://homesin.github.io/arduino-workshop/get.ps1 | iex</code> 按 Enter。
         Arduino IDE、CH340 驅動、Node.js 和課程教材會自動裝好，跳出確認視窗一律按「是」，
-        看到全部完成就好。<b>如果是公務電腦沒有安裝權限，請先跟資訊人員確認。</b>圖文版：<a href="https://homesin.github.io/arduino-workshop/guide/install.html" target="_blank" rel="noopener">一鍵安裝與驗收</a>。</span>
+        看到全部完成就好。<b>如果是學校電腦沒有安裝權限，請先跟老師或助教確認。</b>圖文版：<a href="https://homesin.github.io/arduino-workshop/guide/install.html" target="_blank" rel="noopener">一鍵安裝與驗收</a>。</span>
       </span>
     </label></li>
 
@@ -380,7 +380,7 @@ footer{
       <div class="body">
         <h3>讓板子說話</h3>
         <p>開啟 <code>範例程式\c03b-serial-hello</code>，上傳。接著開<b>工具 → 序列埠監控視窗</b>（Ctrl + Shift + M），
-        右下角速率選 <b>9600</b>。</p>
+        輸入框右邊的速率選單選 <b>9600 baud</b>。</p>
         <p>看到亂碼：幾乎都是速率沒選 9600。之後所有感測器的數字，都是用這個視窗看的。</p>
         <p>另外兩樣新工具，請看簡報：<b>麵包板</b>（哪些孔相通）和<b>杜邦線</b>（公對公、母對公）。</p>
         <div class="checkpoint"><b>檢查點</b><span>序列埠監控視窗出現「你好，我是 Arduino」和一直增加的次數。</span></div>
@@ -395,8 +395,25 @@ footer{
     <div class="step">
       <div class="rail"><b>1:30</b>步驟 1</div>
       <div class="body">
+        <h3>先搭電源軌（只做一次）</h3>
+        <p>Uno 只有一個 5V 孔，四個感測器都要 5V，所以先用麵包板的電源軌分出去。
+        用<b>公對公杜邦線</b>兩條：Uno 的 <b>GND → 藍色（－）電源軌</b>、Uno 的 <b>5V → 紅色（＋）電源軌</b>。
+        接好就留著，後面四個感測器的 VCC、GND 都接到這兩條軌（母對公杜邦線），訊號腳直接接 Uno。</p>
+        <p>四個感測器合計約 90 mA（典型值估算），遠低於 USB 的 500 mA，不需要外接電源。</p>
+        <div class="warn">
+          <h4>先量電源軌</h4>
+          <p>有些 400 孔小麵包板的電源軌在<b>中間是斷開的</b>，左右兩半不通。
+          接線前用三用電表量一下兩端是否相通；斷開的話，左右兩半各自接一條 5V 和 GND。
+          接線順序：<b>先接 GND，最後才接 5V</b>，插電前確認紅藍沒有接反。</p>
+        </div>
+        <div class="checkpoint"><b>檢查點</b><span>Uno 的 5V、GND 各有一條線接到麵包板的紅軌、藍軌，沒有接反。</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="rail"><b>1:40</b>步驟 2</div>
+      <div class="body">
         <h3>DHT11 溫濕度</h3>
-        <p>先拔掉 USB 再接線。每個感測器的 VCC 先接 Uno 的 5V、GND 接 GND，訊號腳如下：</p>
+        <p>先拔掉 USB 再接線。VCC 接麵包板<b>紅軌</b>、GND 接<b>藍軌</b>，訊號腳接 Uno，如下（接好不用拆，後面一個接著一個加）：</p>
         <div class="tablewrap"><table><thead><tr><th>感測器腳位</th><th>接到 Uno</th><th>說明</th></tr></thead><tbody><tr><td>DATA</td><td class="pin">D2</td><td>溫濕度資料線</td></tr><tr><td>VCC</td><td class="pin">5V</td><td>電源</td></tr><tr><td>GND</td><td class="pin">GND</td><td>接地</td></tr></tbody></table></div>
         <p><b>針腳順序以模組板上的印字為準</b>（S／DATA、+／VCC、-／GND），不同廠牌排列可能不同。
         上傳 <code>範例程式\c04a-dht11</code>，開序列埠監控視窗。</p>
@@ -405,7 +422,7 @@ footer{
       </div>
     </div>
     <div class="step">
-      <div class="rail"><b>2:00</b>步驟 2</div>
+      <div class="rail"><b>2:05</b>步驟 3</div>
       <div class="body">
         <h3>HC-SR04 超音波</h3>
         <div class="tablewrap"><table><thead><tr><th>感測器腳位</th><th>接到 Uno</th><th>說明</th></tr></thead><tbody><tr><td>Trig</td><td class="pin">D4</td><td>發射</td></tr><tr><td>Echo</td><td class="pin">D5</td><td>接收回波</td></tr><tr><td>VCC</td><td class="pin">5V</td><td>電源</td></tr><tr><td>GND</td><td class="pin">GND</td><td>接地</td></tr></tbody></table></div>
@@ -415,7 +432,7 @@ footer{
       </div>
     </div>
     <div class="step">
-      <div class="rail"><b>2:30</b>步驟 3</div>
+      <div class="rail"><b>2:30</b>步驟 4</div>
       <div class="body">
         <h3>HC-SR501 人體紅外線</h3>
         <div class="tablewrap"><table><thead><tr><th>感測器腳位</th><th>接到 Uno</th><th>說明</th></tr></thead><tbody><tr><td>OUT</td><td class="pin">D3</td><td>有人／沒人</td></tr><tr><td>VCC</td><td class="pin">5V</td><td>電源</td></tr><tr><td>GND</td><td class="pin">GND</td><td>接地</td></tr></tbody></table></div>
@@ -425,7 +442,7 @@ footer{
       </div>
     </div>
     <div class="step">
-      <div class="rail"><b>3:00</b>步驟 4</div>
+      <div class="rail"><b>3:00</b>步驟 5</div>
       <div class="body">
         <h3>LM393 光敏模組</h3>
         <div class="tablewrap"><table><thead><tr><th>感測器腳位</th><th>接到 Uno</th><th>說明</th></tr></thead><tbody><tr><td>AO</td><td class="pin">A1</td><td>類比輸出（讀數值）</td></tr><tr><td>DO</td><td class="pin">不接</td><td>本次不用</td></tr><tr><td>GND</td><td class="pin">GND</td><td>接地</td></tr><tr><td>VCC</td><td class="pin">5V</td><td>電源</td></tr></tbody></table></div>
@@ -443,23 +460,8 @@ footer{
     <div class="step">
       <div class="rail"><b>3:30</b>步驟 1</div>
       <div class="body">
-        <h3>接電源軌</h3>
-        <p>Uno 只有一個 5V 孔，四個感測器都要 5V，所以要用麵包板的電源軌分出去：
-        用<b>公對公杜邦線</b>把 Uno 的 5V 接到紅色電源軌、GND 接到藍色電源軌；
-        四個感測器的 VCC、GND 都改接到電源軌（母對公杜邦線）。訊號腳維持原本接法。</p>
-        <p>四個感測器合計約 90 mA（典型值估算），遠低於 USB 的 500 mA，不需要外接電源。</p>
-        <div class="warn">
-          <h4>先量電源軌</h4>
-          <p>有些 400 孔小麵包板的電源軌在<b>中間是斷開的</b>，左右兩半不通。
-          接線前用三用電表量一下兩端是否相通；斷開的話，左右兩半各自接一條 5V 和 GND。</p>
-        </div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="rail"><b>3:50</b>步驟 2</div>
-      <div class="body">
         <h3>上傳整合程式，逐一驗收</h3>
-        <p>上傳 <code>範例程式\c05-sensor-node</code>，開序列埠監控視窗，會看到每秒一行：</p>
+        <p>四個感測器在第四章已經全部接好（共用紅軌、藍軌），不用重接。上傳 <code>範例程式\c05-sensor-node</code>，開序列埠監控視窗，會看到每秒一行：</p>
 <pre>{"t":31,"h":43,"pir":0,"dist":23,"light":280}</pre>
         <p>五個欄位依序是：溫度、濕度、人體（1 有人）、距離（公分，-1 量不到）、光線（越暗越大）。
         逐一確認：呵氣 → <code>h</code> 變大；手靠近超音波 → <code>dist</code> 變小；在人體紅外線前揮手 → <code>pir</code> 變 1；遮住光敏 → <code>light</code> 變大。</p>
@@ -552,6 +554,7 @@ NTFY_TOPIC=你自己取的主題名稱</pre>
     <tbody>
       <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/install.html" target="_blank" rel="noopener"><b>一鍵安裝與驗收</b></a></td><td>安裝結果表怎麼看、沒全綠怎麼辦</td></tr>
       <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/upload.html" target="_blank" rel="noopener"><b>Arduino 第一次上傳與序列埠</b></a></td><td>選板子、上傳、看數字、亂碼</td></tr>
+      <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/sketch.html" target="_blank" rel="noopener"><b>開啟範例程式與安裝函式庫</b></a></td><td>File → Open、換程式流程、SimpleDHT</td></tr>
       <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/wiring.html" target="_blank" rel="noopener"><b>麵包板與四感測器接線</b></a></td><td>電源軌、每支腳位、逐個驗證</td></tr>
       <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/cloud.html" target="_blank" rel="noopener"><b>雲端實作啟動</b></a></td><td>.env、npm start、儀表板</td></tr>
       <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/thingspeak-signup.html" target="_blank" rel="noopener"><b>ThingSpeak 註冊教學</b></a></td><td>註冊、建頻道、Write API Key</td></tr>
