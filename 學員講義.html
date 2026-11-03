@@ -479,13 +479,13 @@ footer{
       <div class="body">
         <h3>讓電腦讀到資料</h3>
         <p><b>先關掉序列埠監控視窗</b>（一個連接埠同時只能被一個程式使用）。
-        在教材的 <code>雲端實作</code> 資料夾開終端機：</p>
+        用 <b>VS Code</b>（File → Open Folder 開桌面的 <code>arduino-workshop</code>，按 Ctrl + <code>`</code> 開終端機），先輸入 <code>cd 雲端實作</code>：</p>
 <pre><span class="c"># 列出連接埠，找出 Arduino 是哪個 COM</span>
 npm run ports
 
 <span class="c"># 複製設定檔範本（Windows）</span>
 copy .env.example .env</pre>
-        <p>用記事本開 <code>.env</code>，把 <code>SERIAL_PORT=COM3</code> 改成你的 COM 編號。</p>
+        <p>在 VS Code 左邊的檔案列表點 <code>.env</code>，把 <code>SERIAL_PORT=COM3</code> 改成你的 COM 編號，按 <b>Ctrl + S</b> 存檔。<b>copy 只做一次</b>：<code>.env</code> 已經存在時，再 copy 會直接蓋掉你填好的內容。</p>
       </div>
     </div>
     <div class="step">
@@ -555,6 +555,7 @@ NTFY_TOPIC=你自己取的主題名稱</pre>
       <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/install.html" target="_blank" rel="noopener"><b>一鍵安裝與驗收</b></a></td><td>安裝結果表怎麼看、沒全綠怎麼辦</td></tr>
       <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/upload.html" target="_blank" rel="noopener"><b>Arduino 第一次上傳與序列埠</b></a></td><td>選板子、上傳、看數字、亂碼</td></tr>
       <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/sketch.html" target="_blank" rel="noopener"><b>開啟範例程式與安裝函式庫</b></a></td><td>File → Open、換程式流程、SimpleDHT</td></tr>
+      <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/vscode.html" target="_blank" rel="noopener"><b>用 VS Code 開專案、終端機、問 AI</b></a></td><td>開資料夾、改 .env、終端機、一鍵上傳、Codex 助教</td></tr>
       <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/wiring.html" target="_blank" rel="noopener"><b>麵包板與四感測器接線</b></a></td><td>電源軌、每支腳位、逐個驗證</td></tr>
       <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/cloud.html" target="_blank" rel="noopener"><b>雲端實作啟動</b></a></td><td>.env、npm start、儀表板</td></tr>
       <tr><td><a href="https://homesin.github.io/arduino-workshop/guide/thingspeak-signup.html" target="_blank" rel="noopener"><b>ThingSpeak 註冊教學</b></a></td><td>註冊、建頻道、Write API Key</td></tr>
