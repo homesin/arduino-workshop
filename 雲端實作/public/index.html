@@ -109,7 +109,7 @@
 
   <section class="card">
     <h2>異常偵測</h2>
-    <p class="sub">觸發時會發 LINE 通知</p>
+    <p class="sub">觸發時會發手機通知（ntfy）</p>
     <div class="status-row">
       <div class="status" id="near" data-on="false">
         <span class="icon">📏</span>
@@ -131,18 +131,19 @@
   </section>
 
   <section class="card" id="controlCard">
-    <h2>控制</h2>
-    <p class="sub">指令會經由 Node.js 寫回 Arduino 的序列埠</p>
-    <div class="ctrl-row">
+    <h2>感測數值</h2>
+    <p class="sub">距離、光線的最新讀值</p>
+    <!-- 舊版的控制區（測試警報、消音、水位門檻）：本次硬體沒有對應的東西，先隱藏，程式碼保留 -->
+    <div class="ctrl-row" style="display:none">
       <button class="btn" id="btnTest">測試警報</button>
       <button class="btn danger" id="btnMute" aria-pressed="false">消音</button>
     </div>
-    <div class="slider">
+    <div class="slider" style="display:none">
       <label for="waterRange">水位門檻</label>
       <input type="range" id="waterRange" min="0" max="1023" step="10" value="300">
       <b id="waterVal">300</b>
     </div>
-    <p class="sub" id="cmdLog" style="margin-top:14px">尚未送出任何指令。</p>
+    <p class="sub" id="cmdLog" style="margin-top:14px;display:none">尚未送出任何指令。</p>
     <dl class="extra" id="extraStats" hidden></dl>
   </section>
 
@@ -292,7 +293,7 @@ function addEvent(ev) {
   const placeholder = ul.querySelector('.muted');
   if (placeholder) ul.innerHTML = '';
   const li = document.createElement('li');
-  const note = ev.note ? '（' + ev.note + '）' : ev.delivered ? '（已送出 LINE）' : '';
+  const note = ev.note ? '（' + ev.note + '）' : ev.delivered ? '（已送出）' : '';
   li.innerHTML = '<time>' + fmtTime(ev.at) + '</time><span>' + ev.text + ' ' + note + '</span>';
   ul.prepend(li);
   while (ul.children.length > 20) ul.lastElementChild.remove();

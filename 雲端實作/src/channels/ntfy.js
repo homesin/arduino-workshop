@@ -36,7 +36,7 @@ export function ntfyChannel() {
     },
 
     explain: (status) => {
-      if (status === 429) return '429 = 超過頻率限制。免費版每日 250 則，且每 5 秒才補一則額度。';
+      if (status === 429) return '429 = 超過 ntfy 公開伺服器的頻率限制（數字由 ntfy 決定，可能調整）。稍等一兩分鐘再試，教室裡全班同時測也可能一起被擋。';
       if (status === 403) return '403 = 這個主題被保護起來了，需要帶存取權杖。';
       return '';
     },

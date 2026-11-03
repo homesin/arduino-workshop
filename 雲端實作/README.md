@@ -150,7 +150,7 @@ npm start
 
 | 通道 | 前置作業 | 免費額度 | 要填什麼 |
 |---|---|---|---|
-| **ntfy** | **完全不用註冊** | 250 則/天 | `NTFY_TOPIC` |
+| **ntfy** | **完全不用註冊** | 有頻率限制（數字由 ntfy 決定，可能調整） | `NTFY_TOPIC` |
 | **Discord** | 建 webhook，3 分鐘 | 30 則/分鐘/webhook | `DISCORD_WEBHOOK_URL` |
 | **Telegram** | 跟 @BotFather 對話 | 幾乎無限 | `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` |
 | **Slack** | Incoming webhook | 免費 | `SLACK_WEBHOOK_URL` |
