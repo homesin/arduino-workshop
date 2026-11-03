@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>課後練習：四個延伸題</title>
+<style>
+  :root{--bg:#E9EEE8;--ink:#143D2D;--accent:#87374B;--card:#fff;--line:#c9d3c8;--muted:#4a6358}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.75;font-size:17px}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+  header h1{font-size:2rem;margin:0 0 6px}
+  header p{margin:0;color:var(--muted)}
+  .toc{background:var(--card);border:1px solid var(--line);padding:14px 20px;margin:24px 0}
+  .toc b{display:block;margin-bottom:4px}
+  .toc ol{margin:0;padding-left:22px}
+  .toc a{color:var(--ink)}
+  section.step{background:var(--card);border:1px solid var(--line);margin:24px 0;padding:22px 24px}
+  .step h2{margin:0 0 12px;font-size:1.3rem;display:flex;align-items:center;gap:12px}
+  .num{flex:none;width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;
+    display:grid;place-items:center;font-weight:700}
+  .step p{margin:8px 0}
+  code{background:#eef2ec;padding:1px 6px;font-family:Consolas,monospace}
+  pre{background:#143D2D;color:#E8F0E8;padding:12px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:.95rem;margin:10px 0}
+  .note,.warn,.check{margin:14px 0;padding:10px 14px;border-left:5px solid}
+  .note{border-color:var(--ink);background:#eef2ec}
+  .warn{border-color:var(--accent);background:#f6e9ec}
+  .check{border-color:#2f7d4f;background:#e4f2e8}
+  .note b,.warn b,.check b{margin-right:6px}
+  table{border-collapse:collapse;margin:10px 0;width:100%}
+  th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+  th{background:#eef2ec}
+  a{color:var(--accent)}
+  footer{margin-top:32px;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>課後練習：四個延伸題</h1>
+    <p>沿用上課寫好的雲端程式，改幾行就能做出新功能。四題由簡單到進階，<b>題 1、2 不用板子</b>（模擬模式就能驗證）。</p>
+  </header>
+
+  <nav class="toc">
+    <b>練習題</b>
+    <ol>
+      <li><a href="#e1">天暗自動通報</a></li>
+      <li><a href="#e2">兩個條件一起判斷</a></li>
+      <li><a href="#e3">加上 LINE 通知</a></li>
+      <li><a href="#e4">分享你的圖表</a></li>
+    </ol>
+  </nav>
+
+  <div class="note"><b>開始之前：</b>四題都要先完成上課的雲端實作（<a href="cloud.html">雲端實作啟動</a>），也就是 <code>雲端實作</code> 資料夾裡的 <code>npm run mock</code> 跑得起來。
+    改程式用 VS Code（<a href="vscode.html">VS Code 教學</a>）。改壞了不用怕：把 <code>src\index.js</code> 裡你新增的那幾行刪掉就回到原樣。</div>
+
+  <section class="step" id="e1">
+    <h2><span class="num">1</span>天暗自動通報</h2>
+    <p>上課的程式只會在「有東西靠近」和「有人經過」時通知。照同樣的寫法，再加一條：<b>光線太暗就通知</b>。光敏模組的數字<b>越大越暗</b>。</p>
+    <ol>
+      <li>用 VS Code 開 <code>雲端實作\src\index.js</code>，找到這一行：<pre>  if (reading.pir === 1) {</pre></li>
+      <li>在它的<b>上面</b>貼上這一段：
+<pre>  // 練習 1：天暗通報（light 越大越暗；400 只是範例，要換成你量到的值）
+  if (reading.light > 400) {
+    await fireAlert('dark', `🌙 天暗了\n光線 ${reading.light}（門檻 400）\n時間 ${stamp()}`);
+  }</pre></li>
+      <li>存檔（Ctrl + S），終端機進到 <code>雲端實作</code>，先停掉舊的（Ctrl + C），再執行：<pre>npm run mock</pre></li>
+    </ol>
+    <div class="warn"><b>模擬模式的光線只在 280～300 之間跳：</b>門檻 400 永遠不會觸發。要看到效果，先把 400 暫時改成 <code>290</code>，終端機就會每隔幾秒印出「天暗了」。確認有效後再改回自己量到的值。</div>
+    <div class="note"><b>真實的門檻怎麼訂：</b>接上板子，跑 <code>npm start</code>，看儀表板上「光線」：平常的數字、用手遮住的數字，取中間值（簡報第四章光敏那一組有算法）。</div>
+    <div class="note"><b>為什麼不會一直響：</b>同一種警報有冷卻時間（<code>.env</code> 的 <code>ALERT_COOLDOWN_SEC</code>，預設 60 秒），一分鐘內不會重複通知。</div>
+    <div class="check"><b>檢查點：</b>終端機出現 <code>[LINE 預演] 若已設定憑證，會送出：🌙 天暗了</code>（已填 ntfy 主題的話，手機也會收到）。「LINE 預演」是程式在說：沒有設定 LINE，所以只印出來、沒有真的送。</div>
+  </section>
+
+  <section class="step" id="e2">
+    <h2><span class="num">2</span>兩個條件一起判斷</h2>
+    <p>只要「有人經過」就通知，白天也會響。改成<b>天暗而且有人</b>才通知：用 <code>&amp;&amp;</code>（而且）把兩個條件接起來。</p>
+    <ol>
+      <li>在 <code>src\index.js</code> 練習 1 的下面（<code>if (reading.pir === 1) {</code> 的上面）再貼一段：
+<pre>  // 練習 2：天暗而且有人，才通知
+  if (reading.pir === 1 &amp;&amp; reading.light &gt; 400) {
+    await fireAlert('night-pir', `🌙🚶 天暗了還有人\n光線 ${reading.light}\n時間 ${stamp()}`);
+  }</pre></li>
+      <li>一樣把 <code>400</code> 暫時改成 <code>290</code>，執行 <code>npm run mock</code>。模擬資料大約每 25 秒有一次「有人」，等一下就會看到。</li>
+    </ol>
+    <div class="note"><b>想只留這一條：</b>把原本的 <code>if (reading.pir === 1) {…}</code> 整段刪掉或前面加 <code>//</code> 變成註解，這樣白天有人經過就不會通知了。</div>
+    <div class="check"><b>檢查點：</b>印出「天暗了還有人」；沒有「有人」的那幾秒，只有練習 1 的「天暗了」。</div>
+  </section>
+
+  <section class="step" id="e3">
+    <h2><span class="num">3</span>加上 LINE 通知</h2>
+    <p>程式已經寫好 LINE 通知，只差帳號和設定。這一題要自己申請 LINE 官方帳號，大約 15 分鐘。</p>
+    <ol>
+      <li>到 <a href="https://developers.line.biz" target="_blank" rel="noopener">developers.line.biz</a>，用 LINE 帳號登入，建立一個 <b>Messaging API</b> channel（會一併建立 LINE 官方帳號）。</li>
+      <li>進入該 channel 的 <b>Messaging API</b> 分頁，最下面 <b>Channel access token (long-lived)</b> 按 <b>Issue</b>，複製那一長串。</li>
+      <li>用手機掃同一頁的 QR Code，<b>把自己的官方帳號加為好友</b>（沒加好友就收不到）。</li>
+      <li>用 VS Code 開 <code>雲端實作\.env</code>，加上這一行（貼上你的 token）：<pre>LINE_CHANNEL_ACCESS_TOKEN=貼上你的token</pre></li>
+      <li>找到 <code>NOTIFY_CHANNELS=ntfy</code> 這一行，<b>改成</b>：<pre>NOTIFY_CHANNELS=ntfy,line</pre>
+        這行是「只送哪幾家」的過濾器，不改的話 LINE 會被擋掉，什麼都收不到。</li>
+      <li>存檔，終端機執行 <code>npm run mock</code>，等一則警報，手機 LINE 就會收到。</li>
+    </ol>
+    <div class="warn"><b>額度要看清楚：</b>免費的「輕用量」方案每月 200 則，而且<b>群發給 N 個好友會扣 N 則</b>。所以請用自己申請的帳號、只加自己一個人好友；也不要一直重啟測試。程式內建每天最多送 20 則的保險（<code>LINE_DAILY_LIMIT</code>）。</div>
+    <div class="warn"><b>Token 等同密碼：</b>不要貼在群組、不要截圖、不要貼給 AI。LINE 官網的畫面與按鈕名稱可能改版，以官網現況為準。</div>
+    <div class="note"><b>不需要架 webhook：</b>這裡只是往外「送」通知，不需要對外開放任何網址。要做「你傳訊息、機器人回覆」的問答機器人才需要 webhook，那是更進階的題目，這次不涵蓋。</div>
+    <div class="note"><b>網路上教學寫的 LINE Notify 已經停止服務</b>（2025-03-31）。看到「LINE Notify 權杖」的教學都不要照做，要用本頁的 Messaging API。</div>
+    <div class="check"><b>檢查點：</b>終端機開場橫幅有一行「警報通知　✔ 已啟用　LINE」；警報出現時終端機寫「LINE 已送出：…」，手機 LINE 收到訊息。</div>
+  </section>
+
+  <section class="step" id="e4">
+    <h2><span class="num">4</span>分享你的圖表</h2>
+    <p>把上課做的 ThingSpeak 圖表，變成一個網址，傳給朋友就能看，對方<b>不用註冊、不用登入</b>。</p>
+    <ol>
+      <li>照 <a href="thingspeak-chart.html#s4">ThingSpeak 看圖表與分享 · 步驟 4「公開檢視與分享網址」</a> 把頻道設成公開（Sharing 分頁 → Share channel view with everyone）。</li>
+      <li>複製頻道的公開網址，傳給朋友。</li>
+      <li>確認資料有持續進來：板子或 <code>npm run mock</code> 要一直開著，圖表才會更新。</li>
+    </ol>
+    <div class="note"><b>別人只能看，不能亂寫：</b>公開的只是「看圖表」的權限，要往頻道寫資料一定要有 Write API Key。所以<b>Write API Key 不要一起傳出去</b>，只傳網址。</div>
+    <div class="note"><b>免費版的限制：</b>每 15 秒最多一筆、每年 300 萬則、僅限非商用。</div>
+    <div class="check"><b>檢查點：</b>用手機（沒登入 ThingSpeak 的瀏覽器）打開網址，看得到圖表。</div>
+  </section>
+
+  <footer>115.11.14 · 嘉義巡禮 · Arduino 實作</footer>
+</div>
+<!--copybtn-->
+<style>
+.cpb{font:600 12px/1 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;cursor:pointer;border:1px solid rgba(127,127,127,.55);
+  background:rgba(255,255,255,.92);color:#143D2D;border-radius:4px;padding:5px 9px;white-space:nowrap}
+.cpb:hover{background:#fff;border-color:#87374B;color:#87374B}
+.cpb.ok{background:#e4f2e8;border-color:#2f7d4f;color:#2f7d4f}
+pre>.cpb{position:absolute;top:6px;right:6px;z-index:2;opacity:.9}
+code+.cpb{margin-left:6px;padding:2px 7px;font-size:11px;vertical-align:middle}
+@media print{.cpb{display:none}}
+</style>
+<script>
+(function () {
+  // 只幫「指令」和「設定檔內容」加複製鈕；範例輸出（有 ✓、═ 等符號）不加。
+  var CMD = /^((npm |cd |copy |irm |python |pwsh |winget |\$env:|"sk-)|codex( [A-Za-z-]+)*$)/;
+  var ENV = /^[A-Z][A-Z0-9_]*=/;
+  function isCommandBlock(text) {
+    var lines = text.split('\n').map(function (l) { return l.trim(); })
+      .filter(function (l) { return l && l.charAt(0) !== '#'; });
+    if (!lines.length || /[✓✔✗═─]/.test(text)) return false;
+    return lines.every(function (l) { return CMD.test(l) || ENV.test(l); });
+  }
+  function fallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function flash(btn, ok) {
+    var old = btn.getAttribute('data-label');
+    btn.textContent = ok ? '已複製 ✓' : '請手動複製';
+    btn.className = 'cpb' + (ok ? ' ok' : '');
+    setTimeout(function () { btn.textContent = old; btn.className = 'cpb'; }, 1600);
+  }
+  function makeButton(getText) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'cpb'; b.textContent = '複製'; b.setAttribute('data-label', '複製');
+    b.addEventListener('click', function () {
+      var text = getText();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { flash(b, true); },
+          function () { flash(b, fallback(text)); });
+      } else { flash(b, fallback(text)); }
+    });
+    return b;
+  }
+  function init() {
+    Array.prototype.forEach.call(document.querySelectorAll('pre'), function (pre) {
+      if (pre.querySelector('.cpb')) return;
+      var text = pre.textContent.replace(/\s+$/, '');
+      if (!isCommandBlock(text)) return;
+      pre.style.position = 'relative';
+      pre.appendChild(makeButton(function () {
+        var c = pre.cloneNode(true), x = c.querySelector('.cpb');
+        if (x) x.parentNode.removeChild(x);
+        return c.textContent.replace(/\s+$/, '');
+      }));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('code'), function (code) {
+      if (code.closest('pre') || (code.nextSibling && code.nextSibling.className === 'cpb')) return;
+      var t = code.textContent.trim();
+      if (!CMD.test(t) || t.indexOf('\n') >= 0) return;
+      code.parentNode.insertBefore(makeButton(function () { return t; }), code.nextSibling);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+</body>
+</html>
