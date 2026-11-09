@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>整合版上傳與驗收（c05）</title>
+<style>
+  :root{
+    --bg:#E9EEE8; --ink:#143D2D; --accent:#87374B; --card:#fff; --line:#c9d3c8; --muted:#4a6358;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.75;font-size:17px}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+  header h1{font-size:2rem;margin:0 0 6px}
+  header p{margin:0;color:var(--muted)}
+  .toc{background:var(--card);border:1px solid var(--line);padding:14px 20px;margin:24px 0}
+  .toc b{display:block;margin-bottom:4px}
+  .toc ol{margin:0;padding-left:22px}
+  .toc a{color:var(--ink)}
+  section.step{background:var(--card);border:1px solid var(--line);margin:24px 0;padding:22px 24px}
+  .step h2{margin:0 0 12px;font-size:1.3rem;display:flex;align-items:center;gap:12px}
+  .num{flex:none;width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;
+    display:grid;place-items:center;font-weight:700}
+  .step p{margin:8px 0}
+  figure{margin:14px 0 4px}
+  figure img{display:block;width:100%;height:auto;border:1px solid var(--line)}
+  figcaption{font-size:.9rem;color:var(--muted);margin-top:6px}
+  code{background:#eef2ec;padding:1px 6px;font-family:Consolas,monospace}
+  pre{background:#143D2D;color:#E8F0E8;padding:12px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:.95rem;margin:10px 0}
+  .note,.warn,.check{margin:14px 0;padding:10px 14px;border-left:5px solid}
+  .note{border-color:var(--ink);background:#eef2ec}
+  .warn{border-color:var(--accent);background:#f6e9ec}
+  .check{border-color:#2f7d4f;background:#e4f2e8}
+  .note b,.warn b,.check b{margin-right:6px}
+  table{border-collapse:collapse;margin:10px 0;width:100%}
+  th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+  th{background:#eef2ec}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .cols>div{border:1px solid var(--line);padding:4px 16px 12px;background:#fafcf9}
+  .cols h3{margin:10px 0 4px;font-size:1.05rem}
+  @media(max-width:640px){.cols{grid-template-columns:1fr}}
+  footer{margin-top:32px;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body><style>.gnav{max-width:860px;margin:0 auto;padding:10px 16px;font:15px/1.6 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}.gnav a{color:#87374B;text-decoration:none;font-weight:700}.gnav a:hover{text-decoration:underline}.gnav.bottom{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;border-top:1px solid #c9d3c8;padding:16px 16px 40px;color:#143D2D}.gnav.bottom span{flex:1 1 100%;color:#4a6358}</style><div class="gnav"><a href="index.html">← 全部教學頁</a></div>
+<div class="wrap">
+  <header>
+    <h1>整合版上傳與驗收（c05）</h1>
+    <p>四個感測器一起讀、每秒送出一行 JSON：怎麼上傳、怎麼看、怎麼確認四個欄位都會變。</p>
+  </header>
+  <nav class="toc"><b>步驟</b><ol>
+    <li><a href="#s1">開始前：接線要全部接好</a></li>
+    <li><a href="#s2">開啟並上傳 c05-sensor-node</a></li>
+    <li><a href="#s3">看懂序列埠的那一行</a></li>
+    <li><a href="#s4">逐一驗收：四個欄位都會變</a></li>
+    <li><a href="#s5">程式在做什麼（millis 與事件）</a></li>
+    <li><a href="#s6">常見錯誤</a></li>
+  </ol></nav>
+  <div class="note"><b>前提：</b>四個感測器都照 <a href="wiring.html">麵包板與四感測器接線</a> 接好，VCC 接紅軌、GND 接藍軌。
+    不知道怎麼開檔、上傳，先看 <a href="sketch.html">開啟範例程式與安裝函式庫</a>。</div>
+
+  <section class="step" id="s1">
+    <h2><span class="num">1</span>開始前：接線要全部接好</h2>
+    <p>整合版把前面四支程式合在一起，所以<b>四個感測器要同時接著</b>，腳位和第四章完全一樣，不用重接：</p>
+    <table>
+      <tr><th>感測器</th><th>訊號腳</th><th>電源</th></tr>
+      <tr><td>DHT11</td><td>DATA → D2</td><td rowspan="4">VCC → 紅軌（5V）<br>GND → 藍軌</td></tr>
+      <tr><td>HC-SR501（人體紅外線）</td><td>OUT → D3</td></tr>
+      <tr><td>HC-SR04（超音波）</td><td>Trig → D4、Echo → D5</td></tr>
+      <tr><td>LM393（光敏）</td><td>AO → A1（DO 不接）</td></tr>
+    </table>
+    <div class="warn"><b>接線前先拔掉 USB：</b>接好、檢查完再插回去。</div>
+  </section>
+
+  <section class="step" id="s2">
+    <h2><span class="num">2</span>開啟並上傳 c05-sensor-node</h2>
+    <ol>
+      <li><b>先關掉序列埠監控視窗</b>（開著會讓上傳失敗）。</li>
+      <li>File → Open（<b>Ctrl + O</b>），走到 <code>桌面 → arduino-workshop → 範例程式 → c05-sensor-node</code>，開啟 <code>c05-sensor-node.ino</code>。</li>
+      <li>確認右上角是 <b>Arduino UNO</b> 和正確的 COM 埠。</li>
+      <li>按左上角 <b>→（Upload）</b>（<b>Ctrl + U</b>），等右下角出現 <b>Done uploading.</b>。</li>
+      <li>按 <b>Ctrl + Shift + M</b> 開序列埠監控視窗，速率選 <b>9600 baud</b>。</li>
+    </ol>
+    <div class="note"><b>需要 SimpleDHT：</b>c05 要讀 DHT11，用到 SimpleDHT 函式庫。一鍵安裝已經裝好；編譯說找不到時，看 <a href="sketch.html">開啟範例程式與安裝函式庫</a> 的步驟 4。</div>
+    <div class="check"><b>檢查點：</b>右下角出現 Done uploading.，監控視窗第一行是 <code># sensor node ready</code>。</div>
+  </section>
+
+  <section class="step" id="s3">
+    <h2><span class="num">3</span>看懂序列埠的那一行</h2>
+    <p>之後<b>每秒一行</b>，長得像這樣（數字會依你的環境不同）：</p>
+    <pre># sensor node ready
+{"t":31,"h":43,"pir":0,"dist":-1,"light":659}
+{"t":31,"h":43,"pir":0,"dist":-1,"light":659}</pre>
+    <table>
+      <tr><th>欄位</th><th>意思</th><th>來自</th></tr>
+      <tr><td><code>t</code></td><td>溫度（°C，整數）</td><td>DHT11</td></tr>
+      <tr><td><code>h</code></td><td>濕度（%，整數）</td><td>DHT11</td></tr>
+      <tr><td><code>pir</code></td><td>1＝有人、0＝沒人</td><td>HC-SR501</td></tr>
+      <tr><td><code>dist</code></td><td>距離（公分）；<b>-1＝沒收到回波</b>（前方太空曠、超出量程，或沒接好）</td><td>HC-SR04</td></tr>
+      <tr><td><code>light</code></td><td>0～1023，<b>越暗數值越大</b></td><td>LM393</td></tr>
+    </table>
+    <p><code># sensor node ready</code> 那行不是 JSON，只是讓你看到板子活著；第六章的 Node.js 會自動略過它。</p>
+    <div class="note"><b>溫濕度更新比較慢：</b>DHT11 每 2 秒才讀一次，其他每秒都讀。所以 <code>t</code>、<code>h</code> 會連續兩行一樣，是正常的。</div>
+  </section>
+
+  <section class="step" id="s4">
+    <h2><span class="num">4</span>逐一驗收：四個欄位都會變</h2>
+    <p>一個一個動，看對應的欄位有沒有跟著變：</p>
+    <table>
+      <tr><th>你做的事</th><th>應該看到</th></tr>
+      <tr><td>對著 DHT11 呵氣</td><td><code>h</code> 變大（<code>t</code> 可能也略升）</td></tr>
+      <tr><td>手放在超音波前 10～30 公分，慢慢移近移遠</td><td><code>dist</code> 跟著變小、變大</td></tr>
+      <tr><td>在人體紅外線前揮手</td><td><code>pir</code> 變 1，過幾秒自己變回 0</td></tr>
+      <tr><td>用手遮住光敏模組</td><td><code>light</code> 變大</td></tr>
+    </table>
+    <div class="check"><b>檢查點：</b>四個欄位都會動，整合才算成功。某個欄位不動，就是那個感測器還沒接好，看步驟 6。</div>
+    <div class="warn"><b>人體紅外線剛插電要暖機約 1 分鐘：</b>這段時間 <code>pir</code> 讀值不準，先做別的欄位。</div>
+  </section>
+
+  <section class="step" id="s5">
+    <h2><span class="num">5</span>程式在做什麼（millis 與事件）</h2>
+    <p><b>為什麼不用 delay：</b>四個感測器的節奏不同。<code>delay(1000)</code> 會讓整塊板子睡一秒，這一秒內其他感測器都沒人看。整合版改用 <code>millis()</code>：每一圈都很快，只是看一眼時鐘，<b>時間到了才做事</b>。</p>
+    <pre>unsigned long now = millis();           // 開機到現在幾毫秒
+if (now - lastDht >= 2000) {            // 離上次讀 DHT11 超過 2 秒才讀
+  lastDht = now;                        // 記下這次的時間
+}
+if (now - lastSend >= 1000) {           // 每秒送一行
+  lastSend = now;
+}</pre>
+    <p><b>事件：</b>通知不能每一圈都響。範例的做法是只在「剛跨過門檻」的那一刻算一次，例如距離從 30 公分以上變成 30 公分以下；低於門檻的那段時間不重複算。第六章的手機通知就靠這個寫法才不會響個不停。</p>
+  </section>
+
+  <section class="step" id="s6">
+    <h2><span class="num">6</span>常見錯誤</h2>
+    <table>
+      <tr><th>看到什麼</th><th>原因</th><th>怎麼辦</th></tr>
+      <tr><td>只有 <code># sensor node ready</code>，之後<b>一行 JSON 都沒有</b></td><td>DHT11 一次都沒讀成功（程式要讀到溫濕度才開始送）</td><td>檢查 DHT11 的 VCC、GND、DATA → D2，再按板子上的 Reset</td></tr>
+      <tr><td>某個欄位一直不變</td><td>那個感測器的線沒接好，或沒有電</td><td>拔掉其他模組，一個一個單獨測</td></tr>
+      <tr><td>全部都沒反應</td><td>5V 或 GND 沒接到電源軌，或電源軌中間斷開</td><td>量電源軌兩端；斷開的話左右各接一條線（看 <a href="wiring.html">接線教學</a>）</td></tr>
+      <tr><td><code>dist</code> 一直是 -1</td><td>沒收到回波</td><td>先查 VCC 與 Trig、Echo 有沒有接反；前方不要太空曠</td></tr>
+      <tr><td><code>t</code>、<code>h</code> 一直不變</td><td>DHT11 讀取失敗時，程式沿用上一次的值</td><td>檢查 DATA 線是否鬆脫</td></tr>
+      <tr><td>上傳失敗（Access denied、unable to open port）</td><td>序列埠監控視窗還開著，搶同一個連接埠</td><td>關掉監控視窗，再按上傳</td></tr>
+      <tr><td>監控視窗是亂碼</td><td>速率不是 9600</td><td>右上方選 9600 baud</td></tr>
+    </table>
+    <div class="note"><b>下一章要用 Node.js 讀這個連接埠：</b>一個連接埠同時只能被一個程式使用，進入第六章前，記得先關掉序列埠監控視窗。</div>
+    <p>還是不行：<a href="troubleshooting.html">排錯與驗收總表</a>。</p>
+  </section>
+  <footer>115.11.14 · 嘉義巡禮 · Arduino 實作</footer>
+</div>
+<div class="gnav bottom"><span>卡住了？<a href="troubleshooting.html">排錯與驗收總表</a>　·　<a href="index.html">全部教學頁</a></span><a href="wiring.html">← 上一頁：麵包板與四感測器接線</a><a href="vscode.html">下一頁：用 VS Code 開專案、終端機、問 AI →</a></div><!--copybtn-->
+<style>
+.cpb{font:600 12px/1 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;cursor:pointer;border:1px solid rgba(127,127,127,.55);
+  background:rgba(255,255,255,.92);color:#143D2D;border-radius:4px;padding:5px 9px;white-space:nowrap}
+.cpb:hover{background:#fff;border-color:#87374B;color:#87374B}
+.cpb.ok{background:#e4f2e8;border-color:#2f7d4f;color:#2f7d4f}
+pre>.cpb{position:absolute;top:6px;right:6px;z-index:2;opacity:.9}
+code+.cpb{margin-left:6px;padding:2px 7px;font-size:11px;vertical-align:middle}
+@media print{.cpb{display:none}}
+</style>
+<script>
+(function () {
+  // 只幫「指令」和「設定檔內容」加複製鈕；範例輸出（有 ✓、═ 等符號）不加。
+  var CMD = /^((npm |cd |copy |irm |python |pwsh |winget |\$env:|"sk-)|codex( [A-Za-z-]+)*$)/;
+  var ENV = /^[A-Z][A-Z0-9_]*=/;
+  function isCommandBlock(text) {
+    var lines = text.split('\n').map(function (l) { return l.trim(); })
+      .filter(function (l) { return l && l.charAt(0) !== '#'; });
+    if (!lines.length || /[✓✔✗═─]/.test(text)) return false;
+    return lines.every(function (l) { return CMD.test(l) || ENV.test(l); });
+  }
+  function fallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function flash(btn, ok) {
+    var old = btn.getAttribute('data-label');
+    btn.textContent = ok ? '已複製 ✓' : '請手動複製';
+    btn.className = 'cpb' + (ok ? ' ok' : '');
+    setTimeout(function () { btn.textContent = old; btn.className = 'cpb'; }, 1600);
+  }
+  function makeButton(getText) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'cpb'; b.textContent = '複製'; b.setAttribute('data-label', '複製');
+    b.addEventListener('click', function () {
+      var text = getText();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { flash(b, true); },
+          function () { flash(b, fallback(text)); });
+      } else { flash(b, fallback(text)); }
+    });
+    return b;
+  }
+  function init() {
+    Array.prototype.forEach.call(document.querySelectorAll('pre'), function (pre) {
+      if (pre.querySelector('.cpb')) return;
+      var text = pre.textContent.replace(/\s+$/, '');
+      if (!isCommandBlock(text)) return;
+      pre.style.position = 'relative';
+      pre.appendChild(makeButton(function () {
+        var c = pre.cloneNode(true), x = c.querySelector('.cpb');
+        if (x) x.parentNode.removeChild(x);
+        return c.textContent.replace(/\s+$/, '');
+      }));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('code'), function (code) {
+      if (code.closest('pre') || (code.nextSibling && code.nextSibling.className === 'cpb')) return;
+      var t = code.textContent.trim();
+      if (!CMD.test(t) || t.indexOf('\n') >= 0) return;
+      code.parentNode.insertBefore(makeButton(function () { return t; }), code.nextSibling);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+</body>
+</html>
