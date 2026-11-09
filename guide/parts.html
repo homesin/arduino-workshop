@@ -47,14 +47,16 @@
 <div class="wrap">
   <header>
     <h1>想自己買？元件採購指南</h1>
-    <p>課堂用的七樣東西各買什麼規格、大約多少錢、搜尋要打什麼字，以及最常買錯的地方。</p>
+    <p>課堂用的七樣東西各買什麼規格、大約多少錢、搜尋要打什麼字、最常買錯的地方；還有課程以外想玩的元件，以及怎麼請 AI 幫你寫程式測試。</p>
   </header>
   <nav class="toc"><b>內容</b><ol>
     <li><a href="#s1">清單與大約價位</a></li>
     <li><a href="#s2">每樣要看什麼規格</a></li>
     <li><a href="#s3">搜尋關鍵字</a></li>
     <li><a href="#s4">最常買錯的地方</a></li>
-    <li><a href="#s5">買回來之後</a></li>
+    <li><a href="#s5">課程以外還可以買什麼（延伸元件）</a></li>
+    <li><a href="#s6">買回來，請 AI 幫你寫程式測試</a></li>
+    <li><a href="#s7">買回來之後</a></li>
   </ol></nav>
   <div class="note"><b>先說明：</b>這頁只講「買什麼」，不推薦特定賣家，也沒有商品連結（商品頁常會下架或改價）。價位是 2026 年 10 月的大約範圍，各賣家和時間會不同，請當成預算參考。</div>
 
@@ -118,7 +120,52 @@ LM393 光敏電阻 模組
   </section>
 
   <section class="step" id="s5">
-    <h2><span class="num">5</span>買回來之後</h2>
+    <h2><span class="num">5</span>課程以外還可以買什麼（延伸元件）</h2>
+    <p>下面這些課堂<b>沒有用到</b>，但都是 Arduino Uno 能直接玩的入門元件，想延伸時可以自己挑。價位是我估的大約範圍，各賣家差很多，只供預算參考。</p>
+    <table>
+      <tr><th>元件</th><th>可以做什麼</th><th>大約價位</th><th>要注意</th></tr>
+      <tr><td>LED（5 mm）＋電阻 220～330 Ω</td><td>天暗自動亮燈、有人靠近亮燈，是最直接的「執行」</td><td>各約 30～100 元（一包）</td><td><b>LED 一定要串電阻</b>，否則會燒掉 LED 或腳位</td></tr>
+      <tr><td>蜂鳴器（主動式）</td><td>距離太近就嗶嗶響</td><td>約 15～50 元</td><td>買「主動式」最簡單，通電就響；被動式要用程式產生頻率</td></tr>
+      <tr><td>按鈕、旋鈕（可變電阻）</td><td>手動切換模式、調門檻值</td><td>約 10～50 元</td><td>按鈕要處理彈跳，請 AI 用內建上拉寫法</td></tr>
+      <tr><td>伺服馬達 SG90</td><td>感測到東西就轉到某個角度</td><td>約 60～120 元</td><td>馬達吃電流，<b>不要只靠 Uno 的 5V 供多顆</b>；Servo 函式庫會占用 D9、D10 的 PWM</td></tr>
+      <tr><td>OLED 0.96 吋（I2C，SSD1306）</td><td>在板子上直接顯示溫度、距離，不用接電腦</td><td>約 120～250 元</td><td>I2C 用 A4（SDA）、A5（SCL）；要裝顯示函式庫</td></tr>
+      <tr><td>LCD1602（I2C 版）</td><td>同上，顯示兩行文字</td><td>約 100～200 元</td><td>買有 I2C 背板的，腳位少很多</td></tr>
+      <tr><td>即時時鐘 DS3231</td><td>記錄「幾點幾分」發生什麼事</td><td>約 60～150 元</td><td>I2C，和 OLED 可以共用 A4、A5</td></tr>
+      <tr><td>土壤濕度、水位、火焰、氣體（MQ 系列）感測模組</td><td>澆水提醒、積水通報、安全監測</td><td>各約 30～150 元</td><td>MQ 系列需要預熱，讀值是相對值；<b>不能當成安全警報器</b></td></tr>
+      <tr><td>紅外線遙控器組、RFID（RC522）</td><td>遙控切換、刷卡通報</td><td>各約 40～120 元</td><td>RC522 是 3.3V 元件，接錯會燒，請看商品頁的接線</td></tr>
+      <tr><td>步進馬達 28BYJ-48＋ULN2003 驅動板</td><td>轉到指定圈數</td><td>約 80～150 元</td><td>要用驅動板，不能直接接 Uno 腳位</td></tr>
+      <tr><td>ESP32 開發板</td><td>自己連 Wi-Fi，不用接電腦就能把資料送到 ThingSpeak 或 ntfy</td><td>約 200～350 元</td><td>邏輯電壓是 <b>3.3V</b>：HC-SR04 的 Echo 是 5V，要分壓；程式要請 AI 改成 ESP32 版</td></tr>
+      <tr><td>830 孔麵包板、公對母杜邦線、跳線組</td><td>元件變多後比較好排</td><td>各約 50～120 元</td><td>——</td></tr>
+    </table>
+    <div class="warn"><b>安全：</b>不要用繼電器去控制家用 110V／220V 市電，也不要接大電流馬達直接插 Uno。課程範圍內都是 5V 小訊號，延伸時請維持在這個範圍；需要控制電器的專題，請找有電力經驗的人協助。</div>
+  </section>
+
+  <section class="step" id="s6">
+    <h2><span class="num">6</span>買回來，請 AI 幫你寫程式測試</h2>
+    <p>課堂的 VS Code 裡有 AI 助教（Codex），其他 AI 也可以。AI 寫得對不對，關鍵是<b>你給它的資訊夠不夠</b>。把下面這段貼過去，再把【】換成你的內容：</p>
+    <pre>我有一塊 Arduino Uno R3，已經接了這些東西（腳位不要動）：
+DHT11→D2、HC-SR501→D3、HC-SR04 Trig→D4／Echo→D5、LM393 AO→A1，
+VCC 接麵包板紅軌（5V）、GND 接藍軌。
+我新買了【元件名稱與型號】，想做到【你想要的行為】。
+請幫我：
+1. 告訴我這個元件要接 Uno 的哪幾支腳（避開上面用掉的腳位和 D0、D1）。
+2. 寫一支可以直接上傳的 .ino，用 9600 baud 在序列埠印出讀值。
+3. 說明需要安裝哪個函式庫、怎麼安裝。
+4. 列出接線前要注意的電壓或電流限制。</pre>
+    <table>
+      <tr><th>寫程式前先知道</th><th>說明</th></tr>
+      <tr><td>Uno 已用掉的腳位</td><td>D2、D3、D4、D5、A1；D0、D1 留給序列埠，不要接</td></tr>
+      <tr><td>還能用的腳位</td><td>D6～D13、A0、A2、A3；A4、A5 是 I2C（OLED、LCD、時鐘共用）</td></tr>
+      <tr><td>PWM 腳位</td><td>D3、D5、D6、D9、D10、D11</td></tr>
+      <tr><td>互相打架的情況</td><td><code>tone()</code> 會讓 D3、D11 的 PWM 失效；<code>Servo</code> 會讓 D9、D10 的 PWM 失效</td></tr>
+    </table>
+    <div class="check"><b>先確認，再上傳：</b>AI 說的腳位，請你<b>先拔掉 USB、對照商品頁的腳位印字再接線</b>，接好檢查一遍再上傳。AI 常會把腳位或電壓記錯，上傳前多看一眼不會吃虧。</div>
+    <div class="note"><b>程式出錯時：</b>把完整的錯誤訊息（編譯錯誤或序列埠的輸出）貼給 AI，並說明你的接線，通常一兩輪就能改好。卡在課堂已經教過的部分，可以回到 <a href="troubleshooting.html">排錯與驗收總表</a>。</div>
+    <div class="note"><b>想把新感測器的數字也送到儀表板：</b>課程的 Node.js 讀的是一行 JSON，欄位名稱固定。請 AI「保留原本 c05 的欄位、只多加一個欄位」，並先自己在序列埠確認格式沒壞，再接上 Node.js。</div>
+  </section>
+
+  <section class="step" id="s7">
+    <h2><span class="num">7</span>買回來之後</h2>
     <ol>
       <li>用 <a href="install.html">一鍵安裝與驗收</a> 把軟體裝好。</li>
       <li>照 <a href="upload.html">Arduino 第一次上傳與序列埠</a> 上傳第一支程式，確認板子能動。</li>
@@ -127,7 +174,7 @@ LM393 光敏電阻 模組
     </ol>
     <div class="warn"><b>不要照抄別人的金鑰：</b>ThingSpeak 的 Write API Key 和 ntfy 的主題名稱要自己建立，不要用課堂範例或別人貼出來的。</div>
   </section>
-  <footer>價位為 2026 年 10 月的大約範圍，僅供預算參考 · 115.11.14 · 嘉義巡禮 · Arduino 實作</footer>
+  <footer>課程元件價位參考 2026 年 10 月；延伸元件價位為估計，皆僅供預算參考 · 115.11.14 · 嘉義巡禮 · Arduino 實作</footer>
 </div>
 <div class="gnav bottom"><span>卡住了？<a href="troubleshooting.html">排錯與驗收總表</a>　·　<a href="index.html">全部教學頁</a></span><a href="practice.html">← 上一頁：課後練習：四個延伸題</a></div><!--copybtn-->
 <style>
