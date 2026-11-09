@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>想自己買？元件採購指南</title>
+<style>
+  :root{
+    --bg:#E9EEE8; --ink:#143D2D; --accent:#87374B; --card:#fff; --line:#c9d3c8; --muted:#4a6358;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.75;font-size:17px}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+  header h1{font-size:2rem;margin:0 0 6px}
+  header p{margin:0;color:var(--muted)}
+  .toc{background:var(--card);border:1px solid var(--line);padding:14px 20px;margin:24px 0}
+  .toc b{display:block;margin-bottom:4px}
+  .toc ol{margin:0;padding-left:22px}
+  .toc a{color:var(--ink)}
+  section.step{background:var(--card);border:1px solid var(--line);margin:24px 0;padding:22px 24px}
+  .step h2{margin:0 0 12px;font-size:1.3rem;display:flex;align-items:center;gap:12px}
+  .num{flex:none;width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;
+    display:grid;place-items:center;font-weight:700}
+  .step p{margin:8px 0}
+  figure{margin:14px 0 4px}
+  figure img{display:block;width:100%;height:auto;border:1px solid var(--line)}
+  figcaption{font-size:.9rem;color:var(--muted);margin-top:6px}
+  code{background:#eef2ec;padding:1px 6px;font-family:Consolas,monospace}
+  pre{background:#143D2D;color:#E8F0E8;padding:12px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:.95rem;margin:10px 0}
+  .note,.warn,.check{margin:14px 0;padding:10px 14px;border-left:5px solid}
+  .note{border-color:var(--ink);background:#eef2ec}
+  .warn{border-color:var(--accent);background:#f6e9ec}
+  .check{border-color:#2f7d4f;background:#e4f2e8}
+  .note b,.warn b,.check b{margin-right:6px}
+  table{border-collapse:collapse;margin:10px 0;width:100%}
+  th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+  th{background:#eef2ec}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .cols>div{border:1px solid var(--line);padding:4px 16px 12px;background:#fafcf9}
+  .cols h3{margin:10px 0 4px;font-size:1.05rem}
+  @media(max-width:640px){.cols{grid-template-columns:1fr}}
+  footer{margin-top:32px;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body><style>.gnav{max-width:860px;margin:0 auto;padding:10px 16px;font:15px/1.6 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}.gnav a{color:#87374B;text-decoration:none;font-weight:700}.gnav a:hover{text-decoration:underline}.gnav.bottom{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;border-top:1px solid #c9d3c8;padding:16px 16px 40px;color:#143D2D}.gnav.bottom span{flex:1 1 100%;color:#4a6358}</style><div class="gnav"><a href="index.html">← 全部教學頁</a></div>
+<div class="wrap">
+  <header>
+    <h1>想自己買？元件採購指南</h1>
+    <p>課堂用的七樣東西各買什麼規格、大約多少錢、搜尋要打什麼字，以及最常買錯的地方。</p>
+  </header>
+  <nav class="toc"><b>內容</b><ol>
+    <li><a href="#s1">清單與大約價位</a></li>
+    <li><a href="#s2">每樣要看什麼規格</a></li>
+    <li><a href="#s3">搜尋關鍵字</a></li>
+    <li><a href="#s4">最常買錯的地方</a></li>
+    <li><a href="#s5">買回來之後</a></li>
+  </ol></nav>
+  <div class="note"><b>先說明：</b>這頁只講「買什麼」，不推薦特定賣家，也沒有商品連結（商品頁常會下架或改價）。價位是 2026 年 10 月的大約範圍，各賣家和時間會不同，請當成預算參考。</div>
+
+  <section class="step" id="s1">
+    <h2><span class="num">1</span>清單與大約價位</h2>
+    <p>本課程只用到下面七樣，<b>不需要</b> LED、電阻、蜂鳴器、馬達等其他零件：</p>
+    <table>
+      <tr><th>元件</th><th>數量</th><th>用在</th><th>大約價位（台幣，每個或每包）</th></tr>
+      <tr><td>Arduino Uno R3 開發板</td><td>1</td><td>第三章起</td><td>約 200～400 元</td></tr>
+      <tr><td>DHT11 溫濕度模組</td><td>1</td><td>第四章</td><td>約 50～100 元</td></tr>
+      <tr><td>HC-SR04 超音波模組</td><td>1</td><td>第四章</td><td>約 50～100 元</td></tr>
+      <tr><td>HC-SR501 人體紅外線模組</td><td>1</td><td>第四章</td><td>約 40～80 元</td></tr>
+      <tr><td>LM393 光敏電阻模組</td><td>1</td><td>第四章</td><td>約 30～70 元</td></tr>
+      <tr><td>400 孔迷你麵包板</td><td>1</td><td>第四章起</td><td>約 30～80 元</td></tr>
+      <tr><td>杜邦線（母對公，每包約 40 條）</td><td>1 包</td><td>模組接麵包板、Uno</td><td>約 50～100 元</td></tr>
+      <tr><td>杜邦線（公對公，每包約 40 條）</td><td>1 包</td><td>Uno 接電源軌</td><td>約 50～100 元</td></tr>
+    </table>
+    <div class="note"><b>合計：</b>一套大約 <b>500～1,000 元</b>。杜邦線一包有四十條，用不完；公對公只會用到兩條，有的賣家會搭配成套組，可以比較一下。</div>
+  </section>
+
+  <section class="step" id="s2">
+    <h2><span class="num">2</span>每樣要看什麼規格</h2>
+    <table>
+      <tr><th>元件</th><th>商品頁要看到</th><th>腳位（要和課程一致）</th></tr>
+      <tr><td>Uno R3</td><td>Uno R3、USB-B 或 Type-C 傳輸線；相容板或原廠板都可以</td><td>相容板多半用 <b>CH340</b> 晶片，電腦認不到連接埠時要裝驅動，看 <a href="upload.html">Arduino 第一次上傳與序列埠</a></td></tr>
+      <tr><td>DHT11</td><td><b>模組板</b>、數位輸出、3 腳</td><td>VCC、DATA、GND</td></tr>
+      <tr><td>HC-SR04</td><td>超音波測距模組、5V 供電</td><td>VCC、Trig、Echo、GND（共 4 腳）</td></tr>
+      <tr><td>HC-SR501</td><td>人體紅外線感應模組、<b>可調靈敏度／延遲時間</b></td><td>VCC、OUT、GND（共 3 腳）</td></tr>
+      <tr><td>LM393 光敏</td><td>光敏電阻模組、LM393、<b>有類比輸出 AO</b></td><td>VCC、GND、DO、AO；本課程接 <b>AO</b>，DO 不接</td></tr>
+      <tr><td>麵包板</td><td>400 孔（約 83 × 55 mm）</td><td>——</td></tr>
+      <tr><td>杜邦線</td><td>間距 2.54 mm；母對公、公對公各一包</td><td>——</td></tr>
+    </table>
+    <p>接線方式看 <a href="wiring.html">麵包板與四感測器接線</a>；腳位有些模組的排列順序不同，<b>一律以模組板上的印字為準</b>。</p>
+  </section>
+
+  <section class="step" id="s3">
+    <h2><span class="num">3</span>搜尋關鍵字</h2>
+    <p>把下面這些字貼進購物網站的搜尋框：</p>
+    <pre>Arduino Uno R3 CH340
+DHT11 溫濕度感測器 模組
+HC-SR04 超音波 測距模組
+HC-SR501 人體紅外線 感應模組
+LM393 光敏電阻 模組
+400孔 迷你麵包板
+杜邦線 母對公 40P
+杜邦線 公對公 40P</pre>
+    <div class="note"><b>也可以找套件：</b>搜尋「Arduino 入門套件」。套件通常什麼都有，但不一定有 HC-SR501 或 LM393，買前把上面清單逐項對一次，缺的再單買。</div>
+  </section>
+
+  <section class="step" id="s4">
+    <h2><span class="num">4</span>最常買錯的地方</h2>
+    <table>
+      <tr><th>買錯</th><th>會怎樣</th><th>怎麼避免</th></tr>
+      <tr><td>DHT11 買成 <b>DHT22</b>（或 DHT21）</td><td>外觀像，但程式不同，課程範例讀不到</td><td>型號要寫 <b>DHT11</b></td></tr>
+      <tr><td>買到<b>沒有模組板的裸元件</b>（4 腳、沒有電路板）</td><td>需要另外接電阻，超出課程範圍</td><td>找「模組」「帶板」「3 腳」</td></tr>
+      <tr><td>光敏模組<b>沒有 AO 腳</b></td><td>只能讀「亮／暗」兩種，課程要讀 0～1023 的數字</td><td>商品圖看有沒有 AO 這個印字</td></tr>
+      <tr><td>麵包板買成 830 孔</td><td>可以用，但體積大，課堂的接線圖也對不上位置</td><td>認 400 孔</td></tr>
+      <tr><td>杜邦線買成<b>母對母</b></td><td>模組的針腳插得進去，但另一頭接不到麵包板</td><td>要買<b>母對公</b>；Uno 接電源軌另買<b>公對公</b></td></tr>
+      <tr><td>Uno 買成 Mega 或 Nano</td><td>腳位和接法不同，範例不能直接上傳</td><td>板名要寫 <b>Uno R3</b></td></tr>
+    </table>
+  </section>
+
+  <section class="step" id="s5">
+    <h2><span class="num">5</span>買回來之後</h2>
+    <ol>
+      <li>用 <a href="install.html">一鍵安裝與驗收</a> 把軟體裝好。</li>
+      <li>照 <a href="upload.html">Arduino 第一次上傳與序列埠</a> 上傳第一支程式，確認板子能動。</li>
+      <li>用 <a href="wiring.html">麵包板與四感測器接線</a> 一個一個接，每接好一個就看數字。</li>
+      <li>想再往下做，看 <a href="practice.html">課後練習</a>：四個延伸題都不需要多買零件。</li>
+    </ol>
+    <div class="warn"><b>不要照抄別人的金鑰：</b>ThingSpeak 的 Write API Key 和 ntfy 的主題名稱要自己建立，不要用課堂範例或別人貼出來的。</div>
+  </section>
+  <footer>價位為 2026 年 10 月的大約範圍，僅供預算參考 · 115.11.14 · 嘉義巡禮 · Arduino 實作</footer>
+</div>
+<div class="gnav bottom"><span>卡住了？<a href="troubleshooting.html">排錯與驗收總表</a>　·　<a href="index.html">全部教學頁</a></span><a href="practice.html">← 上一頁：課後練習：四個延伸題</a></div><!--copybtn-->
+<style>
+.cpb{font:600 12px/1 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;cursor:pointer;border:1px solid rgba(127,127,127,.55);
+  background:rgba(255,255,255,.92);color:#143D2D;border-radius:4px;padding:5px 9px;white-space:nowrap}
+.cpb:hover{background:#fff;border-color:#87374B;color:#87374B}
+.cpb.ok{background:#e4f2e8;border-color:#2f7d4f;color:#2f7d4f}
+pre>.cpb{position:absolute;top:6px;right:6px;z-index:2;opacity:.9}
+code+.cpb{margin-left:6px;padding:2px 7px;font-size:11px;vertical-align:middle}
+@media print{.cpb{display:none}}
+</style>
+<script>
+(function () {
+  // 只幫「指令」和「設定檔內容」加複製鈕；範例輸出（有 ✓、═ 等符號）不加。
+  var CMD = /^((npm |cd |copy |irm |python |pwsh |winget |\$env:|"sk-)|codex( [A-Za-z-]+)*$)/;
+  var ENV = /^[A-Z][A-Z0-9_]*=/;
+  function isCommandBlock(text) {
+    var lines = text.split('\n').map(function (l) { return l.trim(); })
+      .filter(function (l) { return l && l.charAt(0) !== '#'; });
+    if (!lines.length || /[✓✔✗═─]/.test(text)) return false;
+    return lines.every(function (l) { return CMD.test(l) || ENV.test(l); });
+  }
+  function fallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function flash(btn, ok) {
+    var old = btn.getAttribute('data-label');
+    btn.textContent = ok ? '已複製 ✓' : '請手動複製';
+    btn.className = 'cpb' + (ok ? ' ok' : '');
+    setTimeout(function () { btn.textContent = old; btn.className = 'cpb'; }, 1600);
+  }
+  function makeButton(getText) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'cpb'; b.textContent = '複製'; b.setAttribute('data-label', '複製');
+    b.addEventListener('click', function () {
+      var text = getText();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { flash(b, true); },
+          function () { flash(b, fallback(text)); });
+      } else { flash(b, fallback(text)); }
+    });
+    return b;
+  }
+  function init() {
+    Array.prototype.forEach.call(document.querySelectorAll('pre'), function (pre) {
+      if (pre.querySelector('.cpb')) return;
+      var text = pre.textContent.replace(/\s+$/, '');
+      if (!isCommandBlock(text)) return;
+      pre.style.position = 'relative';
+      pre.appendChild(makeButton(function () {
+        var c = pre.cloneNode(true), x = c.querySelector('.cpb');
+        if (x) x.parentNode.removeChild(x);
+        return c.textContent.replace(/\s+$/, '');
+      }));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('code'), function (code) {
+      if (code.closest('pre') || (code.nextSibling && code.nextSibling.className === 'cpb')) return;
+      var t = code.textContent.trim();
+      if (!CMD.test(t) || t.indexOf('\n') >= 0) return;
+      code.parentNode.insertBefore(makeButton(function () { return t; }), code.nextSibling);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+</body>
+</html>
