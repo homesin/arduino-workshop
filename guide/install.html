@@ -54,11 +54,12 @@
     <b>步驟</b>
     <ol>
       <li><a href="#s1">先確認條件</a></li>
-      <li><a href="#s2">開啟 PowerShell 並貼上指令</a></li>
-      <li><a href="#s3">安裝過程在做什麼</a></li>
-      <li><a href="#s4">看結果表驗收</a></li>
-      <li><a href="#s5">結果不是全綠怎麼辦</a></li>
-      <li><a href="#s6">插上板子再驗收一次</a></li>
+      <li><a href="#s2">用相容板先裝 CH340 驅動</a></li>
+      <li><a href="#s3">開啟 PowerShell 並貼上指令</a></li>
+      <li><a href="#s4">安裝過程在做什麼</a></li>
+      <li><a href="#s5">看結果表驗收</a></li>
+      <li><a href="#s6">結果不是全綠怎麼辦</a></li>
+      <li><a href="#s7">插上板子再驗收一次</a></li>
     </ol>
   </nav>
 
@@ -74,7 +75,18 @@
   </section>
 
   <section class="step" id="s2">
-    <h2><span class="num">2</span>開啟 PowerShell 並貼上指令</h2>
+    <h2><span class="num">2</span>用相容板的話，先裝 CH340 驅動</h2>
+    <p>相容板（板子上的 USB 晶片是 CH340／CH341）要有這個驅動，電腦才認得，連接埠才會出現。原廠 Uno 不需要，可跳過這一步。先裝好，後面的安裝與驗收就不會卡在「偵測到板子 ✗」。</p>
+    <ol>
+      <li>按下面按鈕下載驅動 <code>CH341SER.EXE</code>（WCH 官方檔案）：<br><a class="btn" href="https://www.wch-ic.com/download/file?id=65">下載 CH340 驅動</a><br>按鈕沒反應的話，改到 <a href="https://www.wch-ic.com/downloads/CH341SER_ZIP.html" target="_blank" rel="noopener">WCH 官網下載頁</a>手動下載（可能是 ZIP）。</li>
+      <li>ZIP 要先解壓縮，再執行 <code>CH341SER.EXE</code>，按「安裝」，出現「驅動安裝成功」即可。</li>
+      <li>把板子<b>插上電腦</b>，到裝置管理員的「連接埠 (COM 和 LPT)」確認出現 <code>USB-SERIAL CH340 (COMx)</code>。</li>
+    </ol>
+    <div class="note"><b>沒有出現 COM 埠：</b>多半是 USB 線只能充電，換一條能傳資料的線；也可以把板子拔掉再插回去。</div>
+  </section>
+
+  <section class="step" id="s3">
+    <h2><span class="num">3</span>開啟 PowerShell 並貼上指令</h2>
     <ol>
       <li>按鍵盤的 <b>Win 鍵</b>，輸入 <code>PowerShell</code>，按 Enter 開啟。</li>
       <li>貼上下面這一行，按 Enter：</li>
@@ -87,8 +99,8 @@
     <div class="note"><b>教材已經在電腦上的話：</b>也可以直接雙擊教材資料夾裡 <code>安裝程式\install.cmd</code>，效果一樣。</div>
   </section>
 
-  <section class="step" id="s3">
-    <h2><span class="num">3</span>安裝過程在做什麼</h2>
+  <section class="step" id="s4">
+    <h2><span class="num">4</span>安裝過程在做什麼</h2>
     <p>安裝程式會一項一項處理，每一段以 <b>▶</b> 開頭。已經裝過的會直接顯示「已安裝，跳過」，所以<b>重複執行沒有副作用</b>。</p>
     <table>
       <tr><th>段落</th><th>項目</th><th>用來做什麼</th></tr>
@@ -106,8 +118,8 @@
     <div class="note"><b>要等多久：</b>第一次安裝會下載 Arduino IDE、板子核心（約 100 MB）等，網路慢的話板子核心那一段要好幾分鐘，停在那裡是正常的，不要關視窗。</div>
   </section>
 
-  <section class="step" id="s4">
-    <h2><span class="num">4</span>看結果表驗收</h2>
+  <section class="step" id="s5">
+    <h2><span class="num">5</span>看結果表驗收</h2>
     <p>全部跑完會印出<b>結果表</b>。看<b>「結果」那一欄是不是全是 ✓</b>：</p>
     <pre>══════════ 結果 ══════════
 
@@ -141,33 +153,24 @@ Codex CLI                 ✓  codex-cli 0.145.0
     </table>
   </section>
 
-  <section class="step" id="s5">
-    <h2><span class="num">5</span>結果不是全綠怎麼辦</h2>
+  <section class="step" id="s6">
+    <h2><span class="num">6</span>結果不是全綠怎麼辦</h2>
     <table>
       <tr><th>看到什麼</th><th>意思與處理</th></tr>
       <tr><td><b>偵測到板子 ！</b>（沒有插板子，或 USB 線只能充電）</td><td>先插上板子，再重新執行一次指令即可。換一條 USB 線試試</td></tr>
-      <tr><td><b>偵測到板子 ✗</b>（板子有插但缺 CH340 驅動）</td><td>照下方「手動安裝 CH340 驅動」裝好，再重新插拔</td></tr>
-      <tr><td><b>CH340 驅動 ！</b></td><td>原廠 Uno 不需要；相容板的話，照下方「手動安裝 CH340 驅動」處理</td></tr>
+      <tr><td><b>偵測到板子 ✗</b>（板子有插但缺 CH340 驅動）</td><td>回到<a href="#s2">步驟 2</a> 手動裝好驅動，再重新插拔</td></tr>
+      <tr><td><b>CH340 驅動 ！</b></td><td>原廠 Uno 不需要；相容板的話，回到<a href="#s2">步驟 2</a> 手動安裝</td></tr>
       <tr><td><b>燒錄測試 ✗</b></td><td>換一條 USB 線或換 USB 孔；重新插拔後再執行一次</td></tr>
       <tr><td><b>Codex 登入 ！</b></td><td>第一次使用才需要，之後再登入，不影響上課</td></tr>
       <tr><td><b>.env 設定檔 ！</b></td><td>已替你從範本複製；金鑰要自己填（見<a href="cloud.html">雲端實作教學</a>）</td></tr>
       <tr><td>Node.js 安裝後找不到 node</td><td>關掉視窗，重新開一個再跑一次（環境變數要重開才生效）</td></tr>
       <tr><td>winget 自動安裝失敗</td><td>後面的軟體都靠它，請找講師</td></tr>
     </table>
-    <div class="note"><b>手動安裝 CH340 驅動：</b>相容板（板子上的 USB 晶片是 CH340／CH341）要有這個驅動，電腦才認得，連接埠才會出現。自動安裝沒成功時：
-      <ol>
-        <li>按下面按鈕下載驅動 <code>CH341SER.EXE</code>（WCH 官方檔案）：<br><a class="btn" href="https://www.wch-ic.com/download/file?id=65">下載 CH340 驅動</a><br>按鈕沒反應的話，改到 <a href="https://www.wch-ic.com/downloads/CH341SER_ZIP.html" target="_blank" rel="noopener">WCH 官網下載頁</a>手動下載（可能是 ZIP）。</li>
-        <li>ZIP 要先解壓縮，再執行 <code>CH341SER.EXE</code>，按「安裝」，出現「驅動安裝成功」即可。</li>
-        <li>板子<b>拔掉再插回去</b>，到裝置管理員的「連接埠 (COM 和 LPT)」確認出現 <code>USB-SERIAL CH340 (COMx)</code>；Arduino IDE 的「連接埠」選單也會多出 COM 埠。</li>
-        <li>再貼一次安裝指令驗收，「偵測到板子」會變 ✓。</li>
-      </ol>
-      裝完還是沒有 COM 埠，多半是 USB 線只能充電，換一條能傳資料的線。
-    </div>
     <div class="note"><b>重新執行不會重裝：</b>修好之後再貼一次同一行指令，已完成的項目會自動跳過。</div>
   </section>
 
-  <section class="step" id="s6">
-    <h2><span class="num">6</span>插上板子再驗收一次</h2>
+  <section class="step" id="s7">
+    <h2><span class="num">7</span>插上板子再驗收一次</h2>
     <p>沒插板子時，最後會顯示「偵測到板子 ！」。插上 Arduino（USB 線要能傳資料），再貼一次指令，會多這幾項：</p>
     <ul>
       <li><b>偵測到板子 ✓</b>，說明欄寫連接埠，例如 <code>COM4</code>。</li>
