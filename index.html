@@ -26,7 +26,7 @@
   h2 { margin: 40px 0 12px; font-size: 21px; border-bottom: 2px solid var(--ink); padding-bottom: 4px; }
   .lead { margin: 0; color: var(--mute); }
   html { scroll-behavior: smooth; }
-  .hub { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 28px 0 0; }
+  .hub { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 28px 0 0; }
   .hub .card {
     display: flex; flex-direction: column; gap: 6px; padding: 16px; text-decoration: none; color: var(--ink);
     background: var(--card); border: 2px solid var(--ink); border-radius: 8px; font-size: 15px; line-height: 1.55;
@@ -38,7 +38,7 @@
   ol.prep { margin: 8px 0 0; padding-left: 24px; }
   ol.prep li { margin: 4px 0; }
   ol.prep a { color: var(--ink); }
-  @media (max-width: 640px) { .hub { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .hub { grid-template-columns: 1fr; } }
   ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; }
   ol.steps > li {
     counter-increment: s; position: relative; padding: 16px 16px 16px 60px; margin: 12px 0;
@@ -103,6 +103,11 @@
       <b>進入 Google Meet</b>
       <span>當天講師用 Meet 分享畫面，取代投影機。進會議室就能在自己螢幕上看到。電腦不用接麥克風與喇叭。</span>
     </a>
+    <a class="card" href="slides/">
+      <span class="tag">跟著看</span>
+      <b>課程簡報</b>
+      <span>全部投影片都在網站上，看不清楚或課後複習都可以開。用左右方向鍵換頁。</span>
+    </a>
     <a class="card" href="#install">
       <span class="tag">然後安裝</span>
       <b>一鍵安裝軟體</b>
@@ -114,7 +119,6 @@
       <span>安裝、接線、上傳、ThingSpeak、ntfy、排錯，都有從頭到尾的圖文教學。</span>
     </a>
   </nav>
-  <p class="note">課程簡報也放在網站上，上課看不清楚或課後複習都可以開：<a href="slides/">打開簡報</a>（用左右方向鍵換頁）</p>
 
   <h2>上課前先做好這四件事</h2>
   <p class="note" style="margin-top:0">能先做完最好；沒時間也沒關係，現場會一起做。</p>
@@ -195,7 +199,7 @@
   <h2>卡住了？查教學頁</h2>
   <p class="note">安裝、上傳、接線、雲端、ThingSpeak、ntfy 都有從頭到尾的圖文教學，上課卡住時、或課後在自己的電腦上複習都可以查（Arduino 套件是借用的，歸還方式請看現場說明）：<a href="guide/">教學頁總覽</a></p>
 
-  <footer>教材版本 2026-11-11 18:42</footer>
+  <footer>教材版本 2026-11-11 19:30</footer>
 </main>
 
 <script>
@@ -223,7 +227,7 @@
     setTimeout(() => copy.textContent = '複製', 1500);
   });
   // 重新部署後檔名不變，加版本參數避免拿到瀏覽器快取的舊 zip
-  document.getElementById('zip').href += '?v=' + encodeURIComponent('2026-11-11 18:42');
+  document.getElementById('zip').href += '?v=' + encodeURIComponent('2026-11-11 19:30');
   show('full');
 </script>
 <!--copybtn-->
