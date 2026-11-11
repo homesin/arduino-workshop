@@ -131,6 +131,11 @@
 
   <h2 id="install">一行指令安裝（建議）</h2>
   <p class="lead">上課前在自己的 Windows 電腦做一次，約 15–30 分鐘（視網路速度）。軟體全部自動安裝，最後會列出檢查結果。</p>
+  <p class="note" style="margin:12px 0 0"><b>用相容板的話，建議先裝 CH340 驅動</b>（板子上的 USB 晶片是 CH340／CH341，沒裝電腦認不得板子；原廠 Uno 可跳過）。安裝指令也會自動裝，但學校電腦常擋住，先手動裝比較保險：</p>
+  <p style="margin:6px 0 0">
+    <a class="dl" href="https://www.wch-ic.com/download/file?id=65">下載 CH340 驅動（CH341SER.EXE）</a>
+    <span class="note" style="display:block;margin-top:4px">或到 <a href="https://www.wch-ic.com/downloads/CH341SER_ZIP.html" target="_blank" rel="noopener">WCH 官網下載頁</a>。下載後執行，按「安裝」，出現「驅動安裝成功」即可。</span>
+  </p>
   <ol class="steps">
     <li>
       <b>開啟 PowerShell</b>
@@ -199,7 +204,7 @@
   <h2>卡住了？查教學頁</h2>
   <p class="note">安裝、上傳、接線、雲端、ThingSpeak、ntfy 都有從頭到尾的圖文教學，上課卡住時、或課後在自己的電腦上複習都可以查（Arduino 套件是借用的，歸還方式請看現場說明）：<a href="guide/">教學頁總覽</a></p>
 
-  <footer>教材版本 2026-11-12 04:36</footer>
+  <footer>教材版本 2026-11-12 04:53</footer>
 </main>
 
 <script>
@@ -227,7 +232,7 @@
     setTimeout(() => copy.textContent = '複製', 1500);
   });
   // 重新部署後檔名不變，加版本參數避免拿到瀏覽器快取的舊 zip
-  document.getElementById('zip').href += '?v=' + encodeURIComponent('2026-11-12 04:36');
+  document.getElementById('zip').href += '?v=' + encodeURIComponent('2026-11-12 04:53');
   show('full');
 </script>
 <!--copybtn-->
