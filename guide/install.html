@@ -146,14 +146,23 @@ Codex CLI                 ✓  codex-cli 0.145.0
     <table>
       <tr><th>看到什麼</th><th>意思與處理</th></tr>
       <tr><td><b>偵測到板子 ！</b>（沒有插板子，或 USB 線只能充電）</td><td>先插上板子，再重新執行一次指令即可。換一條 USB 線試試</td></tr>
-      <tr><td><b>偵測到板子 ✗</b>（板子有插但缺 CH340 驅動）</td><td>看上方「CH340 驅動」那一列的說明，裝好後重新插拔</td></tr>
-      <tr><td><b>CH340 驅動 ！</b></td><td>原廠 Uno 不需要；相容板的話，到 WCH 官網下載 CH341SER.EXE 手動安裝</td></tr>
+      <tr><td><b>偵測到板子 ✗</b>（板子有插但缺 CH340 驅動）</td><td>照下方「手動安裝 CH340 驅動」裝好，再重新插拔</td></tr>
+      <tr><td><b>CH340 驅動 ！</b></td><td>原廠 Uno 不需要；相容板的話，照下方「手動安裝 CH340 驅動」處理</td></tr>
       <tr><td><b>燒錄測試 ✗</b></td><td>換一條 USB 線或換 USB 孔；重新插拔後再執行一次</td></tr>
       <tr><td><b>Codex 登入 ！</b></td><td>第一次使用才需要，之後再登入，不影響上課</td></tr>
       <tr><td><b>.env 設定檔 ！</b></td><td>已替你從範本複製；金鑰要自己填（見<a href="cloud.html">雲端實作教學</a>）</td></tr>
       <tr><td>Node.js 安裝後找不到 node</td><td>關掉視窗，重新開一個再跑一次（環境變數要重開才生效）</td></tr>
       <tr><td>winget 自動安裝失敗</td><td>後面的軟體都靠它，請找講師</td></tr>
     </table>
+    <div class="note"><b>手動安裝 CH340 驅動：</b>相容板（板子上的 USB 晶片是 CH340／CH341）要有這個驅動，電腦才認得，連接埠才會出現。自動安裝沒成功時：
+      <ol>
+        <li>按下面按鈕下載驅動 <code>CH341SER.EXE</code>（WCH 官方檔案）：<br><a class="btn" href="https://www.wch-ic.com/download/file?id=65">下載 CH340 驅動</a><br>按鈕沒反應的話，改到 <a href="https://www.wch-ic.com/downloads/CH341SER_ZIP.html" target="_blank" rel="noopener">WCH 官網下載頁</a>手動下載（可能是 ZIP）。</li>
+        <li>ZIP 要先解壓縮，再執行 <code>CH341SER.EXE</code>，按「安裝」，出現「驅動安裝成功」即可。</li>
+        <li>板子<b>拔掉再插回去</b>，到裝置管理員的「連接埠 (COM 和 LPT)」確認出現 <code>USB-SERIAL CH340 (COMx)</code>；Arduino IDE 的「連接埠」選單也會多出 COM 埠。</li>
+        <li>再貼一次安裝指令驗收，「偵測到板子」會變 ✓。</li>
+      </ol>
+      裝完還是沒有 COM 埠，多半是 USB 線只能充電，換一條能傳資料的線。
+    </div>
     <div class="note"><b>重新執行不會重裝：</b>修好之後再貼一次同一行指令，已完成的項目會自動跳過。</div>
   </section>
 
