@@ -13,6 +13,5 @@ irm https://homesin.github.io/arduino-workshop/get.ps1 | iex
 | `範例程式/` | 第三到五章用的 7 支 Arduino 程式與接線圖 |
 | `雲端實作/` | 雲端單元的 Node.js 專案（感測資料上網、ntfy 手機通知） |
 | `安裝程式/` | 一鍵安裝＋驗收腳本，雙擊 `install.cmd` |
-| `開始這裡.html` | 學員入口頁（教學頁網址、上課前 4 件事、套件借用） |
 
 這個 repo 由講師端的 `deploy.ps1 -GitHub` 自動產生，請不要直接修改。
