@@ -158,8 +158,37 @@ function Repair-Winget {
   Info 'winget 來源仍無法使用，之後的軟體會改從官網直接下載（不影響結果）'
 }
 
-function Test-CH340Driver {
-  [bool](Get-ChildItem (Join-Path $env:WINDIR 'System32\DriverStore\FileRepository') -Filter 'ch341ser.inf_*' -Directory -ErrorAction SilentlyContinue)
+# 驅動庫裡 CH340 驅動（ch341ser.inf）的最高版本；沒有就回 $null。
+# 直接讀 INF 的 DriverVer 行：不受系統語言影響，也不需要系統管理員權限。
+function Get-CH340StoreVersion {
+  $repo = Join-Path $env:WINDIR 'System32\DriverStore\FileRepository'
+  $best = $null
+  foreach ($dir in Get-ChildItem $repo -Filter 'ch341ser.inf_*' -Directory -ErrorAction SilentlyContinue) {
+    $v = Get-InfDriverVersion (Join-Path $dir.FullName 'ch341ser.inf')
+    if ($v -and (-not $best -or $v -gt $best)) { $best = $v }
+  }
+  return $best
+}
+
+function Get-InfDriverVersion($inf) {
+  if (-not (Test-Path $inf)) { return $null }
+  $m = Select-String -Path $inf -Pattern 'DriverVer\s*=\s*[\d/]+\s*,\s*([\d.]+)' -ErrorAction SilentlyContinue | Select-Object -First 1
+  if (-not $m) { return $null }
+  try { return [version]$m.Matches[0].Groups[1].Value } catch { return $null }
+}
+
+# 目前插著、而且狀態不正常（裝置管理員會有黃色驚嘆號）的 CH340／CH341 裝置。
+function Get-BrokenCH340Device {
+  try {
+    @(Get-PnpDevice -PresentOnly -ErrorAction Stop |
+      Where-Object { $_.InstanceId -match '^USB\\VID_1A86&' -and $_.Status -ne 'OK' })
+  } catch { @() }
+}
+
+function Test-CH340DevicePresent {
+  try {
+    [bool](Get-PnpDevice -PresentOnly -ErrorAction Stop | Where-Object { $_.InstanceId -match '^USB\\VID_1A86&' })
+  } catch { $false }
 }
 
 function Find-VSCode {
@@ -267,44 +296,64 @@ Step '4. CH340 驅動（相容板的 USB 晶片）'
 # 原廠 Uno 不需要；相容板雖然 Windows Update 通常會自動抓，但學校電腦常關掉自動安裝驅動或沒網路。
 # 不跑 CH341SER.EXE 的安裝精靈（會跳視窗要按按鈕），改成解開後用 pnputil 直接裝進驅動程式庫，
 # 這樣沒插板子也能先裝好，之後插上任何一塊都直接認得。
-if (Test-CH340Driver) {
-  Info '已安裝，跳過'
-  Record 'CH340 驅動' $true
-} else {
-  $tmp = Join-Path $env:TEMP 'ch341ser'
-  $exe = Join-Path $env:TEMP 'CH341SER.EXE'
-  $note = ''
-  try {
-    Info '從 WCH 官網下載 CH341SER.EXE…'
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest $CH340Url -OutFile $exe -UseBasicParsing -ErrorAction Stop
+#
+# 「驅動庫裡有 ch341ser」不代表可用：電腦教室常有舊版（Windows Update、別的課程軟體、還原映像留下的），
+# 舊版可能不認這塊板子。所以這裡比版本：驅動庫裡的版本不比 WCH 這包新、或插著的板子狀態不正常，就重裝。
+$oldVer = Get-CH340StoreVersion
+$broken = @(Get-BrokenCH340Device)
+$tmp = Join-Path $env:TEMP 'ch341ser'
+$exe = Join-Path $env:TEMP 'CH341SER.EXE'
+$note = ''
+$newVer = $null
+$inf = $null
+try {
+  Info ($(if ($oldVer) { "驅動庫裡已有 CH340 驅動 $oldVer，檢查是不是最新…" } else { '驅動庫裡沒有 CH340 驅動，從 WCH 官網下載…' }))
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+  Invoke-WebRequest $CH340Url -OutFile $exe -UseBasicParsing -ErrorAction Stop
 
-    $sig = Get-AuthenticodeSignature $exe
-    if ($sig.Status -ne 'Valid' -or $sig.SignerCertificate.Subject -notmatch 'Qinheng') {
-      throw '下載的檔案簽章不是 WCH（南京沁恒），不安裝'
-    }
+  $sig = Get-AuthenticodeSignature $exe
+  if ($sig.Status -ne 'Valid' -or $sig.SignerCertificate.Subject -notmatch 'Qinheng') {
+    throw '下載的檔案簽章不是 WCH（南京沁恒），不安裝'
+  }
 
-    # 它是 RAR 自解壓檔，Windows 10 1803 起內建的 tar 就解得開
-    Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
-    New-Item -ItemType Directory $tmp | Out-Null
-    & "$env:WINDIR\System32\tar.exe" -xf $exe -C $tmp
-    $inf = Join-Path $tmp 'WIN 1X\CH341SER.INF'
-    if (-not (Test-Path $inf)) { throw '解壓縮失敗，找不到 CH341SER.INF' }
+  # 它是 RAR 自解壓檔，Windows 10 1803 起內建的 tar 就解得開
+  Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
+  New-Item -ItemType Directory $tmp | Out-Null
+  & "$env:WINDIR\System32\tar.exe" -xf $exe -C $tmp
+  $inf = Join-Path $tmp 'WIN 1X\CH341SER.INF'
+  if (-not (Test-Path $inf)) { throw '解壓縮失敗，找不到 CH341SER.INF' }
+  $newVer = Get-InfDriverVersion $inf
 
-    Info '安裝驅動（會跳出系統管理員確認，請按「是」）…'
+  $upToDate = $oldVer -and $newVer -and ($oldVer -ge $newVer)
+  if ($upToDate -and $broken.Count -eq 0) {
+    Info "已是最新版（$oldVer），板子狀態也正常，不重裝"
+  } else {
+    if ($upToDate) { Info "驅動版本夠新（$oldVer），但插著的板子狀態不正常，重新安裝一次" }
+    elseif ($oldVer) { Info "驅動庫裡是舊版（$oldVer），安裝新版 $newVer" }
+    Info '安裝驅動，約需 1–2 分鐘，請不要關閉視窗（若跳出系統管理員確認，請按「是」；沒跳出也正常）…'
     $p = Start-Process pnputil -ArgumentList '/add-driver', "`"$inf`"", '/install' -Verb RunAs -Wait -PassThru -WindowStyle Hidden
     if ($p.ExitCode -eq 3010) { $note = '已安裝，重新開機後生效' }
-  } catch {
-    $note = $_.Exception.Message
-  } finally {
-    Remove-Item $tmp, $exe -Recurse -Force -ErrorAction SilentlyContinue
+    elseif ($p.ExitCode -ne 0) { $note = "pnputil 結束碼 $($p.ExitCode)" }
   }
-  if (Test-CH340Driver) {
-    Record 'CH340 驅動' $true $note
-  } else {
-    # 用「！」不用「✗」：原廠 Uno 不需要它，Windows Update 也可能插板子時自動補上
-    Record 'CH340 驅動' $null "沒裝成（$note）。用相容板的話，手動到 WCH 官網下載 CH341SER.EXE 安裝"
-  }
+} catch {
+  $note = $_.Exception.Message
+} finally {
+  Remove-Item $tmp, $exe -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+$curVer = Get-CH340StoreVersion
+$stillBroken = @(Get-BrokenCH340Device)
+if (-not $curVer) {
+  # 用「！」不用「✗」：原廠 Uno 不需要它，Windows Update 也可能插板子時自動補上
+  Record 'CH340 驅動' $null "沒裝成（$note）。用相容板的話，手動到 WCH 官網下載 CH341SER 安裝"
+} elseif ($stillBroken.Count -gt 0) {
+  Record 'CH340 驅動' $null "驅動已裝（$curVer），但插著的板子狀態不正常。請把板子拔掉再插回去；還是不行就重新開機，或手動到 WCH 官網下載 CH341SER 安裝"
+} elseif ($newVer -and $curVer -lt $newVer) {
+  Record 'CH340 驅動' $null "驅動庫裡仍是舊版（$curVer）。$note 用相容板的話，手動到 WCH 官網下載 CH341SER 安裝"
+} elseif (Test-CH340DevicePresent) {
+  Record 'CH340 驅動' $true "版本 $curVer，板子已認得$(if ($note) { '；' + $note })"
+} else {
+  Record 'CH340 驅動' $true "版本 $curVer，已就緒。相容板插上後會自動認得（插上後若沒出現 COM 埠，拔掉再插一次）$(if ($note) { '；' + $note })"
 }
 
 # ─────────────────────────────────────────────
