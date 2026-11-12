@@ -65,6 +65,8 @@ process.env.NEAR_CM = '30';
 // 學員的 .env（從 .env.example 複製）會寫 NOTIFY_CHANNELS=ntfy，dotenv 載入後會把其他通知渠道過濾掉，
 // 下面 Discord／Slack／Telegram 的測試就會失敗。先明確清成空字串（dotenv 不會覆蓋已存在的環境變數）。
 process.env.NOTIFY_CHANNELS = '';
+// Email 也一樣：學員的 .env 填了 SMTP 設定，Email 就會被啟用，「五家」「沒填 SMTP」的斷言會失敗。
+for (const key of ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'EMAIL_FROM', 'EMAIL_TO']) process.env[key] = '';
 
 // 其他四家通知服務也指到同一個假伺服器
 process.env.NTFY_SERVER = `${base}/ntfy`;
