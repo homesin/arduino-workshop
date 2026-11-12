@@ -175,6 +175,13 @@
     </li>
   </ol>
 
+  <h3>個別安裝：分別下載</h3>
+  <p>一鍵安裝失敗，或只缺其中一樣時用。板子核心（Arduino AVR Boards）與 SimpleDHT 函式庫不用另外下載，在 Arduino IDE 的「開發板管理員」與「函式庫管理員」裡安裝。</p>
+  <table>
+    <tr><th>軟體</th><th>用途</th><th>下載連結</th></tr>
+    <tr><td>Arduino IDE</td><td>寫程式、按上傳</td><td><a href="https://www.arduino.cc/en/software" target="_blank" rel="noopener">arduino.cc/en/software</a></td></tr><tr><td>CH340 驅動</td><td>相容板的 USB 驅動</td><td><a href="https://www.wch-ic.com/downloads/CH341SER_ZIP.html" target="_blank" rel="noopener">wch-ic.com 下載頁</a></td></tr><tr><td>Node.js（選 LTS 版）</td><td>第六章送資料上雲端</td><td><a href="https://nodejs.org/en/download" target="_blank" rel="noopener">nodejs.org/en/download</a></td></tr><tr><td>VS Code（選用）</td><td>另一種編輯器</td><td><a href="https://code.visualstudio.com/download" target="_blank" rel="noopener">code.visualstudio.com/download</a></td></tr>
+  </table>
+
   <h2>會安裝哪些東西</h2>
   <table>
     <tr><th>項目</th><th>用途</th><th>只裝 Arduino</th></tr>
@@ -204,7 +211,7 @@
   <h2>卡住了？查教學頁</h2>
   <p class="note">安裝、上傳、接線、雲端、ThingSpeak、ntfy 都有從頭到尾的圖文教學，上課卡住時、或課後在自己的電腦上複習都可以查（Arduino 套件是借用的，歸還方式請看現場說明）：<a href="guide/">教學頁總覽</a></p>
 
-  <footer>教材版本 2026-11-12 08:00</footer>
+  <footer>教材版本 2026-11-12 08:12</footer>
 </main>
 
 <script>
@@ -232,7 +239,7 @@
     setTimeout(() => copy.textContent = '複製', 1500);
   });
   // 重新部署後檔名不變，加版本參數避免拿到瀏覽器快取的舊 zip
-  document.getElementById('zip').href += '?v=' + encodeURIComponent('2026-11-12 08:00');
+  document.getElementById('zip').href += '?v=' + encodeURIComponent('2026-11-12 08:12');
   show('full');
 </script>
 <!--copybtn-->

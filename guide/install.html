@@ -60,6 +60,7 @@
       <li><a href="#s5">看結果表驗收</a></li>
       <li><a href="#s6">結果不是全綠怎麼辦</a></li>
       <li><a href="#s7">插上板子再驗收一次</a></li>
+      <li><a href="#s8">個別安裝：分別下載</a></li>
     </ol>
   </nav>
 
@@ -178,6 +179,15 @@ Codex CLI                 ✓  codex-cli 0.145.0
     </ul>
     <div class="check"><b>用眼睛確認：</b>看板子上印著 <b>L</b> 的小燈，每秒閃一下就正常。腳本只能確認「上傳成功」，燈有沒有閃要你自己看。</div>
     <div class="note"><b>注意：</b>這一步會把板子上原有的程式換成 Blink。之後要跑感測器範例，再重新上傳對應的程式即可。</div>
+  </section>
+
+  <section class="step" id="s8">
+    <h2><span class="num">8</span>個別安裝：分別下載</h2>
+    <p>一鍵安裝失敗，或只缺其中一樣時用。板子核心與 SimpleDHT 函式庫不用另外下載，在 Arduino IDE 的「開發板管理員」與「函式庫管理員」裡安裝。</p>
+    <table>
+      <tr><th>軟體</th><th>用途</th><th>下載連結</th></tr>
+      <tr><td>Arduino IDE</td><td>寫程式、按上傳</td><td><a href="https://www.arduino.cc/en/software" target="_blank" rel="noopener">arduino.cc/en/software</a></td></tr><tr><td>CH340 驅動</td><td>相容板的 USB 驅動</td><td><a href="https://www.wch-ic.com/downloads/CH341SER_ZIP.html" target="_blank" rel="noopener">wch-ic.com 下載頁</a></td></tr><tr><td>Node.js（選 LTS 版）</td><td>第六章送資料上雲端</td><td><a href="https://nodejs.org/en/download" target="_blank" rel="noopener">nodejs.org/en/download</a></td></tr><tr><td>VS Code（選用）</td><td>另一種編輯器</td><td><a href="https://code.visualstudio.com/download" target="_blank" rel="noopener">code.visualstudio.com/download</a></td></tr>
+    </table>
   </section>
 
   <footer>一鍵安裝與驗收 · 115.11.14 Arduino 實作研習</footer>
