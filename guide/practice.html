@@ -92,7 +92,8 @@
     <h2><span class="num">3</span>加上 LINE 通知</h2>
     <p>程式已經寫好 LINE 通知，只差帳號和設定。這一題要自己申請 LINE 官方帳號，大約 15 分鐘。</p>
     <ol>
-      <li>到 <a href="https://developers.line.biz" target="_blank" rel="noopener">developers.line.biz</a>，用 LINE 帳號登入，建立一個 <b>Messaging API</b> channel（會一併建立 LINE 官方帳號）。</li>
+      <li>先到 <a href="https://manager.line.biz/" target="_blank" rel="noopener">LINE Official Account Manager</a> 建立 <b>LINE 官方帳號</b>，再到「設定 → Messaging API」按<b>啟用 Messaging API</b>（2024 年 9 月起不能再直接在 developers.line.biz 建立頻道）。完整圖文步驟見 <a href="line.html">LINE 通知教學</a>。</li>
+      <li>啟用後到 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener">developers.line.biz</a> 用同一組 LINE Business ID 登入，找到那個 Messaging API 頻道。</li>
       <li>進入該 channel 的 <b>Messaging API</b> 分頁，最下面 <b>Channel access token (long-lived)</b> 按 <b>Issue</b>，複製那一長串。</li>
       <li>用手機掃同一頁的 QR Code，<b>把自己的官方帳號加為好友</b>（沒加好友就收不到）。</li>
       <li>用 VS Code 開啟設定檔 <code>桌面\arduino-workshop\雲端實作\.env</code>（Explorer 裡 <b>雲端實作 → .env</b>），加上這一行（貼上你的 token）：<pre>LINE_CHANNEL_ACCESS_TOKEN=貼上你的token</pre></li>

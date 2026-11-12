@@ -101,8 +101,8 @@ npm start
 
 ### 選用：LINE 推播（本次課程不用，改用下面的 ntfy）
 
-1. <https://developers.line.biz> 建立 **Messaging API** channel（會一併建立 LINE 官方帳號）
-2. **Messaging API** 分頁 → 最下面 **Channel access token (long-lived)** → Issue
+1. 先到 <https://manager.line.biz/> 建立 **LINE 官方帳號**，再在「設定 → Messaging API」按**啟用 Messaging API**（2024 年 9 月起不能再直接在 developers.line.biz 建立頻道）
+2. 到 <https://developers.line.biz/console/> 用同一組帳號登入，進入該頻道的 **Messaging API** 分頁 → 最下面 **Channel access token (long-lived)** → Issue
 3. 貼進 `.env` 的 `LINE_CHANNEL_ACCESS_TOKEN`
 4. 用手機掃該頁的 QR Code，**把自己的官方帳號加為好友**
 
