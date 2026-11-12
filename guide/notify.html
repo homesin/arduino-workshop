@@ -140,6 +140,7 @@ NOTIFY_CHANNELS=ntfy,slack</pre></li>
   <section class="step" id="s6">
     <h2><span class="num">6</span>Email：寄信通知</h2>
     <p>人人都有信箱，不必裝 App。但手機不一定即時跳通知，自動寄出的信也容易被丟進垃圾信，適合當備援，不適合當唯一管道。</p>
+    <div class="check"><b>這一種已實測可行，有完整教學：</b><a href="email.html">Email 通知教學</a>（兩步驟驗證、應用程式密碼、測試、疑難排解）。下面是重點。</div>
     <ol>
       <li>Gmail 要用<b>應用程式密碼</b>，不是登入密碼：到 <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">Google 帳戶的應用程式密碼</a>產生 16 碼（沒開兩步驟驗證時這個選項不會出現）。</li>
       <li>填進 <code>.env</code>：<pre>SMTP_HOST=smtp.gmail.com
@@ -173,7 +174,7 @@ NOTIFY_CHANNELS=ntfy,email</pre></li>
 
   <footer>憑證（Token、Webhook 網址、密碼）請只放在自己的 .env，分享截圖前先遮起來。 · 其他通知管道教學 · 115.11.14 Arduino 實作研習</footer>
 </div>
-<div class="gnav bottom"><span>卡住了？<a href="troubleshooting.html">排錯與驗收總表</a>　·　<a href="index.html">全部教學頁</a></span><a href="slack.html">← 上一頁：Slack 通知教學</a><a href="parts.html">下一頁：想自己買？元件採購指南 →</a></div><!--copybtn-->
+<div class="gnav bottom"><span>卡住了？<a href="troubleshooting.html">排錯與驗收總表</a>　·　<a href="index.html">全部教學頁</a></span><a href="email.html">← 上一頁：Email 通知教學</a><a href="parts.html">下一頁：想自己買？元件採購指南 →</a></div><!--copybtn-->
 <style>
 .cpb{font:600 12px/1 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;cursor:pointer;border:1px solid rgba(127,127,127,.55);
   background:rgba(255,255,255,.92);color:#143D2D;border-radius:4px;padding:5px 9px;white-space:nowrap}
