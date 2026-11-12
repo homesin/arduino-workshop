@@ -3,6 +3,7 @@ import { createSerialSource, createMockSource } from './sources.js';
 import { createThingSpeakUploader } from './thingspeak.js';
 import { createNotifier } from './notify.js';
 import { createDashboard } from './dashboard.js';
+import { createHumidityWatcher, isCovered } from './triggers.js';
 
 const mock = process.argv.includes('--mock');
 
@@ -35,6 +36,7 @@ source.on('fatal', (msg) => {
 });
 
 let printedFirst = false;
+const humidityWatcher = createHumidityWatcher({ rise: config.humidityRisePct });
 
 source.on('reading', async (reading) => {
   if (!printedFirst) {
@@ -52,6 +54,17 @@ source.on('reading', async (reading) => {
   // dist 是公分；-1 代表沒收到回波，不能當成「很近」
   if (reading.dist >= 0 && reading.dist < config.nearCm) {
     await fireAlert('near', `📏 有東西靠近\n距離 ${reading.dist} 公分（門檻 ${config.nearCm}）\n時間 ${stamp()}`);
+  }
+  if (isCovered(reading.light, config.lightDarkAbove)) {
+    await fireAlert('dark', `🌑 光線被遮住
+光敏讀值 ${reading.light}（大於 ${config.lightDarkAbove} 算暗）
+時間 ${stamp()}`);
+  }
+  const wet = humidityWatcher.push(reading.h);
+  if (wet) {
+    await fireAlert('humid', `💨 濕度突然升高
+目前 ${reading.h}%，比最近平均 ${wet.baseline}% 高 ${wet.rise} 個百分點
+時間 ${stamp()}`);
   }
   if (reading.pir === 1) {
     await fireAlert('pir', `🚶 偵測到有人經過\n當下溫度 ${reading.t}°C、濕度 ${reading.h}%\n時間 ${stamp()}`);

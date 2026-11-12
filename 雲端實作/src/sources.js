@@ -66,11 +66,14 @@ export function createMockSource() {
     tick += 1;
     // 溫度慢慢在 24~30 度之間來回，濕度反向擺動，看起來像真的
     const t = 27 + Math.sin(tick / 20) * 3 + (Math.random() - 0.5) * 0.4;
-    const h = 60 - Math.sin(tick / 20) * 8 + (Math.random() - 0.5) * 2;
     // 每 25 秒模擬一次有人經過，每 40 秒模擬一次有東西靠近，方便測警報
     const pir = tick % 25 === 0 ? 1 : 0;
     const dist = tick % 40 === 0 ? 12 : 60 + Math.round(Math.random() * 40);
-    const light = 280 + Math.round(Math.random() * 20);
+    // 每 55 秒模擬遮住光敏 3 秒，每 70 秒模擬對感測器呼氣（濕度跳高幾秒）
+    const covered = tick % 55 < 3 && tick >= 55;
+    const breath = tick % 70 < 4 && tick >= 70;
+    const h = 60 - Math.sin(tick / 20) * 4 + (Math.random() - 0.5) * 2 + (breath ? 20 : 0);
+    const light = covered ? 900 : 280 + Math.round(Math.random() * 20);
     bus.emit('reading', {
       t: Math.round(t * 10) / 10,
       h: Math.round(h * 10) / 10,

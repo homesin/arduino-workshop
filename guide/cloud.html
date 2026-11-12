@@ -148,6 +148,8 @@
       <tr><th>設定</th><th>意思</th><th>預設</th></tr>
       <tr><td><code>SERIAL_PORT</code></td><td>Arduino 的連接埠</td><td>COM3</td></tr>
       <tr><td><code>NEAR_CM</code></td><td>距離小於幾公分算「有東西靠近」</td><td>30</td></tr>
+      <tr><td><code>LIGHT_DARK_ABOVE</code></td><td>光敏讀值大於幾算「光線被遮住」（0 最亮、1023 最暗）</td><td>400</td></tr>
+      <tr><td><code>HUMIDITY_RISE_PCT</code></td><td>濕度比最近 30 秒平均高出幾個百分點算「濕度突然升高」（對 DHT11 呼氣）</td><td>8</td></tr>
       <tr><td><code>ALERT_COOLDOWN_SEC</code></td><td>同一種警報幾秒內不重複發</td><td>60</td></tr>
       <tr><td><code>THINGSPEAK_INTERVAL_SEC</code></td><td>上傳 ThingSpeak 的間隔（免費版最短 15）</td><td>15</td></tr>
       <tr><td><code>PORT</code></td><td>儀表板網址的埠號</td><td>3000</td></tr>

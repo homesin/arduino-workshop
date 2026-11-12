@@ -47,6 +47,10 @@ export const config = {
 
   port: num(process.env.PORT, 3000),
   nearCm: num(process.env.NEAR_CM, 30),
+  // 光敏讀值大於這個數字算「光線被遮住」（0 最亮、1023 最暗，和 c04d 一樣）
+  lightDarkAbove: num(process.env.LIGHT_DARK_ABOVE, 400),
+  // 濕度比最近 30 秒平均高出幾個百分點算「濕度突然升高」（對 DHT11 呼氣）
+  humidityRisePct: num(process.env.HUMIDITY_RISE_PCT, 8),
   alertCooldownMs: num(process.env.ALERT_COOLDOWN_SEC, 60) * 1000,
 };
 

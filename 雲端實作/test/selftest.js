@@ -279,6 +279,35 @@ check('擋下空值與非字串', () => {
   }
 });
 
+// ── 7. 新警報的判斷：光線被遮住、濕度突然升高 ──────────────
+const { createHumidityWatcher, isCovered } = await import('../src/triggers.js');
+
+check('光敏讀值大於門檻算被遮住，小於等於不算', () => {
+  assert.equal(isCovered(900, 400), true);
+  assert.equal(isCovered(401, 400), true);
+  assert.equal(isCovered(400, 400), false);
+  assert.equal(isCovered(280, 400), false);
+});
+check('光敏缺值或不是數字時不誤報', () => {
+  for (const bad of [undefined, null, NaN, '']) assert.equal(isCovered(bad, 400), false, String(bad));
+});
+check('濕度突然升高：平穩時不報，跳高 8 個百分點以上才報', () => {
+  const w = createHumidityWatcher({ rise: 8 });
+  for (let i = 0; i < 10; i++) assert.equal(w.push(60 + (i % 2)), null);
+  assert.equal(w.push(64), null);
+  const hit = w.push(75);
+  assert.ok(hit && hit.rise >= 8, JSON.stringify(hit));
+});
+check('濕度資料還不夠（開機前幾秒）時不誤報', () => {
+  const w = createHumidityWatcher({ rise: 8 });
+  assert.equal(w.push(50), null);
+  assert.equal(w.push(90), null);
+});
+check('濕度緩慢上升（天氣變化）不誤報', () => {
+  const w = createHumidityWatcher({ rise: 8 });
+  for (let i = 0; i < 60; i++) assert.equal(w.push(50 + i * 0.2), null, `第 ${i} 筆`);
+});
+
 // ── 收尾 ────────────────────────────────────────────────────
 fakeCloud.close();
 

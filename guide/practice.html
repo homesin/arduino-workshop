@@ -45,7 +45,7 @@
   <nav class="toc">
     <b>練習題</b>
     <ol>
-      <li><a href="#e1">天暗自動通報</a></li>
+      <li><a href="#e1">調出自己的門檻</a></li>
       <li><a href="#e2">兩個條件一起判斷</a></li>
       <li><a href="#e3">加上 LINE 通知</a></li>
       <li><a href="#e4">分享你的圖表</a></li>
@@ -56,36 +56,32 @@
     改程式用 VS Code（<a href="vscode.html">VS Code 教學</a>），先用 <b>File → Open Folder</b> 開啟桌面的 <code>arduino-workshop</code> 資料夾。下面的路徑都從這個資料夾算起。改壞了不用怕：把 <code>src\index.js</code> 裡你新增的那幾行刪掉就回到原樣。</div>
 
   <section class="step" id="e1">
-    <h2><span class="num">1</span>天暗自動通報</h2>
-    <p>上課的程式只會在「有東西靠近」和「有人經過」時通知。照同樣的寫法，再加一條：<b>光線太暗就通知</b>。光敏模組的數字<b>越大越暗</b>。</p>
+    <h2><span class="num">1</span>調出自己的門檻</h2>
+    <p>上課的程式有四種通知：有東西靠近、有人經過、<b>光線被遮住</b>、<b>濕度突然升高</b>。後兩種的門檻都放在設定檔，不用改程式。這題要試著把它們調成「最適合你那塊板子」的值。光敏模組的數字<b>越大越暗</b>。</p>
     <ol>
-      <li>用 VS Code 開啟程式檔 <code>桌面\arduino-workshop\雲端實作\src\index.js</code>（左邊 Explorer 依序點 <b>雲端實作 → src → index.js</b>），找到這一行：<pre>  if (reading.pir === 1) {</pre></li>
-      <li>在它的<b>上面</b>貼上這一段：
-<pre>  // 練習 1：天暗通報（light 越大越暗；400 只是範例，要換成你量到的值）
-  if (reading.light > 400) {
-    await fireAlert('dark', `🌙 天暗了\n光線 ${reading.light}（門檻 400）\n時間 ${stamp()}`);
-  }</pre></li>
-      <li>存檔（Ctrl + S），終端機進到 <code>雲端實作</code>，先停掉舊的（Ctrl + C），再執行：<pre>npm run mock</pre></li>
+      <li>用 VS Code 開啟設定檔 <code>桌面\arduino-workshop\雲端實作\.env</code>（Explorer 裡 <b>雲端實作 → .env</b>），確認有這兩行（沒有就加上）：<pre>LIGHT_DARK_ABOVE=400
+HUMIDITY_RISE_PCT=8</pre></li>
+      <li>終端機進到 <code>雲端實作</code>，執行 <code>npm run mock</code>。模擬訊號每 55 秒遮一次光、每 70 秒呼一次氣，等一下會看到 <code>🌑 光線被遮住</code> 和 <code>💨 濕度突然升高</code>。</li>
+      <li>有板子的話改跑 <code>npm start</code>，看儀表板「光線」：平常的數字、用手遮住的數字，<b>取中間值</b>填進 <code>LIGHT_DARK_ABOVE</code>。對 DHT11 呼氣幾秒，看濕度跳多少，<code>HUMIDITY_RISE_PCT</code> 設成比跳動幅度小一點。</li>
     </ol>
-    <div class="warn"><b>模擬模式的光線只在 280～300 之間跳：</b>門檻 400 永遠不會觸發。要看到效果，先把 400 暫時改成 <code>290</code>，終端機就會每隔幾秒印出「天暗了」。確認有效後再改回自己量到的值。</div>
-    <div class="note"><b>真實的門檻怎麼訂：</b>接上板子，跑 <code>npm start</code>，看儀表板上「光線」：平常的數字、用手遮住的數字，取中間值（簡報第四章光敏那一組有算法）。</div>
-    <div class="note"><b>為什麼不會一直響：</b>同一種警報有冷卻時間（<code>.env</code> 的 <code>ALERT_COOLDOWN_SEC</code>，預設 60 秒），一分鐘內不會重複通知。</div>
-    <div class="check"><b>檢查點：</b>終端機出現 <code>[LINE 預演] 若已設定憑證，會送出：🌙 天暗了</code>（已填 ntfy 主題的話，手機也會收到）。「LINE 預演」是程式在說：沒有設定 LINE，所以只印出來、沒有真的送。</div>
+    <div class="warn"><b>改 .env 要重啟才生效：</b>存檔後在終端機按 Ctrl + C 停掉，再重新執行。</div>
+    <div class="note"><b>為什麼不會一直響：</b>同一種警報有冷卻時間（<code>ALERT_COOLDOWN_SEC</code>，預設 60 秒），一分鐘內不會重複通知。</div>
+    <div class="check"><b>檢查點：</b>終端機出現 <code>[LINE 預演] 若已設定憑證，會送出：🌑 光線被遮住</code>（已填 ntfy 主題的話，手機也會收到）。「LINE 預演」是程式在說：沒有設定 LINE，所以只印出來、沒有真的送。</div>
   </section>
 
   <section class="step" id="e2">
     <h2><span class="num">2</span>兩個條件一起判斷</h2>
     <p>只要「有人經過」就通知，白天也會響。改成<b>天暗而且有人</b>才通知：用 <code>&amp;&amp;</code>（而且）把兩個條件接起來。</p>
     <ol>
-      <li>在 <code>src\index.js</code> 練習 1 的下面（<code>if (reading.pir === 1) {</code> 的上面）再貼一段：
+      <li>用 VS Code 開啟 <code>桌面\arduino-workshop\雲端實作\src\index.js</code>（Explorer 依序點 <b>雲端實作 → src → index.js</b>），找到這一行：<pre>  if (reading.pir === 1) {</pre>在它的<b>上面</b>貼上這一段：
 <pre>  // 練習 2：天暗而且有人，才通知
-  if (reading.pir === 1 &amp;&amp; reading.light &gt; 400) {
+  if (reading.pir === 1 &amp;&amp; reading.light &gt; config.lightDarkAbove) {
     await fireAlert('night-pir', `🌙🚶 天暗了還有人\n光線 ${reading.light}\n時間 ${stamp()}`);
   }</pre></li>
-      <li>一樣把 <code>400</code> 暫時改成 <code>290</code>，執行 <code>npm run mock</code>。模擬資料大約每 25 秒有一次「有人」，等一下就會看到。</li>
+      <li><b>模擬模式的光線平常只在 280～300 之間跳</b>，門檻 400 不會觸發。把 <code>.env</code> 的 <code>LIGHT_DARK_ABOVE</code> 暫時改成 <code>290</code>，存檔後重新執行 <code>npm run mock</code>。模擬資料大約每 25 秒有一次「有人」，等一下就會看到。確認有效後改回自己量到的值。</li>
     </ol>
-    <div class="note"><b>想只留這一條：</b>把原本的 <code>if (reading.pir === 1) {…}</code> 整段刪掉或前面加 <code>//</code> 變成註解，這樣白天有人經過就不會通知了。</div>
-    <div class="check"><b>檢查點：</b>印出「天暗了還有人」；沒有「有人」的那幾秒，只有練習 1 的「天暗了」。</div>
+    <div class="note"><b>想只留這一條：</b>把原本的 <code>if (reading.pir === 1) {…}</code> 整段刪掉或前面加 <code>//</code> 變成註解，這樣白天有人經過就不會通知了。改壞了不用怕：把你新增的那幾行刪掉就回到原樣。</div>
+    <div class="check"><b>檢查點：</b>印出「天暗了還有人」；沒有「有人」的那幾秒，不會出現這則（只有內建的「光線被遮住」）。</div>
   </section>
 
   <section class="step" id="e3">
