@@ -129,8 +129,9 @@ NOTIFY_CHANNELS=ntfy,telegram</pre></li>
   <section class="step" id="s5">
     <h2><span class="num">5</span>Slack：Incoming Webhook</h2>
     <p>學校或團隊本來就在用 Slack 的話最方便，通知直接進工作頻道。做法和 Discord 幾乎一樣。</p>
+    <div class="check"><b>這一種已實測可行，有完整圖文教學：</b><a href="slack.html">Slack 通知教學</a>（建立工作空間、建 App、Incoming Webhook、疑難排解）。下面是重點。</div>
     <ol>
-      <li>依 <a href="https://api.slack.com/messaging/webhooks" target="_blank" rel="noopener">Slack 官方 Incoming Webhooks 說明</a>建立 App、啟用 Incoming Webhooks，並為頻道新增一個 Webhook，複製網址。</li>
+      <li>到 <a href="https://api.slack.com/apps" target="_blank" rel="noopener">api.slack.com/apps</a> 建立 App（Create an App → From scratch → Pick features），加入 <code>incoming-webhook</code> 權限，按 Create and Install 並授權頻道；再到 App 的 Incoming Webhooks 頁複製網址。官方說明見 <a href="https://api.slack.com/messaging/webhooks" target="_blank" rel="noopener">Incoming Webhooks</a>。</li>
       <li>填進 <code>.env</code>：<pre>SLACK_WEBHOOK_URL=貼上網址
 NOTIFY_CHANNELS=ntfy,slack</pre></li>
     </ol>
@@ -172,7 +173,7 @@ NOTIFY_CHANNELS=ntfy,email</pre></li>
 
   <footer>憑證（Token、Webhook 網址、密碼）請只放在自己的 .env，分享截圖前先遮起來。 · 其他通知管道教學 · 115.11.14 Arduino 實作研習</footer>
 </div>
-<div class="gnav bottom"><span>卡住了？<a href="troubleshooting.html">排錯與驗收總表</a>　·　<a href="index.html">全部教學頁</a></span><a href="line.html">← 上一頁：LINE 通知教學</a><a href="parts.html">下一頁：想自己買？元件採購指南 →</a></div><!--copybtn-->
+<div class="gnav bottom"><span>卡住了？<a href="troubleshooting.html">排錯與驗收總表</a>　·　<a href="index.html">全部教學頁</a></span><a href="slack.html">← 上一頁：Slack 通知教學</a><a href="parts.html">下一頁：想自己買？元件採購指南 →</a></div><!--copybtn-->
 <style>
 .cpb{font:600 12px/1 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;cursor:pointer;border:1px solid rgba(127,127,127,.55);
   background:rgba(255,255,255,.92);color:#143D2D;border-radius:4px;padding:5px 9px;white-space:nowrap}
