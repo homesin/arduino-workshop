@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>其他通知管道教學</title>
+<style>
+  :root{
+    --bg:#E9EEE8; --ink:#143D2D; --accent:#87374B; --card:#fff; --line:#c9d3c8; --muted:#4a6358;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.75;font-size:17px}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+  header h1{font-size:2rem;margin:0 0 6px}
+  header p{margin:0;color:var(--muted)}
+  .toc{background:var(--card);border:1px solid var(--line);padding:14px 20px;margin:24px 0}
+  .toc b{display:block;margin-bottom:4px}
+  .toc ol{margin:0;padding-left:22px}
+  .toc a{color:var(--ink)}
+  section.step{background:var(--card);border:1px solid var(--line);margin:24px 0;padding:22px 24px}
+  .step h2{margin:0 0 12px;font-size:1.3rem;display:flex;align-items:center;gap:12px}
+  .num{flex:none;width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;
+    display:grid;place-items:center;font-weight:700}
+  .step p{margin:8px 0}
+  figure{margin:14px 0 4px}
+  figure img{display:block;width:100%;height:auto;border:1px solid var(--line)}
+  figcaption{font-size:.9rem;color:var(--muted);margin-top:6px}
+  code{background:#eef2ec;padding:1px 6px;font-family:Consolas,monospace}
+  pre{background:#143D2D;color:#E8F0E8;padding:12px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:.95rem;margin:10px 0}
+  .note,.warn,.check{margin:14px 0;padding:10px 14px;border-left:5px solid}
+  .note{border-color:var(--ink);background:#eef2ec}
+  .warn{border-color:var(--accent);background:#f6e9ec}
+  .check{border-color:#2f7d4f;background:#e4f2e8}
+  .note b,.warn b,.check b{margin-right:6px}
+  table{border-collapse:collapse;margin:10px 0;width:100%}
+  th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+  th{background:#eef2ec}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .cols>div{border:1px solid var(--line);padding:4px 16px 12px;background:#fafcf9}
+  .cols h3{margin:10px 0 4px;font-size:1.05rem}
+  @media(max-width:640px){.cols{grid-template-columns:1fr}}
+  footer{margin-top:32px;color:var(--muted);font-size:.9rem}
+  .btn{display:inline-block;background:var(--accent);color:#fff!important;text-decoration:none;font-weight:700;padding:9px 18px;border-radius:6px;margin:4px 8px 4px 0;border:0;font:inherit;font-weight:700;cursor:pointer}
+  [hidden]{display:none!important}
+  .btn:hover{opacity:.88}
+  .btn.alt{background:var(--ink)}
+  .btns{margin:10px 0}
+
+
+  .links a{margin-right:14px}
+</style>
+</head>
+<body><style>.gnav{max-width:860px;margin:0 auto;padding:10px 16px;font:15px/1.6 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}.gnav a{color:#87374B;text-decoration:none;font-weight:700}.gnav a:hover{text-decoration:underline}.gnav.bottom{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;border-top:1px solid #c9d3c8;padding:16px 16px 40px;color:#143D2D}.gnav.bottom span{flex:1 1 100%;color:#4a6358}</style><div class="gnav"><a href="index.html">← 全部教學頁</a></div>
+<div class="wrap">
+  <header>
+    <h1>其他通知管道：LINE、Discord、Telegram、Slack、Email</h1>
+    <p>課堂上用 ntfy，課後想換別的，程式都已寫好，只差憑證與設定。</p>
+  </header>
+
+  <nav class="toc">
+    <b>內容</b>
+    <ol>
+      <li><a href="#s1">先看總覽：每種管道要準備什麼</a></li>
+      <li><a href="#s2">LINE：官方帳號＋Messaging API</a></li>
+      <li><a href="#s3">Discord：建立 Webhook</a></li>
+      <li><a href="#s4">Telegram：BotFather 機器人</a></li>
+      <li><a href="#s5">Slack：Incoming Webhook</a></li>
+      <li><a href="#s6">Email：寄信通知</a></li>
+      <li><a href="#s7">測試：npm run mock</a></li>
+    </ol>
+  </nav>
+
+  <section class="step" id="s1">
+    <h2><span class="num">1</span>先看總覽：每種管道要準備什麼</h2>
+<svg viewBox="0 0 860 150" role="img" aria-label="資料流向：Arduino 傳給電腦，電腦送到通知服務，再到手機" style="width:100%;height:auto;display:block;margin:12px 0"><g font-family="Noto Sans TC,Microsoft JhengHei,sans-serif" font-size="22" font-weight="700" fill="#143D2D" text-anchor="middle"><rect x="4" y="30" width="180" height="80" rx="10" fill="#fff" stroke="#87374B" stroke-width="3"/><text x="94" y="78">Arduino</text><rect x="244" y="30" width="180" height="80" rx="10" fill="#fff" stroke="#2F5D8A" stroke-width="3"/><text x="334" y="68">電腦</text><text x="334" y="96" font-size="18" font-weight="400">npm start</text><rect x="484" y="30" width="180" height="80" rx="10" fill="#fff" stroke="#2F6B4F" stroke-width="3"/><text x="574" y="68">通知服務</text><text x="574" y="96" font-size="17" font-weight="400">LINE／Discord…</text><rect x="724" y="30" width="132" height="80" rx="10" fill="#fff" stroke="#A8741A" stroke-width="3"/><text x="790" y="78">你的手機</text><path d="M184 70 L228 70 M228 70 L218 63 M228 70 L218 77" stroke="#143D2D" stroke-width="4" fill="none"/><path d="M424 70 L468 70 M468 70 L458 63 M468 70 L458 77" stroke="#143D2D" stroke-width="4" fill="none"/><path d="M664 70 L708 70 M708 70 L698 63 M708 70 L698 77" stroke="#143D2D" stroke-width="4" fill="none"/></g></svg>
+    <table>
+      <tr><th>管道</th><th>要準備什麼</th><th>.env 要填</th><th>注意</th></tr>
+      <tr><td>ntfy（課堂用）</td><td>自訂主題名稱，不用註冊</td><td><code>NTFY_TOPIC</code></td><td>主題名稱像密碼，別外流</td></tr>
+      <tr><td>LINE</td><td>官方帳號＋Messaging API 頻道</td><td><code>LINE_CHANNEL_ACCESS_TOKEN</code></td><td>每月 200 則免費；群發給 N 位好友扣 N 則</td></tr>
+      <tr><td>Discord</td><td>頻道的 Webhook 網址</td><td><code>DISCORD_WEBHOOK_URL</code></td><td>校園網路可能封鎖 Discord，先實測</td></tr>
+      <tr><td>Telegram</td><td>BotFather 建的機器人＋你的 Chat ID</td><td><code>TELEGRAM_BOT_TOKEN</code><br><code>TELEGRAM_CHAT_ID</code></td><td>要先對機器人說一句話</td></tr>
+      <tr><td>Slack</td><td>Incoming Webhook 網址</td><td><code>SLACK_WEBHOOK_URL</code></td><td>需要有 Slack 工作區</td></tr>
+      <tr><td>Email</td><td>SMTP 主機與信箱密碼</td><td><code>SMTP_HOST</code>、<code>SMTP_USER</code>、<code>SMTP_PASS</code>、<code>EMAIL_TO</code></td><td>不即時，容易進垃圾信</td></tr>
+    </table>
+    <div class="warn"><b>LINE Notify 已停止：</b>它在 2025 年 3 月 31 日結束服務，網路上舊的「LINE Notify 教學」都不能用。現在要用 LINE，走官方帳號的 Messaging API（第 2 步）。</div>
+    <div class="note"><b>這些管道程式都已經寫好</b>（在 <code>雲端實作\src\channels</code>）。你只要做兩件事：把憑證填進 <code>.env</code>，再把管道名稱加進 <code>NOTIFY_CHANNELS</code>。</div>
+  </section>
+  <section class="step" id="s2">
+    <h2><span class="num">2</span>LINE：官方帳號＋Messaging API</h2>
+    <p>需要自己申請，約 15 分鐘。完整圖文步驟在<a href="practice.html">課後練習教學</a>的第三題，這裡列重點：</p>
+    <ol>
+      <li>到 <a href="https://developers.line.biz" target="_blank" rel="noopener">developers.line.biz</a> 用 LINE 帳號登入，建立 <b>Messaging API</b> 頻道（會一併建立 LINE 官方帳號）。</li>
+      <li>頻道的 <b>Messaging API</b> 分頁最下面，<b>Channel access token</b> 按 <b>Issue</b>，複製。</li>
+      <li>用手機掃 QR Code，<b>把官方帳號加為好友</b>，沒加好友收不到。</li>
+      <li>填進 <code>.env</code>：<pre>LINE_CHANNEL_ACCESS_TOKEN=貼上你的token
+NOTIFY_CHANNELS=ntfy,line</pre></li>
+    </ol>
+    <div class="note"><b>額度：</b>官方帳號輕用量方案每月 200 則免費（2026-09 查證，會變動）。程式用「群發」，加你好友的人越多，每則扣越多；程式預設一天最多送 20 則。</div>
+  </section>
+  <section class="step" id="s3">
+    <h2><span class="num">3</span>Discord：建立 Webhook</h2>
+    <p>最省事的一種：不用開發者帳號，也不用裝額外程式。</p>
+    <ol>
+      <li>在你自己的 Discord 伺服器，對想收通知的文字頻道按「編輯頻道」，找到「整合」→「Webhook」→「建立 Webhook」。</li>
+      <li>按「複製 Webhook 網址」。</li>
+      <li>填進 <code>.env</code>：<pre>DISCORD_WEBHOOK_URL=貼上網址
+NOTIFY_CHANNELS=ntfy,discord</pre></li>
+    </ol>
+    <div class="warn"><b>Webhook 網址等於密碼：</b>知道的人都能往你的頻道發訊息。不要貼在截圖、簡報或公開網站上。外洩了就刪掉那個 Webhook 重建。</div>
+    <div class="note"><b>學校網路：</b>校園網路有可能把 Discord 列入封鎖，換場地前先在現場實測。</div>
+  </section>
+  <section class="step" id="s4">
+    <h2><span class="num">4</span>Telegram：BotFather 機器人</h2>
+    <p>免費，幾乎沒有額度限制。要填兩個值：機器人的 Token，和你自己的 Chat ID。</p>
+    <ol>
+      <li>在 Telegram 搜尋 <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a>，送出 <code>/newbot</code>，依指示取名，最後會給你一串 <b>Token</b>。</li>
+      <li>用手機<b>對你的新機器人說一句話</b>（任何字都行）。沒先說過話，機器人不能主動傳訊息給你。</li>
+      <li>用瀏覽器開 <code>https://api.telegram.org/bot&lt;你的Token&gt;/getUpdates</code>，在回傳資料裡找 <code>message → chat → id</code>，那個數字就是 Chat ID。</li>
+      <li>填進 <code>.env</code>：<pre>TELEGRAM_BOT_TOKEN=貼上Token
+TELEGRAM_CHAT_ID=貼上數字
+NOTIFY_CHANNELS=ntfy,telegram</pre></li>
+    </ol>
+    <div class="note"><b>送不出去：</b>401 是 Token 錯了；400 是 Chat ID 錯了，或你還沒對機器人說過話。</div>
+  </section>
+  <section class="step" id="s5">
+    <h2><span class="num">5</span>Slack：Incoming Webhook</h2>
+    <p>學校或團隊本來就在用 Slack 的話最方便，通知直接進工作頻道。做法和 Discord 幾乎一樣。</p>
+    <ol>
+      <li>依 <a href="https://api.slack.com/messaging/webhooks" target="_blank" rel="noopener">Slack 官方 Incoming Webhooks 說明</a>建立 App、啟用 Incoming Webhooks，並為頻道新增一個 Webhook，複製網址。</li>
+      <li>填進 <code>.env</code>：<pre>SLACK_WEBHOOK_URL=貼上網址
+NOTIFY_CHANNELS=ntfy,slack</pre></li>
+    </ol>
+    <div class="note">Slack 的操作畫面常改版，選單名稱以官方說明為準。Webhook 網址同樣要當密碼保管。</div>
+  </section>
+  <section class="step" id="s6">
+    <h2><span class="num">6</span>Email：寄信通知</h2>
+    <p>人人都有信箱，不必裝 App。但手機不一定即時跳通知，自動寄出的信也容易被丟進垃圾信，適合當備援，不適合當唯一管道。</p>
+    <ol>
+      <li>Gmail 要用<b>應用程式密碼</b>，不是登入密碼：到 <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">Google 帳戶的應用程式密碼</a>產生 16 碼（沒開兩步驟驗證時這個選項不會出現）。</li>
+      <li>填進 <code>.env</code>：<pre>SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=你的信箱
+SMTP_PASS=16碼應用程式密碼
+EMAIL_TO=收信的信箱
+NOTIFY_CHANNELS=ntfy,email</pre></li>
+    </ol>
+    <div class="warn"><b>SMTP_PASS 只放在自己的 .env：</b>不要貼給任何人，也不要上傳到網路。程式預設一天最多寄 50 封。</div>
+  </section>
+  <section class="step" id="s7">
+    <h2><span class="num">7</span>測試：npm run mock</h2>
+    <ol>
+      <li>存檔 <code>.env</code>。<code>NOTIFY_CHANNELS</code> 用逗號分隔，可以同時開好幾種，名稱不分大小寫。</li>
+      <li>在終端機執行 <code>npm run mock</code>，等一則警報。</li>
+      <li>對應的手機或信箱收到訊息，就成功了。</li>
+    </ol>
+    <div class="check"><b>檢查點：</b>沒設定憑證的管道，終端機只會印出「預演」字樣的內容，那是程式在說「還沒設定，所以沒真的送」，不是錯誤。</div>
+    <div class="warn"><b>預演模式會真的送：</b>只要 <code>.env</code> 裡有憑證，<code>npm run mock</code> 就會真的送出通知。測試前確認收件的是你自己。</div>
+  </section>
+  <section class="step">
+    <h2>接下來</h2>
+    <ul class="links">
+      <li><a href="ntfy.html">ntfy 安裝與訂閱</a>：課堂用的通知管道。</li>
+      <li><a href="practice.html">課後練習：四個延伸題</a>：天暗通報、兩個條件、LINE、分享圖表。</li>
+      <li><a href="troubleshooting.html">排錯與驗收總表</a>：沒收到通知時先查這裡。</li>
+      <li><a href="./">回到教學頁總覽</a></li>
+    </ul>
+  </section>
+
+  <footer>憑證（Token、Webhook 網址、密碼）請只放在自己的 .env，分享截圖前先遮起來。 · 其他通知管道教學 · 115.11.14 Arduino 實作研習</footer>
+</div>
+<div class="gnav bottom"><span>卡住了？<a href="troubleshooting.html">排錯與驗收總表</a>　·　<a href="index.html">全部教學頁</a></span><a href="practice.html">← 上一頁：課後練習：四個延伸題</a><a href="parts.html">下一頁：想自己買？元件採購指南 →</a></div><!--copybtn-->
+<style>
+.cpb{font:600 12px/1 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;cursor:pointer;border:1px solid rgba(127,127,127,.55);
+  background:rgba(255,255,255,.92);color:#143D2D;border-radius:4px;padding:5px 9px;white-space:nowrap}
+.cpb:hover{background:#fff;border-color:#87374B;color:#87374B}
+.cpb.ok{background:#e4f2e8;border-color:#2f7d4f;color:#2f7d4f}
+pre>.cpb{position:absolute;top:6px;right:6px;z-index:2;opacity:.9}
+code+.cpb{margin-left:6px;padding:2px 7px;font-size:11px;vertical-align:middle}
+@media print{.cpb{display:none}}
+</style>
+<script>
+(function () {
+  // 只幫「指令」和「設定檔內容」加複製鈕；範例輸出（有 ✓、═ 等符號）不加。
+  var CMD = /^((npm |cd |copy |irm |python |pwsh |winget |\$env:|"sk-)|codex( [A-Za-z-]+)*$)/;
+  var ENV = /^[A-Z][A-Z0-9_]*=/;
+  function isCommandBlock(text) {
+    var lines = text.split('\n').map(function (l) { return l.trim(); })
+      .filter(function (l) { return l && l.charAt(0) !== '#'; });
+    if (!lines.length || /[✓✔✗═─]/.test(text)) return false;
+    return lines.every(function (l) { return CMD.test(l) || ENV.test(l); });
+  }
+  function fallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function flash(btn, ok) {
+    var old = btn.getAttribute('data-label');
+    btn.textContent = ok ? '已複製 ✓' : '請手動複製';
+    btn.className = 'cpb' + (ok ? ' ok' : '');
+    setTimeout(function () { btn.textContent = old; btn.className = 'cpb'; }, 1600);
+  }
+  function makeButton(getText) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'cpb'; b.textContent = '複製'; b.setAttribute('data-label', '複製');
+    b.addEventListener('click', function () {
+      var text = getText();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { flash(b, true); },
+          function () { flash(b, fallback(text)); });
+      } else { flash(b, fallback(text)); }
+    });
+    return b;
+  }
+  function init() {
+    Array.prototype.forEach.call(document.querySelectorAll('pre'), function (pre) {
+      if (pre.querySelector('.cpb')) return;
+      var text = pre.textContent.replace(/\s+$/, '');
+      if (!isCommandBlock(text)) return;
+      pre.style.position = 'relative';
+      pre.appendChild(makeButton(function () {
+        var c = pre.cloneNode(true), x = c.querySelector('.cpb');
+        if (x) x.parentNode.removeChild(x);
+        return c.textContent.replace(/\s+$/, '');
+      }));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('code'), function (code) {
+      if (code.closest('pre') || (code.nextSibling && code.nextSibling.className === 'cpb')) return;
+      var t = code.textContent.trim();
+      if (!CMD.test(t) || t.indexOf('\n') >= 0) return;
+      code.parentNode.insertBefore(makeButton(function () { return t; }), code.nextSibling);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+</body>
+</html>
