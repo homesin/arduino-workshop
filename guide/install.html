@@ -80,7 +80,8 @@
     <p>相容板（板子上的 USB 晶片是 CH340／CH341）要有這個驅動，電腦才認得，連接埠才會出現。原廠 Uno 不需要，可跳過這一步。先裝好，後面的安裝與驗收就不會卡在「偵測到板子 ✗」。</p>
     <ol>
       <li>按下面按鈕下載驅動 <code>CH341SER.EXE</code>（WCH 官方檔案）：<br><a class="btn" href="https://www.wch-ic.com/download/file?id=65">下載 CH340 驅動</a><br>按鈕沒反應的話，改到 <a href="https://www.wch-ic.com/downloads/CH341SER_ZIP.html" target="_blank" rel="noopener">WCH 官網下載頁</a>手動下載（可能是 ZIP）。</li>
-      <li>ZIP 要先解壓縮，再執行 <code>CH341SER.EXE</code>，按「安裝」，出現「驅動安裝成功」即可。</li>
+      <li>ZIP 要先解壓縮，再執行 <code>CH341SER.EXE</code>（ZIP 裡叫 <code>SETUP.EXE</code>），按「安裝」，出現「驅動安裝成功」即可。</li>
+      <li><b>已經跑過一鍵安裝、板子還是找不到？</b>電腦裡可能已有舊版驅動，一鍵安裝就跳過了。這時請<b>再手動裝一次</b>：請到官網下載頁取得 <code>CH341SER</code>，解壓縮後執行 <code>SETUP.EXE</code>，按「安裝」。裝完把板子拔掉再插回去。</li>
       <li>把板子<b>插上電腦</b>，到裝置管理員的「連接埠 (COM 和 LPT)」確認出現 <code>USB-SERIAL CH340 (COMx)</code>。</li>
     </ol>
     <div class="note"><b>沒有出現 COM 埠：</b>多半是 USB 線只能充電，換一條能傳資料的線；也可以把板子拔掉再插回去。</div>
