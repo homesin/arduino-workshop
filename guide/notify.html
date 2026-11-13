@@ -62,12 +62,8 @@
     <b>內容</b>
     <ol>
       <li><a href="#s1">先看總覽：每種管道要準備什麼</a></li>
-      <li><a href="#s2">LINE：官方帳號＋Messaging API</a></li>
-      <li><a href="#s3">Discord：建立 Webhook</a></li>
-      <li><a href="#s4">Telegram：BotFather 機器人</a></li>
-      <li><a href="#s5">Slack：Incoming Webhook</a></li>
-      <li><a href="#s6">Email：寄信通知</a></li>
-      <li><a href="#s7">測試：npm run mock</a></li>
+      <li><a href="#s2">選一個，照它的教學做</a></li>
+      <li><a href="#s3">可以同時開好幾種</a></li>
     </ol>
   </nav>
 
@@ -83,83 +79,24 @@
       <tr><td>Slack</td><td>Incoming Webhook 網址</td><td><code>SLACK_WEBHOOK_URL</code></td><td>需要有 Slack 工作區</td></tr>
       <tr><td>Email</td><td>SMTP 主機與信箱密碼</td><td><code>SMTP_HOST</code>、<code>SMTP_USER</code>、<code>SMTP_PASS</code>、<code>EMAIL_TO</code></td><td>不即時，容易進垃圾信</td></tr>
     </table>
-    <div class="warn"><b>LINE Notify 已停止：</b>它在 2025 年 3 月 31 日結束服務，網路上舊的「LINE Notify 教學」都不能用。現在要用 LINE，走官方帳號的 Messaging API（第 2 步）。</div>
+    <div class="warn"><b>LINE Notify 已停止：</b>它在 2025 年 3 月 31 日結束服務，網路上舊的「LINE Notify 教學」都不能用。現在要用 LINE，走官方帳號的 Messaging API（見下方 LINE 通知教學）。</div>
     <div class="note"><b>這些管道程式都已經寫好</b>（在 <code>雲端實作\src\channels</code>）。你只要做兩件事：把憑證填進 <code>.env</code>，再把管道名稱加進 <code>NOTIFY_CHANNELS</code>。</div>
   </section>
   <section class="step" id="s2">
-    <h2><span class="num">2</span>LINE：官方帳號＋Messaging API</h2>
-    <p>需要自己申請，約 15 分鐘。完整圖文步驟見 <a href="line.html">LINE 通知教學</a>，這裡列重點：</p>
-    <ol>
-      <li>先到 <a href="https://manager.line.biz/" target="_blank" rel="noopener">LINE Official Account Manager</a> 建立 <b>LINE 官方帳號</b>，再到「設定 → Messaging API」按<b>啟用 Messaging API</b>（2024 年 9 月起不能再直接在 developers.line.biz 建立頻道）。完整圖文步驟見 <a href="line.html">LINE 通知教學</a>。</li>
-      <li>啟用後到 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener">developers.line.biz</a> 用同一組帳號登入，找到頻道。</li>
-      <li>頻道的 <b>Messaging API</b> 分頁最下面，<b>Channel access token</b> 按 <b>Issue</b>，複製。</li>
-      <li>用手機掃 QR Code，<b>把官方帳號加為好友</b>，沒加好友收不到。</li>
-      <li>填進 <code>.env</code>：<pre>LINE_CHANNEL_ACCESS_TOKEN=貼上你的token
-NOTIFY_CHANNELS=ntfy,line</pre></li>
-    </ol>
-    <div class="note"><b>額度：</b>官方帳號輕用量方案每月 200 則免費（2026-09 查證，會變動）。程式用「群發」，加你好友的人越多，每則扣越多；程式預設一天最多送 20 則。</div>
+    <h2><span class="num">2</span>選一個，照它的教學做</h2>
+    <p>每個管道都有從頭到尾的圖文教學，設定內容與注意事項都在裡面，這頁不重複。</p>
+    <table>
+      <tr><th>想用</th><th>適合誰</th><th>完整教學</th></tr>
+      <tr><td>LINE</td><td>每天都在用 LINE、想直接收在手機上；要自己申請，約 15 分鐘</td><td><a href="line.html">LINE 通知教學</a></td></tr>
+      <tr><td>Discord</td><td>最省事，不用開發者帳號；已實測可行</td><td><a href="discord.html">Discord 通知教學</a></td></tr>
+      <tr><td>Telegram</td><td>免費、幾乎沒有額度限制；已實測可行</td><td><a href="telegram.html">Telegram 通知教學</a></td></tr>
+      <tr><td>Slack</td><td>學校或團隊本來就在用 Slack；已實測可行</td><td><a href="slack.html">Slack 通知教學</a></td></tr>
+      <tr><td>Email</td><td>不必裝 App，適合當備援，不適合當唯一管道；已實測可行</td><td><a href="email.html">Email 通知教學</a></td></tr>
+    </table>
   </section>
   <section class="step" id="s3">
-    <h2><span class="num">3</span>Discord：建立 Webhook</h2>
-    <p>最省事的一種：不用開發者帳號，也不用裝額外程式。</p>
-    <div class="check"><b>這一種已實測可行，有完整圖文教學：</b><a href="discord.html">Discord 通知教學</a>（註冊、建伺服器、Webhook、疑難排解）。下面是重點。</div>
-    <ol>
-      <li>在你自己的 Discord 伺服器，對想收通知的文字頻道按「編輯頻道」，找到「整合」→「Webhook」→「建立 Webhook」。</li>
-      <li>按「複製 Webhook 網址」。</li>
-      <li>填進 <code>.env</code>：<pre>DISCORD_WEBHOOK_URL=貼上網址
-NOTIFY_CHANNELS=ntfy,discord</pre></li>
-    </ol>
-    <div class="warn"><b>Webhook 網址等於密碼：</b>知道的人都能往你的頻道發訊息。不要貼在截圖、簡報或公開網站上。外洩了就刪掉那個 Webhook 重建。</div>
-    <div class="note"><b>學校網路：</b>校園網路有可能把 Discord 列入封鎖，換場地前先在現場實測。</div>
-  </section>
-  <section class="step" id="s4">
-    <h2><span class="num">4</span>Telegram：BotFather 機器人</h2>
-    <p>免費，幾乎沒有額度限制。要填兩個值：機器人的 Token，和你自己的 Chat ID。</p>
-    <div class="check"><b>這一種已實測可行，有完整圖文教學：</b><a href="telegram.html">Telegram 通知教學</a>（註冊、操作、疑難排解）。下面是重點。</div>
-    <ol>
-      <li>在 Telegram 搜尋 <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a>，送出 <code>/newbot</code>，依指示取名，最後會給你一串 <b>Token</b>。</li>
-      <li>用手機<b>對你的新機器人說一句話</b>（任何字都行）。沒先說過話，機器人不能主動傳訊息給你。</li>
-      <li>用瀏覽器開 <code>https://api.telegram.org/bot&lt;你的Token&gt;/getUpdates</code>，在回傳資料裡找 <code>message → chat → id</code>，那個數字就是 Chat ID。</li>
-      <li>填進 <code>.env</code>：<pre>TELEGRAM_BOT_TOKEN=貼上Token
-TELEGRAM_CHAT_ID=貼上數字
-NOTIFY_CHANNELS=ntfy,telegram</pre></li>
-    </ol>
-    <div class="note"><b>送不出去：</b>401 是 Token 錯了；400 是 Chat ID 錯了，或你還沒對機器人說過話。</div>
-  </section>
-  <section class="step" id="s5">
-    <h2><span class="num">5</span>Slack：Incoming Webhook</h2>
-    <p>學校或團隊本來就在用 Slack 的話最方便，通知直接進工作頻道。做法和 Discord 幾乎一樣。</p>
-    <div class="check"><b>這一種已實測可行，有完整圖文教學：</b><a href="slack.html">Slack 通知教學</a>（建立工作空間、建 App、Incoming Webhook、疑難排解）。下面是重點。</div>
-    <ol>
-      <li>到 <a href="https://api.slack.com/apps" target="_blank" rel="noopener">api.slack.com/apps</a> 建立 App（Create an App → From scratch → Pick features），加入 <code>incoming-webhook</code> 權限，按 Create and Install 並授權頻道；再到 App 的 Incoming Webhooks 頁複製網址。官方說明見 <a href="https://api.slack.com/messaging/webhooks" target="_blank" rel="noopener">Incoming Webhooks</a>。</li>
-      <li>填進 <code>.env</code>：<pre>SLACK_WEBHOOK_URL=貼上網址
-NOTIFY_CHANNELS=ntfy,slack</pre></li>
-    </ol>
-    <div class="note">Slack 的操作畫面常改版，選單名稱以官方說明為準。Webhook 網址同樣要當密碼保管。</div>
-  </section>
-  <section class="step" id="s6">
-    <h2><span class="num">6</span>Email：寄信通知</h2>
-    <p>人人都有信箱，不必裝 App。但手機不一定即時跳通知，自動寄出的信也容易被丟進垃圾信，適合當備援，不適合當唯一管道。</p>
-    <div class="check"><b>這一種已實測可行，有完整教學：</b><a href="email.html">Email 通知教學</a>（兩步驟驗證、應用程式密碼、測試、疑難排解）。下面是重點。</div>
-    <ol>
-      <li>Gmail 要用<b>應用程式密碼</b>，不是登入密碼：到 <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">Google 帳戶的應用程式密碼</a>產生 16 碼（沒開兩步驟驗證時這個選項不會出現）。</li>
-      <li>填進 <code>.env</code>：<pre>SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=你的信箱
-SMTP_PASS=16碼應用程式密碼
-EMAIL_TO=收信的信箱
-NOTIFY_CHANNELS=ntfy,email</pre></li>
-    </ol>
-    <div class="warn"><b>SMTP_PASS 只放在自己的 .env：</b>不要貼給任何人，也不要上傳到網路。程式預設一天最多寄 50 封。</div>
-  </section>
-  <section class="step" id="s7">
-    <h2><span class="num">7</span>測試：npm run mock</h2>
-    <ol>
-      <li>存檔 <code>.env</code>。<code>NOTIFY_CHANNELS</code> 用逗號分隔，可以同時開好幾種，名稱不分大小寫。</li>
-      <li>在終端機執行 <code>npm run mock</code>，等一則警報。</li>
-      <li>對應的手機或信箱收到訊息，就成功了。</li>
-    </ol>
-    <div class="check"><b>檢查點：</b>沒設定憑證的管道，終端機只會印出「預演」字樣的內容，那是程式在說「還沒設定，所以沒真的送」，不是錯誤。</div>
+    <h2><span class="num">3</span>可以同時開好幾種</h2>
+    <p><code>.env</code> 的 <code>NOTIFY_CHANNELS</code> 用逗號分隔，例如 <code>ntfy,line,email</code>，名稱不分大小寫。每份教學最後都有 <code>npm run mock</code> 測試步驟。</p>
     <div class="warn"><b>預演模式會真的送：</b>只要 <code>.env</code> 裡有憑證，<code>npm run mock</code> 就會真的送出通知。測試前確認收件的是你自己。</div>
   </section>
   <section class="step">
