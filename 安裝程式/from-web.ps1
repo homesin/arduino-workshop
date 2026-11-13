@@ -6,7 +6,8 @@
 
 param(
   [Parameter(Mandatory)][string]$Source,
-  [switch]$ArduinoOnly
+  [switch]$ArduinoOnly,
+  [string]$SlidesFile
 )
 
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
@@ -32,6 +33,12 @@ if (-not (Test-Path (Join-Path $Dest '安裝程式\install.ps1'))) {
 Sync $Source $Dest '/XC', '/XN', '/XO'
 Sync (Join-Path $Source '安裝程式') (Join-Path $Dest '安裝程式')
 
+# 簡報（get.ps1 另外下載的單檔 HTML）：放在 arduino-workshop\ 底下，直接雙擊用瀏覽器開，比線上版快。每次都換成最新版。
+if ($SlidesFile -and (Test-Path $SlidesFile)) {
+  Copy-Item $SlidesFile (Join-Path $Dest '課程簡報.html') -Force
+  Write-Host '  ✓ 簡報已存到 arduino-workshop\課程簡報.html（雙擊就能用瀏覽器開）' -ForegroundColor Green
+}
+
 # 另開一個 powershell 跑：install.ps1 失敗時會 exit，不要連這支一起結束
 $a = '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $Dest '安裝程式\install.ps1')
 if ($ArduinoOnly) { $a += '-ArduinoOnly' }
@@ -39,5 +46,6 @@ if ($ArduinoOnly) { $a += '-ArduinoOnly' }
 
 Write-Host ''
 Write-Host '教材在桌面的 arduino-workshop 資料夾。' -ForegroundColor Green
+if ($SlidesFile -and (Test-Path $SlidesFile)) { Write-Host '簡報：arduino-workshop\課程簡報.html，雙擊用瀏覽器打開。' -ForegroundColor Green }
 Write-Host '之後要重新檢查（例如插上板子後），雙擊裡面的 安裝程式\install.cmd 即可。' -ForegroundColor DarkGray
 Start-Process explorer.exe $Dest

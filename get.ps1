@@ -32,12 +32,25 @@
     return
   }
 
+  # The slides (about 7 MB) are fetched separately so students can open them locally instead of the slow web page.
+  # Best effort: a failure here must not stop the installation.
+  $slides = Join-Path $tmp 'slides.html'
+  try {
+    Write-Host "Downloading slides ($base/slides/) ..." -ForegroundColor Cyan
+    Invoke-WebRequest "$base/slides/" -OutFile $slides -UseBasicParsing -TimeoutSec 180
+    if ((Get-Item $slides).Length -lt 100000) { Remove-Item $slides -Force }
+  } catch {
+    Write-Host "Slides download skipped: $($_.Exception.Message)" -ForegroundColor Yellow
+    Remove-Item $slides -Force -ErrorAction SilentlyContinue
+  }
+
   # The setup folder is named in Chinese. Written as \u escapes because this file must stay ASCII (see above).
   $setupDir = [regex]::Unescape('\u5b89\u88dd\u7a0b\u5f0f')
 
   # A separate process: install.ps1 calls exit on failure, which would otherwise close this window.
   $a = '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $src ($setupDir + '\from-web.ps1')), '-Source', $src
   if ($only) { $a += '-ArduinoOnly' }
+  if (Test-Path $slides) { $a += '-SlidesFile', $slides }
   & powershell.exe @a
   Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
 }
